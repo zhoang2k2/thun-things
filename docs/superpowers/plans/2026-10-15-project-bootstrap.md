@@ -34,10 +34,12 @@
 ### Task 1: Initialize Next.js Project Baseline
 
 **Files:**
+
 - Create/Initialize: `package.json`, `tsconfig.json`, `next.config.ts`, `app/layout.tsx`, `app/page.tsx`, `app/globals.css`
 - Ensure: `thun-things.md` is preserved at root
 
 **Interfaces:**
+
 - Produces: Working Next.js 16 root-based application with App Router
 
 - [ ] **Step 1:** Initialize Next.js using `pnpm dlx create-next-app@latest .` with `--ts --tailwind --eslint --app --import-alias "@/*" --use-pnpm --empty --no-src-dir` while preserving `thun-things.md`.
@@ -49,10 +51,12 @@
 ### Task 2: Configure Code Formatting, Linting & Editor Standards
 
 **Files:**
+
 - Create/Modify: `.prettierrc`, `.prettierignore`, `.editorconfig`, `eslint.config.mjs`
 - Modify: `package.json`
 
 **Interfaces:**
+
 - Produces: Standardized code formatting and linting scripts (`pnpm lint`, `pnpm format`, `pnpm format:check`)
 
 - [ ] **Step 1:** Install `prettier` and `prettier-plugin-tailwindcss` as devDependencies.
@@ -66,10 +70,12 @@
 ### Task 3: Setup Environment Configuration and Security Boundaries
 
 **Files:**
+
 - Create: `lib/env.ts`, `.env.example`, `.env.local`
 - Modify: `.gitignore`
 
 **Interfaces:**
+
 - Produces: `env` validated object exported from `lib/env.ts`
 
 - [ ] **Step 1:** Install `zod` and `next-intl` dependencies.
@@ -82,10 +88,12 @@
 ### Task 4: Configure Testing Suite (Vitest + React Testing Library)
 
 **Files:**
+
 - Create: `vitest.config.ts`, `vitest.setup.ts`, `app/page.test.tsx`
 - Modify: `package.json`
 
 **Interfaces:**
+
 - Produces: Working `pnpm test` script executing Vitest with DOM environment
 
 - [ ] **Step 1:** Install `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `@vitejs/plugin-react`, `jsdom` as devDependencies.
@@ -99,6 +107,7 @@
 ### Task 5: AI Agent Configuration and Reusable Skills
 
 **Files:**
+
 - Create: `AGENTS.md`, `CLAUDE.md`
 - Create: `.agents/skills/architecture-guidelines/SKILL.md`
 - Create: `.agents/skills/frontend-standards/SKILL.md`
@@ -110,6 +119,7 @@
 - Create symlinks or reference adapters in `.claude/skills/`
 
 **Interfaces:**
+
 - Produces: Project-level agent governance and 7 required skills
 
 - [ ] **Step 1:** Create `AGENTS.md` containing canonical rules, decision hierarchy, and technology baseline.
@@ -122,6 +132,7 @@
 ### Task 6: Architectural Documentation
 
 **Files:**
+
 - Create: `docs/architecture/overview.md`
 - Create: `docs/architecture/tech-stack.md`
 - Create: `docs/decisions/README.md`
@@ -129,6 +140,7 @@
 - Create: `README.md`
 
 **Interfaces:**
+
 - Produces: Comprehensive technical documentation referenced to `thun-things.md`
 
 - [ ] **Step 1:** Write `docs/architecture/overview.md` (modular monolith, directory structure, boundaries).
@@ -142,9 +154,11 @@
 ### Task 7: GitHub Actions CI Workflow and Verification
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 **Interfaces:**
+
 - Produces: Automated CI workflow verifying pnpm install, typecheck, lint, test, build
 
 - [ ] **Step 1:** Create `.github/workflows/ci.yml` with actions for checkout, pnpm setup, node setup with cache, `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm build`.
