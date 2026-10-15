@@ -93,3 +93,4 @@ This codebase is maintained with assistance from Claude Code, Codex, and Antigra
 2. Implement only the explicitly requested scope; do not start future phases prematurely.
 3. Always run `pnpm typecheck`, `pnpm lint`, and `pnpm test` after modifying code.
 4. Keep technical artifacts in English; communicate with the owner in Vietnamese.
+# thun-things
