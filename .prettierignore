@@ -1,8 +1,0 @@
-.next
-out
-build
-node_modules
-pnpm-lock.yaml
-coverage
-.superpowers
-thun-things.md
