@@ -4,18 +4,18 @@
 
 All variables are declared in the env schema module (`lib/env.ts`) from P0. Variables not needed by the current phase are optional; a missing value disables the related feature instead of crashing the app.
 
-| Variable | Scope | Needed from | Default when missing | Owner action |
-| --- | --- | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | public | P1 | `http://localhost:3000` | Set preview URL in Vercel; production domain at P9 |
-| `RESEND_API_KEY` | server | P3 | — (contact form disabled) | Create Resend account, API key |
-| `LEADS_TO_EMAIL` | server | P3 | — (contact form disabled) | Inbox that receives leads |
-| `LEADS_FROM_EMAIL` | server | P3 | `onboarding@resend.dev` | Verified sender; switch to own domain at P9 |
-| `UPSTASH_REDIS_REST_URL` | server | P3 | — (rate limit off in dev only) | Create Upstash Redis database |
-| `UPSTASH_REDIS_REST_TOKEN` | server | P3 | — | Same database |
-| `NEXT_PUBLIC_GA_ID` | public | P6 | — (analytics off) | GA4 measurement ID (`G-XXXXXXX`) |
-| `ANTHROPIC_API_KEY` | server | P8 | — (AI off) | Anthropic Console key + spend cap |
-| `ANTHROPIC_MODEL` | server | P8 | `claude-haiku-5-5` [PROPOSED] | Confirm model |
-| `AI_ENABLED` | server | P8 | `false` | Set `true` to enable rationale |
+| Variable                   | Scope  | Needed from | Default when missing           | Owner action                                       |
+| -------------------------- | ------ | ----------- | ------------------------------ | -------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`     | public | P1          | `http://localhost:3000`        | Set preview URL in Vercel; production domain at P9 |
+| `RESEND_API_KEY`           | server | P3          | — (contact form disabled)      | Create Resend account, API key                     |
+| `LEADS_TO_EMAIL`           | server | P3          | — (contact form disabled)      | Inbox that receives leads                          |
+| `LEADS_FROM_EMAIL`         | server | P3          | `onboarding@resend.dev`        | Verified sender; switch to own domain at P9        |
+| `UPSTASH_REDIS_REST_URL`   | server | P3          | — (rate limit off in dev only) | Create Upstash Redis database                      |
+| `UPSTASH_REDIS_REST_TOKEN` | server | P3          | —                              | Same database                                      |
+| `NEXT_PUBLIC_GA_ID`        | public | P6          | — (analytics off)              | GA4 measurement ID (`G-XXXXXXX`)                   |
+| `ANTHROPIC_API_KEY`        | server | P8          | — (AI off)                     | Anthropic Console key + spend cap                  |
+| `ANTHROPIC_MODEL`          | server | P8          | `claude-haiku-5-5` [PROPOSED]  | Confirm model                                      |
+| `AI_ENABLED`               | server | P8          | `false`                        | Set `true` to enable rationale                     |
 
 ## Rules
 

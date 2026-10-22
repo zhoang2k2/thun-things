@@ -23,14 +23,14 @@ Give every later phase a working, verified codebase so no phase needs to install
 
 ## Decisions
 
-| Topic | Decision | Reason |
-| --- | --- | --- |
-| Versions | Latest stable at execution time, exact pins via `.npmrc` `save-exact=true` | Reproducible installs; floors from `tech-stack.md` |
-| Node | 22 LTS (`engines.node >=22`, CI uses 22) | Matches local toolchain |
-| Env parsing | `parseEnv(source)` pure function + `env` constant; empty string = missing; errors name every bad key | Testable without touching real env (R4) |
-| Server-only guard | `import 'server-only'` in `lib/env.ts` | Build fails if a client component imports secrets |
-| Playwright in CI | Not in CI for P0; `pnpm test:e2e` runs locally | Keeps CI fast and browser-free; added to CI in P4 |
-| GSAP | Not installed | Only if P2 proves `motion` + CSS insufficient |
+| Topic             | Decision                                                                                             | Reason                                             |
+| ----------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Versions          | Latest stable at execution time, exact pins via `.npmrc` `save-exact=true`                           | Reproducible installs; floors from `tech-stack.md` |
+| Node              | 22 LTS (`engines.node >=22`, CI uses 22)                                                             | Matches local toolchain                            |
+| Env parsing       | `parseEnv(source)` pure function + `env` constant; empty string = missing; errors name every bad key | Testable without touching real env (R4)            |
+| Server-only guard | `import 'server-only'` in `lib/env.ts`                                                               | Build fails if a client component imports secrets  |
+| Playwright in CI  | Not in CI for P0; `pnpm test:e2e` runs locally                                                       | Keeps CI fast and browser-free; added to CI in P4  |
+| GSAP              | Not installed                                                                                        | Only if P2 proves `motion` + CSS insufficient      |
 
 ## Error handling
 

@@ -25,25 +25,25 @@
 
 Installed in Task 2. "Wired in" = the phase that first imports it.
 
-| Package | Kind | Wired in | Purpose |
-| --- | --- | --- | --- |
-| `next`, `react`, `react-dom` | dep | P0 | Framework |
-| `zod` | dep | P0 | Env, catalog, API validation |
-| `motion` | dep | P1 | Animations, shared-element transition |
-| `lucide-react` | dep | P1 | Icons |
-| `radix-ui` | dep | P1 | Accessible primitives (Dialog, Popover) |
-| `clsx`, `tailwind-merge` | dep | P1 | Class composition |
-| `resend` | dep | P3 | Contact email |
-| `@upstash/ratelimit`, `@upstash/redis` | dep | P3 | Serverless rate limiting |
-| `next-intl` | dep | P5 | i18n routing and messages |
-| `@next/third-parties` | dep | P6 | GA4 loader |
-| `@anthropic-ai/sdk` | dep | P8 | Claude rationale |
-| `typescript`, `@types/node`, `@types/react`, `@types/react-dom` | dev | P0 | Types |
-| `tailwindcss`, `@tailwindcss/postcss` | dev | P0 | Styling |
-| `eslint`, `eslint-config-next`, `prettier`, `prettier-plugin-tailwindcss` | dev | P0 | Lint/format |
-| `vitest`, `@vitejs/plugin-react`, `jsdom` | dev | P0 | Unit/component tests |
-| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | dev | P0 | Component tests |
-| `@playwright/test`, `@axe-core/playwright` | dev | P0 / P4 | Smoke + a11y tests |
+| Package                                                                              | Kind | Wired in | Purpose                                 |
+| ------------------------------------------------------------------------------------ | ---- | -------- | --------------------------------------- |
+| `next`, `react`, `react-dom`                                                         | dep  | P0       | Framework                               |
+| `zod`                                                                                | dep  | P0       | Env, catalog, API validation            |
+| `motion`                                                                             | dep  | P1       | Animations, shared-element transition   |
+| `lucide-react`                                                                       | dep  | P1       | Icons                                   |
+| `radix-ui`                                                                           | dep  | P1       | Accessible primitives (Dialog, Popover) |
+| `clsx`, `tailwind-merge`                                                             | dep  | P1       | Class composition                       |
+| `resend`                                                                             | dep  | P3       | Contact email                           |
+| `@upstash/ratelimit`, `@upstash/redis`                                               | dep  | P3       | Serverless rate limiting                |
+| `next-intl`                                                                          | dep  | P5       | i18n routing and messages               |
+| `@next/third-parties`                                                                | dep  | P6       | GA4 loader                              |
+| `@anthropic-ai/sdk`                                                                  | dep  | P8       | Claude rationale                        |
+| `typescript`, `@types/node`, `@types/react`, `@types/react-dom`                      | dev  | P0       | Types                                   |
+| `tailwindcss`, `@tailwindcss/postcss`                                                | dev  | P0       | Styling                                 |
+| `eslint`, `eslint-config-next`, `prettier`, `prettier-plugin-tailwindcss`            | dev  | P0       | Lint/format                             |
+| `vitest`, `@vitejs/plugin-react`, `jsdom`                                            | dev  | P0       | Unit/component tests                    |
+| `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event` | dev  | P0       | Component tests                         |
+| `@playwright/test`, `@axe-core/playwright`                                           | dev  | P0 / P4  | Smoke + a11y tests                      |
 
 Not installed: `gsap` (only if `motion` + CSS cannot deliver the pinned hero, decided in P2), Prisma/Supabase, Redux/Zustand (see `tech-stack.md` §3).
 
@@ -67,11 +67,13 @@ P0 has no Owner tasks [USER]. Env deny rules were already narrowed (2026-10-22: 
 ### Task 1 (FE): Scaffold Next.js baseline
 
 **Files:**
+
 - Create: `package.json`, `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `app/layout.tsx`, `app/page.tsx`, `app/globals.css`, `.npmrc`
 - Modify: `.gitignore` (keep existing entries; add Next/Playwright outputs)
 - Preserve: `thun-things.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `docs/`, `.agents/`, `.claude/`
 
 **Interfaces:**
+
 - Produces: Next.js app at root; `@/*` alias; scripts `dev`, `build`, `start`.
 
 - [ ] **Step 1:** Scaffold into a temp dir and copy in (create-next-app refuses non-empty dirs): `pnpm dlx create-next-app@latest /tmp/thun-scaffold --ts --tailwind --eslint --app --no-src-dir --import-alias "@/*" --use-pnpm --turbopack --empty`, then copy everything except `README.md`, `AGENTS.md`, `CLAUDE.md`, `.git`.
@@ -84,9 +86,11 @@ P0 has no Owner tasks [USER]. Env deny rules were already narrowed (2026-10-22: 
 ### Task 2 (BE): Install all roadmap libraries
 
 **Files:**
+
 - Modify: `package.json`, `pnpm-lock.yaml`
 
 **Interfaces:**
+
 - Produces: every package in the Dependency Manifest resolvable from `node_modules`.
 
 - [ ] **Step 1:** `pnpm add zod motion lucide-react radix-ui clsx tailwind-merge resend @upstash/ratelimit @upstash/redis next-intl @next/third-parties @anthropic-ai/sdk server-only`
@@ -99,10 +103,12 @@ P0 has no Owner tasks [USER]. Env deny rules were already narrowed (2026-10-22: 
 ### Task 3 (BE): Lint, format, and test tooling
 
 **Files:**
+
 - Create: `.prettierrc`, `.prettierignore`, `.editorconfig`, `vitest.config.mts`, `vitest.setup.ts`, `playwright.config.ts`, `app/page.test.tsx`, `e2e/smoke.spec.ts`
 - Modify: `eslint.config.mjs`, `package.json` (scripts)
 
 **Interfaces:**
+
 - Produces scripts: `lint`, `typecheck` (`tsc --noEmit`), `format`, `format:check`, `test` (`vitest run`), `test:watch`, `test:e2e` (`playwright test`).
 
 - [ ] **Step 1:** Write failing test `app/page.test.tsx`:
@@ -128,10 +134,12 @@ it('renders the brand heading', () => {
 ### Task 4 (BE): Env schema, example file, and agent guard
 
 **Files:**
+
 - Create: `lib/env.ts`, `lib/env.test.ts`, `.env.example`, `.claude/settings.json`
 - Modify: `docs/configuration-variables.md` (only if a variable changes)
 
 **Interfaces:**
+
 - Produces: `export function parseEnv(source: Record<string, string | undefined>): Env`, `export const env: Env` (parsed from `process.env`), `export type Env`.
 - `Env` fields exactly as in `docs/configuration-variables.md`: `NEXT_PUBLIC_SITE_URL: string` (default `http://localhost:3000`), `RESEND_API_KEY?`, `LEADS_TO_EMAIL?` (email), `LEADS_FROM_EMAIL: string` (default `onboarding@resend.dev`), `UPSTASH_REDIS_REST_URL?` (url), `UPSTASH_REDIS_REST_TOKEN?`, `NEXT_PUBLIC_GA_ID?` (regex `^G-[A-Z0-9]+$`), `ANTHROPIC_API_KEY?`, `ANTHROPIC_MODEL: string` (default `claude-haiku-5-5`), `AI_ENABLED: boolean` (from `"true" | "false"`, default `false`).
 - Empty strings are treated as missing.
@@ -153,10 +161,12 @@ it('renders the brand heading', () => {
 ### Task 5 (BE): CI workflow and docs sync
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 - Modify: `docs/architecture/tech-stack.md`, `README.md`, `docs/superpowers/plans/2026-10-22-roadmap.md` (P0 status)
 
 **Interfaces:**
+
 - Produces: CI job `quality` on push/PR to `develop` and `main`.
 
 - [ ] **Step 1:** `ci.yml`: `pnpm/action-setup` (version from `packageManager`), Node 22 LTS, `pnpm install --frozen-lockfile`, then `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`; no secrets referenced.
