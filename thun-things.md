@@ -421,6 +421,8 @@ Cart, checkout, payments, user accounts, order management, inventory sync, free-
 
 # Part 2 — Delivery Plan
 
+> **Superseded (2026-10-22) [USER]:** Phase order, FE/BE/Owner roles, and phase gating rules now live in [`docs/superpowers/plans/2026-10-22-roadmap.md`](./docs/superpowers/plans/2026-10-22-roadmap.md). The phase content below remains as reference detail; where it conflicts with the roadmap, the roadmap wins.
+
 > **Audience:** AI agents (Claude Code, Codex, Antigravity) and the owner.
 > **Read first:** Part 1 above (decisions D-xx, risks R-xx, data model, folder structure).
 > **Capacity assumption:** one developer, ~8 h/week → ~10–13 weeks to launch (v2 UI adds scroll-driven and transition work). Re-estimate after Phase 1.
