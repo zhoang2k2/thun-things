@@ -59,7 +59,7 @@ The action opens the chat channel from `config/site.ts` when the owner sets one;
 
 - Route `/products/[slug]`, one per catalog product (`generateStaticParams`).
 - Unknown slugs must return a **real 404**. Under Partial Prerendering a dynamic segment streams `200` before `notFound()` runs (seen in P1), so `proxy.ts` rejects slugs not in the catalog before rendering.
-- Desktop: left column of stacked images (front, back, lifestyle), right sticky info column: name (`h1`), price, badge, status note, action or notify-me link, sizes, material, care, description. Mobile: single column, images first.
+- Desktop: left column of stacked images (front, back, lifestyle), right sticky info column: name (`h1`), price, badge, status note, action or notify-me link, sizes, material, care, description. **Mobile (P2-10):** swipeable snap carousel with a `01 / 04` counter, info directly below, and an order bar (price + action, or notify-me for sold-out) fixed to the bottom of the screen; the in-page action is hidden on mobile to avoid duplicates.
 - Related products: 4 others, same colour first, rendered with the same grid and hover card.
 
 ## Evidence tooling

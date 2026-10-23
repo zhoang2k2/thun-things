@@ -86,7 +86,7 @@
 
 **Files:** Create `components/product/ProductHoverCard.tsx`, `components/product/glass/GlassLayer.tsx`, `components/product/glass/glass.css` (global stylesheet imported by the component; CSS Modules do not work with the Turbopack Tailwind rule); modify `ProductGrid`, `ProductTile` (+ tests).
 
-**Interfaces:** grid-level state `{ activeId, origin: { x, y }, rect }` in `ProductGrid`; tile handlers `onPointerEnter`, `onPointerLeave`, `onFocus`, `onBlur` (focus leaving the tile), `onKeyDown` (Escape), touch: `onPointerDown` records `pointerType`, `onClick` prevents navigation when the card is closed and the pointer is touch. `ProductHoverCard({ product, origin, align: 'start' | 'center' | 'end' })` renders the print-frame card (image section reuses `MediaImage`, name, price, `StatusBadge`, `ProductAction`). `align` is `start` on the first column, `end` on the last. `GlassLayer({ rect, origin, open })` positions one blob behind the card.
+**Interfaces:** grid-level state `{ activeId, origin: { x, y }, rect }` in `ProductGrid`; tile handlers `onPointerEnter`, `onPointerLeave`, `onFocus`, `onBlur` (focus leaving the tile), `onKeyDown` (Escape), touch: `onPointerDown` records `pointerType`, `onClick` prevents navigation when the card is closed and the pointer is touch. `ProductHoverCard({ product, active })` renders the print-frame card (image section reuses `MediaImage`, name, price, `StatusBadge`, `ProductAction`); geometry and reveal per Task 8. `GlassLayer({ rect, origin, open })` positions one blob behind the card.
 
 - [x] Tests: hover opens a card containing name, price, badge; `sold_out` card has no action link; focusing the tile link opens the card and `Escape` closes it; `first touch tap opens the card without navigating` (click default prevented on first touch tap, not on the second).
 - [x] Implement; checks; visual check of frames; commit `[FEATURE] Add hover card with glass layer`.
@@ -107,6 +107,14 @@
 - [x] E2E: home shows 20 tiles, `/?page=2` shows 4, `/?page=abc` shows 20; hovering a tile shows the card with price; `edge tiles do not overflow the viewport` (hover first and last column tiles → `scrollWidth <= clientWidth`); keyboard Tab to a tile opens the card; product page renders `h1`; `/products/nope` → 404; axe on `/`, `/?page=2`, one product page.
 - [x] `pnpm evidence` scenarios: hero autoplay + pause; grid hover card (desktop); keyboard card; mobile tap card; pagination; product page desktop/mobile; 404.
 - [x] Full suite; open PR with evidence; wait for CI.
+
+### Task 8 (FE): Owner revisions after review (2026-10-23, P2-7 → P2-10)
+
+- [x] Card: fixed 16px frame (1px border + 15px padding) so the card image lands exactly on the cell image; reveal by `clip-path: circle()` from the pointer (image never moves); full-width 48px action; 8-point spacing in the info area. Edge-column shifting removed.
+- [x] Grid: 1 column on mobile, 16px gutters on all sizes so edge and mobile cards fit; mobile card spans the screen.
+- [x] Fix: first touch tap navigated because focus opened the card before `click`; open state is captured at `pointerdown`.
+- [x] Product page on mobile: snap carousel with `01 / 04` counter and a fixed order bar; in-page action hidden on mobile.
+- [x] E2E: image position/size unchanged and neighbours still on hover; mobile one column + full-width card; carousel counter; sticky bar; evidence regenerated.
 
 ## P2 Acceptance (gate for P3)
 
