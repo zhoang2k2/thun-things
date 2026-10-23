@@ -72,6 +72,25 @@ const scenarios = [
       await snap(12);
     },
   },
+  {
+    name: '04-hover-card-no-glass',
+    kind: 'gif',
+    viewport: DESKTOP,
+    set: 'hover',
+    run: async ({ page, snap }) => {
+      await page.goto('/');
+      const tiles = page.locator('.ProductTile');
+      await tiles.nth(4).scrollIntoViewIfNeeded();
+      await page.mouse.move(720, 120);
+      await snap(3);
+      for (const index of [5, 6]) {
+        const box = await tiles.nth(index).boundingBox();
+        await page.mouse.move(box.x + box.width * 0.35, box.y + box.height * 0.4, { steps: 6 });
+        for (let step = 0; step < 6; step += 1) await snap();
+        await snap(6);
+      }
+    },
+  },
   { name: 'contact-desktop', kind: 'png', viewport: DESKTOP, path: '/contact' },
   { name: 'contact-mobile', kind: 'png', viewport: MOBILE, path: '/contact', mobile: true },
   {
