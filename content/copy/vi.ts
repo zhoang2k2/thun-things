@@ -27,6 +27,7 @@ export const copy = {
     home: {
       title: 'Thun Things',
       description: 'Áo thun Thun Things.',
+      heroAlt: 'Banner Thun Things',
     },
     about: {
       title: 'Giới thiệu',

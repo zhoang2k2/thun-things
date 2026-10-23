@@ -61,7 +61,7 @@ export const SiteFooter = ({ policies, contactEmail, socials }: SiteFooterProps)
       </div>
       <p
         aria-hidden="true"
-        className="SiteFooter__wordmark px-2 text-[17vw] leading-[0.8] font-extrabold tracking-tighter whitespace-nowrap uppercase"
+        className="SiteFooter__wordmark px-2 text-[14.5vw] leading-[0.8] font-extrabold tracking-tighter whitespace-nowrap uppercase"
       >
         {copy.site.name}
       </p>
