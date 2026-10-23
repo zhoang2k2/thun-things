@@ -1,6 +1,6 @@
 // Runs Lighthouse (mobile preset, default throttling) against the production build and checks the
 // P4 performance budgets. Usage: `pnpm perf` (builds first).
-// Output: docs/reports/lighthouse-p4-<date>/<page>.report.html plus summary.json.
+// Output: docs/reports/lighthouse-p4-<date>/<page>.report.html (the median run) plus summary.json.
 // Exits non-zero when any page misses a budget.
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -12,7 +12,12 @@ import lighthouse from 'lighthouse';
 const PORT = 3102;
 const DEBUG_PORT = 9223;
 const BASE_URL = `http://localhost:${PORT}`;
-const DATE = new Date().toISOString().slice(0, 10);
+// Local calendar date (YYYY-MM-DD), so a late-night run is not filed under the UTC date.
+const DATE = new Date().toLocaleDateString('sv-SE');
+// Simulated throttling still varies run to run on a local server (which requests start before the
+// observed paint shifts the estimate by whole round trips), so each page runs RUNS times and the
+// run with the median LCP is reported, as Lighthouse's variability guide recommends.
+const RUNS = 3;
 const OUT_DIR = join('docs', 'reports', `lighthouse-p4-${DATE}`);
 
 const PAGES = [
@@ -46,10 +51,27 @@ const startServer = async () => {
 
 const score = (lhr, category) => Math.round((lhr.categories[category]?.score ?? 0) * 100);
 
-const summarize = (page, lhr) => {
-  const lcpMs = lhr.audits['largest-contentful-paint'].numericValue;
-  const cls = lhr.audits['cumulative-layout-shift'].numericValue;
-  const tbtMs = lhr.audits['total-blocking-time'].numericValue;
+const metricsOf = (lhr) => ({
+  lcpMs: Math.round(lhr.audits['largest-contentful-paint'].numericValue),
+  cls: Number(lhr.audits['cumulative-layout-shift'].numericValue.toFixed(3)),
+  tbtMs: Math.round(lhr.audits['total-blocking-time'].numericValue),
+});
+
+const runLighthouse = async (page) => {
+  const result = await lighthouse(`${BASE_URL}${page.path}`, {
+    port: DEBUG_PORT,
+    output: 'html',
+    logLevel: 'error',
+  });
+  if (!result) throw new Error(`Lighthouse returned no result for ${page.path}`);
+  if (result.lhr.runtimeError) {
+    throw new Error(`${page.path}: ${result.lhr.runtimeError.message}`);
+  }
+  return result;
+};
+
+const summarize = (page, lhr, runs) => {
+  const { lcpMs, cls, tbtMs } = metricsOf(lhr);
   const failures = [];
   if (!(lcpMs < BUDGETS.lcpMs)) failures.push('LCP');
   if (!(cls < BUDGETS.cls)) failures.push('CLS');
@@ -58,12 +80,13 @@ const summarize = (page, lhr) => {
     page: page.path,
     report: `${page.name}.report.html`,
     performance: score(lhr, 'performance'),
-    lcpMs: Math.round(lcpMs),
-    cls: Number(cls.toFixed(3)),
-    tbtMs: Math.round(tbtMs),
+    lcpMs,
+    cls,
+    tbtMs,
     accessibility: score(lhr, 'accessibility'),
     bestPractices: score(lhr, 'best-practices'),
     seo: score(lhr, 'seo'),
+    runs: runs.map(({ lhr: run }) => metricsOf(run)),
     runWarnings: lhr.runWarnings,
     passed: failures.length === 0,
     failures,
@@ -102,17 +125,14 @@ const main = async () => {
     browser = await chromium.launch({ args: [`--remote-debugging-port=${DEBUG_PORT}`] });
     // Sequential on purpose: parallel runs skew the simulated throttling.
     for (const page of PAGES) {
-      const result = await lighthouse(`${BASE_URL}${page.path}`, {
-        port: DEBUG_PORT,
-        output: 'html',
-        logLevel: 'error',
-      });
-      if (!result) throw new Error(`Lighthouse returned no result for ${page.path}`);
-      const { lhr, report } = result;
-      if (lhr.runtimeError) throw new Error(`${page.path}: ${lhr.runtimeError.message}`);
+      await fetch(`${BASE_URL}${page.path}`); // warm the server so run 1 is not a cold start
+      const runs = [];
+      for (let run = 0; run < RUNS; run += 1) runs.push(await runLighthouse(page));
+      const byLcp = [...runs].sort((a, b) => metricsOf(a.lhr).lcpMs - metricsOf(b.lhr).lcpMs);
+      const { lhr, report } = byLcp[Math.floor(RUNS / 2)];
       writeFileSync(join(OUT_DIR, `${page.name}.report.html`), report);
       version = lhr.lighthouseVersion;
-      rows.push(summarize(page, lhr));
+      rows.push(summarize(page, lhr, runs));
       console.log(`  ${page.path} done`);
     }
   } finally {
@@ -123,6 +143,7 @@ const main = async () => {
     date: DATE,
     lighthouse: version,
     preset: 'mobile (default throttling)',
+    method: `median-LCP run of ${RUNS} per page`,
     budgets: BUDGETS,
     pages: rows,
   };
