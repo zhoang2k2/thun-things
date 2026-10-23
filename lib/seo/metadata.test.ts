@@ -19,6 +19,6 @@ describe('buildMetadata', () => {
   });
 
   it('omits the title when none is given so the root default applies', () => {
-    expect(buildMetadata({ description: 'd', path: '/' }).title).toBeUndefined();
+    expect(buildMetadata({ description: 'd', path: '/' })).not.toHaveProperty('title');
   });
 });

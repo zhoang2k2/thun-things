@@ -16,7 +16,8 @@ export const siteUrl = (path = '/'): string => new URL(path, env.NEXT_PUBLIC_SIT
 
 export const buildMetadata = ({ title, description, path }: BuildMetadataOptions): Metadata => ({
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
-  title,
+  // An explicit `title: undefined` would override the root layout's default title.
+  ...(title && { title }),
   description,
   alternates: { canonical: path },
   openGraph: {
