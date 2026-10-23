@@ -135,7 +135,7 @@
 
 **Files:**
 
-- Create: `lib/seo/metadata.ts`, `lib/seo/metadata.test.ts`, `app/about/page.tsx`, `app/contact/page.tsx`, `app/policy/[slug]/page.tsx`, `app/robots.ts`, `app/sitemap.ts`, `app/sitemap.test.ts`
+- Create: `lib/seo/metadata.ts`, `lib/seo/metadata.test.ts`, `app/about/page.tsx`, `app/contact/page.tsx`, `app/policy/privacy/page.tsx`, `app/policy/returns/page.tsx`, `components/policy/PolicyPage.tsx`, `app/robots.ts`, `app/sitemap.ts`, `app/sitemap.test.ts`
 - Modify: `app/page.tsx`, `app/page.test.tsx`, `app/layout.tsx` (root metadata via helper)
 
 **Interfaces:**
@@ -147,7 +147,7 @@
   - `sitemap()` returns entries for `/`, `/about`, `/contact`, `/policy/privacy`, `/policy/returns` prefixed with the site URL.
   - `robots()` allows all, `sitemap: <siteUrl>/sitemap.xml`.
 - Pages render one `h1` from `copy.pages.*.title` plus a placeholder paragraph from copy; Home `h1` is `Thun Things` with a reserved hero region (`aspect` none, `min-h-[70vh]`, `aria-hidden` decorative block) so P2 drops the slideshow in without layout change.
-- Policy page: `generateStaticParams` returns `policySlugs`; unknown slug → `notFound()` (`dynamicParams = false` if supported by this Next version; otherwise guard).
+- Policy pages: two static routes sharing `PolicyPage` / `policyMetadata(slug)`. A dynamic `/policy/[slug]` was tried and rejected: with Cache Components `dynamicParams` is unavailable and Partial Prerendering streams a `200` before `notFound()` runs, so unknown slugs never got a real 404 (caught by the e2e test).
 
 - [ ] **Step 1:** Tests: `metadata.test.ts` — `builds canonical and open graph from path` (`buildMetadata({ title: 'Giới thiệu', description: 'd', path: '/about' })` → `alternates.canonical === '/about'`, `openGraph.locale === 'vi_VN'`, `metadataBase.href === 'http://localhost:3000/'`). `sitemap.test.ts` — `lists every shell page` (5 URLs, all start with `http://localhost:3000`). Mock `server-only`.
 - [ ] **Step 2:** Run → FAIL.
