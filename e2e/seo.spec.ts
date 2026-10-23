@@ -182,11 +182,16 @@ test('every slug is lowercase kebab-case (17)', () => {
   for (const slug of slugs) expect(slug).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
 });
 
-test('Home and every product page share a 1200x630 og:image (18)', async ({ page, request }) => {
-  for (const path of ['/', ...productPaths]) {
+test('every public page and the 404 carry a 1200x630 og:image and twitter:image (18)', async ({
+  page,
+  request,
+}) => {
+  for (const path of [...PUBLIC_PAGES, NOT_FOUND]) {
     await open(page, path);
+    expect(await metaContent(page, 'meta[name="twitter:image"]'), path).toBeTruthy();
     const image = await metaContent(page, 'meta[property="og:image"]');
     expect(image, path).toBeTruthy();
+    if (path.startsWith('/products/')) expect(image, path).toContain(`${path}/opengraph-image`);
     expect(await metaContent(page, 'meta[property="og:image:width"]'), path).toBe('1200');
     expect(await metaContent(page, 'meta[property="og:image:height"]'), path).toBe('630');
     const response = await request.get(toPath(image!));
@@ -194,6 +199,24 @@ test('Home and every product page share a 1200x630 og:image (18)', async ({ page
     expect(response.headers()['content-type'], path).toBe('image/png');
   }
 });
+
+const LIMITED_BOT_AGENTS = {
+  Zalo: 'Mozilla/5.0 (compatible; Zalo link preview)',
+  Googlebot: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+};
+
+for (const [name, userAgent] of Object.entries(LIMITED_BOT_AGENTS)) {
+  test(`${name} receives Home metadata inside <head> (5, 6, 10)`, async ({ request }) => {
+    for (const path of ['/', '/?page=2']) {
+      const html = await (await request.get(path, { headers: { 'user-agent': userAgent } })).text();
+      const head = html.slice(0, html.indexOf('</head>'));
+      expect(head, path).toMatch(/<title>[^<]+<\/title>/);
+      expect(head, path).toMatch(/<meta name="description" content="[^"]{50,}"/);
+      expect(head, path).toMatch(/<link rel="canonical" href="[^"]+"/);
+      expect(head, path).toMatch(/<meta property="og:image" content="[^"]+"/);
+    }
+  });
+}
 
 test('/llms.txt is served as plain text (20)', async ({ request }) => {
   const response = await request.get('/llms.txt');

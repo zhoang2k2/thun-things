@@ -24,6 +24,21 @@ describe('buildMetadata', () => {
     });
   });
 
+  it('gives open graph and Twitter the default 1200x630 share image', () => {
+    const metadata = buildMetadata({ description: 'd', path: '/about' });
+    const image = { url: '/opengraph-image', width: 1200, height: 630, alt: 'Thun Things' };
+    expect(metadata.openGraph).toMatchObject({ images: [image] });
+    expect(metadata.twitter).toMatchObject({ images: [image] });
+  });
+
+  it('lets a page supply its own share image and alt', () => {
+    const image = { url: '/products/x/opengraph-image', alt: 'X' };
+    const metadata = buildMetadata({ description: 'd', path: '/products/x', image });
+    const expected = [{ ...image, width: 1200, height: 630 }];
+    expect(metadata.openGraph).toMatchObject({ images: expected });
+    expect(metadata.twitter).toMatchObject({ images: expected });
+  });
+
   it('omits the title when none is given so the root default applies', () => {
     expect(buildMetadata({ description: 'd', path: '/' })).not.toHaveProperty('title');
   });

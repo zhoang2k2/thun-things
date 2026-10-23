@@ -16,13 +16,13 @@ describe('homeMetadata', () => {
   it('gives page 2 its own canonical, title and description', () => {
     const metadata = homeMetadata('2');
     expect(metadata.alternates?.canonical).toBe('/?page=2');
-    expect(metadata.title).toBe('Trang 2');
+    expect(metadata.title).toEqual({ absolute: 'Trang 2 · Thun Things' });
     expect(metadata.description).toMatch(/ Trang 2\.$/);
   });
 
   it('clamps an out-of-range page to the last page', () => {
     expect(homeMetadata('99').alternates?.canonical).toBe('/?page=2');
-    expect(homeMetadata('99').title).toBe('Trang 2');
+    expect(homeMetadata('99').title).toEqual({ absolute: 'Trang 2 · Thun Things' });
   });
 });
 
@@ -36,6 +36,9 @@ describe('product metadata', () => {
     expect(metadata.title).toBe(product.name.vi);
     expect(metadata.description).toBe(product.description.vi);
     expect(metadata.alternates?.canonical).toBe(`/products/${slug}`);
+    expect(metadata.openGraph).toMatchObject({
+      images: [{ url: `/products/${slug}/opengraph-image`, alt: product.name.vi }],
+    });
   });
 });
 

@@ -17,7 +17,7 @@ export const homeMetadata = (pageParam: string | string[] | undefined): Metadata
 
   const label = `${copy.pagination.page} ${page}`;
   return buildMetadata({
-    title: label,
+    title: { absolute: `${label} · ${copy.site.name}` },
     description: `${description} ${label}.`,
     path: `/?page=${page}`,
   });

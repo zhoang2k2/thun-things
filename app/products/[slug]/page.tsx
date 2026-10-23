@@ -25,6 +25,7 @@ export async function generateMetadata({
     title: product.name.vi,
     description: product.description.vi,
     path: `/products/${slug}`,
+    image: { url: `/products/${slug}/opengraph-image`, alt: product.name.vi },
   });
 }
 
