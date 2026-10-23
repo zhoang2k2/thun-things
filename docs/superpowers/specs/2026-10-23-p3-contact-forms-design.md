@@ -31,9 +31,9 @@ Without a verified domain, Resend only delivers from `onboarding@resend.dev` to 
 
 **Shared rules**
 
-- Server Functions (`'use server'`) with `useActionState`; the forms work without client JS (progressive enhancement).
+- Server Functions (`'use server'`) with `useActionState`; the forms work without client JS (progressive enhancement). Without JS a submission lands on static `/contact/sent` or `/contact/retry` (303), because Cache Components cannot re-render the page in place for a native form post.
 - Validation: one Zod schema per form in `lib/leads/schema.ts`, used by the server function; Vietnamese messages from `content/copy/vi.ts`. Phone accepts Vietnamese mobile formats (`0xxxxxxxxx`, `+84xxxxxxxxx`, spaces/dots allowed).
-- Spam: hidden honeypot field (any value → pretend success, send nothing); rate limit 5 submissions / 10 min per IP via Upstash.
+- Spam: hidden honeypot field (any value → pretend success, send nothing); rate limit 5 submissions / 10 min per IP via Upstash, applied after validation so invalid attempts do not count.
 - **Disabled state:** when `RESEND_API_KEY` or `LEADS_TO_EMAIL` is missing, or Upstash is missing in production, the form renders disabled with a note and the contact email (if configured); the server function refuses too.
 
 ## Leads

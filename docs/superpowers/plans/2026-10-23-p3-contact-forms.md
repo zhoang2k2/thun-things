@@ -31,10 +31,10 @@
 
 ### Task 0 (Owner) — required before P3 starts
 
-- [ ] Merge PR #3 (P2 DONE) and connect Vercel (carried from P1).
-- [ ] Create a **Resend** account → API key. Use the **Resend account email** as `LEADS_TO_EMAIL` until the domain is verified (P9).
-- [ ] Create an **Upstash Redis** database → REST URL and token.
-- [ ] Set in `.env.local` **and** Vercel (Preview + Production) using the names in `.env.example`: `RESEND_API_KEY`, `LEADS_TO_EMAIL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`; leave `LEADS_FROM_EMAIL` empty (defaults to `onboarding@resend.dev`).
+- [x] Merge PR #3 (P2 DONE) and connect Vercel (carried from P1).
+- [x] Create a **Resend** account → API key. Use the **Resend account email** as `LEADS_TO_EMAIL` until the domain is verified (P9).
+- [x] Create an **Upstash Redis** database → REST URL and token.
+- [ ] Set in `.env.local` (done by the owner, 2026-10-23) **and** Vercel (Preview + Production) using the names in `.env.example`: `RESEND_API_KEY`, `LEADS_TO_EMAIL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`; leave `LEADS_FROM_EMAIL` empty (defaults to `onboarding@resend.dev`).
 - [ ] Optional (defaults apply): policy text, About text and photo, chat channel link, footer contact email.
 
 ### Task 1 (BE): Form readiness
@@ -43,8 +43,8 @@
 
 **Interfaces:** no new owner-facing variable. `canSendCustomerConfirmation(fromEmail = env.LEADS_FROM_EMAIL): boolean` → true only when the sender is outside `resend.dev`. `leadSinkMode(): 'email' | 'memory'` → `memory` only when the test-only `E2E_LEADS_SINK=memory` is set by Playwright and never when `VERCEL_ENV === 'production'` (read in `lib/leads/readiness.ts`, not in `lib/env.ts`, `.env.example`, or `docs/configuration-variables.md`). `getFormReadiness(): { enabled: true } | { enabled: false; reason: 'email' | 'ratelimit' }` — email needs `RESEND_API_KEY` and `LEADS_TO_EMAIL` (unless memory mode); rate limit needs Upstash when `NODE_ENV === 'production'`.
 
-- [ ] Tests: confirmation off for empty / `@resend.dev` senders, on for an own-domain sender; `memory` refused in production; readiness reasons for each missing piece.
-- [ ] Implement; commit `[TASK] Add form readiness`.
+- [x] Tests: confirmation off for empty / `@resend.dev` senders, on for an own-domain sender; `memory` refused in production; readiness reasons for each missing piece.
+- [x] Implement; commit `[TASK] Add form readiness`.
 
 ### Task 2 (BE): Lead schemas
 
@@ -52,8 +52,8 @@
 
 **Interfaces:** `normalizeVietnamesePhone(input: string): string | null` → `+84xxxxxxxxx`; `contactFormSchema` (purpose enum, email, phone, optional name ≤ 80, size ≤ 10, quantity int 1–20, address ≤ 300, message ≤ 1000, productSlug optional, consent literal `on`/`true`, honeypot `website` optional); `notifyFormSchema` (productSlug, email?, phone?, consent; refine: at least one of email/phone with the error on `email`). Types `ContactForm`, `NotifyForm`. Messages from copy.
 
-- [ ] Tests: phone accept/reject list (Review Focus 2); contact requires email + phone + consent; optional fields accept empty strings; quantity bounds; notify requires one of email/phone (Review Focus 3).
-- [ ] Implement; commit `[FEATURE] Add lead form schemas`.
+- [x] Tests: phone accept/reject list (Review Focus 2); contact requires email + phone + consent; optional fields accept empty strings; quantity bounds; notify requires one of email/phone (Review Focus 3).
+- [x] Implement; commit `[FEATURE] Add lead form schemas`.
 
 ### Task 3 (BE): Rate limit and client IP
 
@@ -61,8 +61,8 @@
 
 **Interfaces:** `checkRateLimit(key: string): Promise<{ ok: boolean }>` — Upstash `Ratelimit.slidingWindow(5, '10 m')` when configured, in-memory fallback otherwise (development and tests only); `clientKey(headers: Headers): string` from `x-forwarded-for` first hop, else `'anonymous'`.
 
-- [ ] Tests with the in-memory limiter: 5 allowed, 6th refused, other key unaffected; `clientKey` parsing.
-- [ ] Implement; commit `[FEATURE] Add submission rate limiting`.
+- [x] Tests with the in-memory limiter: 5 allowed, 6th refused, other key unaffected; `clientKey` parsing.
+- [x] Implement; commit `[FEATURE] Add submission rate limiting`.
 
 ### Task 4 (BE): Lead sink and emails
 
@@ -70,8 +70,8 @@
 
 **Interfaces:** `Lead` per spec; `LeadSink { deliver(lead: Lead): Promise<void> }`; `getLeadSink(): LeadSink` (email or memory by `env.LEADS_SINK`); `ownerEmail(lead, product?)` and `customerEmail(lead, product?)` → `{ subject, text }` in Vietnamese; email sink sends the owner email always and the customer email only when `canSendCustomerConfirmation()` and `lead.email` exist; Resend errors throw a `LeadDeliveryError` without lead data.
 
-- [ ] Tests (Resend client mocked): owner email contains purpose, product name, phone; confirmation skipped for a `resend.dev` sender or no email; sent for an own-domain sender; delivery error message contains no email/phone.
-- [ ] Implement; commit `[FEATURE] Add email lead sink`.
+- [x] Tests (Resend client mocked): owner email contains purpose, product name, phone; confirmation skipped for a `resend.dev` sender or no email; sent for an own-domain sender; delivery error message contains no email/phone.
+- [x] Implement; commit `[FEATURE] Add email lead sink`.
 
 ### Task 5 (BE): Server functions
 
@@ -79,36 +79,36 @@
 
 **Interfaces:** `type FormState = { status: 'idle' | 'success' | 'error' | 'disabled'; fieldErrors?: Record<string, string>; message?: string }`; `submitContact(prev: FormState, formData: FormData): Promise<FormState>`; `submitNotify(prev, formData)`. Order: readiness → honeypot → rate limit → validate → build lead (product resolved via `lib/catalog`) → `sink.deliver` → success.
 
-- [ ] Tests (sink and limiter mocked): honeypot → success without delivery; rate limited → error message; invalid → field errors; valid → one delivery with normalised phone; readiness off → `disabled`.
-- [ ] Implement; commit `[FEATURE] Add contact and notify server functions`.
+- [x] Tests (sink and limiter mocked): honeypot → success without delivery; rate limited → error message; invalid → field errors; valid → one delivery with normalised phone; readiness off → `disabled`.
+- [x] Implement; commit `[FEATURE] Add contact and notify server functions`.
 
 ### Task 6 (FE): Contact page form
 
 **Files:** Create `components/forms/Field.tsx` (label, input/select/textarea, error, hint), `components/forms/ContactForm.tsx` (client), `components/forms/FormStatus.tsx`; modify `app/contact/page.tsx`, `content/copy/vi.ts`, `app/globals.css` (square native controls already reset).
 
-- [ ] Tests: prefilled product summary for a known slug; unknown slug ignored; purpose default; required markers; field errors rendered with `aria-invalid` and linked messages; disabled state shows the note and no submit.
-- [ ] Implement; commit `[FEATURE] Add contact order form`.
+- [x] Tests: prefilled product summary for a known slug; unknown slug ignored; purpose default; required markers; field errors rendered with `aria-invalid` and linked messages; disabled state shows the note and no submit.
+- [x] Implement; commit `[FEATURE] Add contact order form`.
 
 ### Task 7 (FE): Notify-me on product pages
 
 **Files:** Create `components/forms/NotifyForm.tsx`; modify `components/product/ProductInfo.tsx` (+ test).
 
-- [ ] Tests: sold-out shows the form (email, phone, consent), others do not; submitting neither field shows the error.
-- [ ] Implement; commit `[FEATURE] Add in-page notify-me form`.
+- [x] Tests: sold-out shows the form (email, phone, consent), others do not; submitting neither field shows the error.
+- [x] Implement; commit `[FEATURE] Add in-page notify-me form`.
 
 ### Task 8 (FE): Policy and About content
 
 **Files:** Create `content/policies/privacy.ts`, `content/policies/returns.ts`, `content/about.ts`; modify policy and About pages.
 
-- [ ] Structured sections (headings, paragraphs, lists) marked `TODO(owner)`; privacy lists email/phone collection, Resend, consent; About text + `MediaImage` photo placeholder.
-- [ ] Commit `[TASK] Add policy and about placeholder content`.
+- [x] Structured sections (headings, paragraphs, lists) marked `TODO(owner)`; privacy lists email/phone collection, Resend, consent; About text + `MediaImage` photo placeholder.
+- [x] Commit `[TASK] Add policy and about placeholder content`.
 
 ### Task 9: E2E, evidence, PR
 
-- [ ] Playwright `webServer` env: `E2E_LEADS_SINK=memory`, test-only `RESEND_API_KEY`/`LEADS_TO_EMAIL` dummies (never real), so forms are enabled without sending.
-- [ ] E2E: contact validation errors and success; prefill from a product link; notify-me error and success; disabled state when config is absent (second server config or unit-level); axe on `/contact`, a sold-out product, both policies, About.
-- [ ] Evidence scenarios: contact errors → success; product → contact prefill; notify-me; disabled form; policy and About pages.
-- [ ] Full suite, PR, evidence, CI.
+- [x] Playwright `webServer` env: `E2E_LEADS_SINK=memory`, test-only `RESEND_API_KEY`/`LEADS_TO_EMAIL` dummies (never real), so forms are enabled without sending.
+- [x] E2E: contact validation errors and success; prefill from a product link; notify-me error and success; disabled state when config is absent (second server config or unit-level); axe on `/contact`, a sold-out product, both policies, About.
+- [x] Evidence scenarios: contact errors → success; product → contact prefill; notify-me; disabled form; policy and About pages.
+- [x] Full suite, PR, evidence, CI.
 
 ## P3 Acceptance (gate for P4)
 
@@ -116,3 +116,15 @@
 - [ ] Owner receives a real notification email from the Vercel preview (owner verifies; agents cannot use real credentials).
 - [ ] Honeypot and rate limit tested; forms show a clear disabled state when configuration is missing.
 - [ ] Owner merged the PR; roadmap P3 = `DONE`.
+
+## Implementation notes (2026-10-23)
+
+Deviations from the tasks above, recorded during implementation:
+
+- **Validation before rate limit** (Task 5): invalid submissions are rejected before the limiter runs, so fixing typos never uses up a visitor's five submissions. Nothing is sent for invalid input.
+- **Contact form in the static shell** (Task 6): the form is prerendered; only the query-dependent parts (product summary, purpose, size options, hidden product slug) stream in through `use()` inside `<Suspense>`, each with a working fallback.
+- **No-JS result pages:** under Cache Components a native (no-JS) form post cannot re-render the page in place, so the server functions answer non-router submissions with a 303 to static `/contact/sent` or `/contact/retry` (noindex, not in the sitemap). Router submissions (with the `next-action` header) keep the in-place state.
+- **Notify-me readiness** is evaluated when the static product page is prerendered; the server function re-checks it per request.
+- **Upstash outage** fails open (logged by error name only); the honeypot still filters naive bots.
+- **E2E:** `E2E_LEADS_SINK=memory` also forces the in-memory limiter, so test runs never touch Upstash.
+- **Evidence:** `scripts/evidence/capture.mjs` gained `EVIDENCE_SET`; the disabled state is captured from a second build with blank email variables.
