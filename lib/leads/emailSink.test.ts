@@ -106,3 +106,10 @@ describe('emailSink', () => {
     errorLog.mockRestore();
   });
 });
+
+it('keeps the owner notification Vietnamese and identifies the customer locale', async () => {
+  const { sink, sent } = setup('onboarding@resend.dev');
+  await sink.deliver({ ...LEAD, locale: 'en' });
+  expect(sent[0].text).toContain('Ngôn ngữ khách: EN');
+  expect(sent[0].subject).toContain('Đặt mua');
+});

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Suspense, useActionState } from 'react';
 
 import { ConsentField } from '@/components/forms/ConsentField';
@@ -43,6 +43,7 @@ export const ContactForm = ({ enabled, prefill, contactEmail }: ContactFormProps
   const [state, formAction, pending] = useActionState(submitContact, initialFormState);
   const { errorRef, successRef } = useFormFocus(state);
   const t = useTranslations('forms');
+  const locale = useLocale();
   const { errors, message } = useFormMessages(state);
 
   if (state.status === 'success') {
@@ -68,6 +69,7 @@ export const ContactForm = ({ enabled, prefill, contactEmail }: ContactFormProps
       )}
       {!isEnabled && <FormDisabledNote contactEmail={contactEmail} />}
 
+      <input type="hidden" name="locale" value={locale} className="ContactForm__locale" />
       <fieldset disabled={!isEnabled} className="ContactForm__fields flex flex-col gap-8">
         <p className="ContactForm__legend text-ink-muted text-sm leading-5">
           <RequiredMark /> {t('required')}

@@ -178,3 +178,29 @@ describe('submitNotify', () => {
     expect(mocks.deliver).not.toHaveBeenCalled();
   });
 });
+
+describe('locale-aware submissions', () => {
+  it.each(['en', 'vi', 'xx', 'EN', ''])(
+    'validates locale %s before storing a lead',
+    async (locale) => {
+      await submitContact(initialFormState, formData({ ...VALID_CONTACT, locale }));
+      expect(mocks.deliver.mock.calls[0][0].locale).toBe(locale === 'en' ? 'en' : 'vi');
+    },
+  );
+  it('keeps the English locale on native success and retry redirects', async () => {
+    mocks.requestHeaders = new Headers();
+    await expect(
+      submitContact(initialFormState, formData({ ...VALID_CONTACT, locale: 'en' })),
+    ).rejects.toThrow('REDIRECT /en/contact/sent');
+    await expect(
+      submitNotify(initialFormState, formData({ productSlug: 'am-ban', locale: 'en' })),
+    ).rejects.toThrow('REDIRECT /en/contact/retry');
+  });
+  it('stores an English notify lead', async () => {
+    await submitNotify(
+      initialFormState,
+      formData({ productSlug: 'am-ban', email: 'a@example.com', consent: 'on', locale: 'en' }),
+    );
+    expect(mocks.deliver.mock.calls[0][0].locale).toBe('en');
+  });
+});

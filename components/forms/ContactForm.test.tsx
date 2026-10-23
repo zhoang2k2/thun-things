@@ -135,3 +135,19 @@ describe('ContactForm', () => {
     expect(screen.queryByRole('button', { name: forms.submit })).not.toBeInTheDocument();
   });
 });
+
+it('posts the page locale and translates server field errors in English', async () => {
+  submitContact.mockResolvedValue({
+    status: 'error',
+    fieldErrors: { email: 'forms.errors.emailRequired' },
+  });
+  await act(async () => {
+    renderWithFormIntl(<ContactForm enabled prefill={ORDER} />, { locale: 'en' });
+  });
+  await userEvent.click(screen.getByRole('button', { name: 'Send' }));
+  await waitFor(() => expect(submitContact).toHaveBeenCalled());
+  expect(submitContact.mock.calls[0][1].get('locale')).toBe('en');
+  expect(
+    await screen.findByText('Enter your email.', { selector: '[id$="email-error"]' }),
+  ).toBeInTheDocument();
+});

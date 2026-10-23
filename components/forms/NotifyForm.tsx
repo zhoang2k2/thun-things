@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import { ConsentField } from '@/components/forms/ConsentField';
@@ -32,6 +32,7 @@ export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormPro
   const [state, formAction, pending] = useActionState(submitNotify, initialFormState);
   const { errorRef, successRef } = useFormFocus(state);
   const t = useTranslations('forms');
+  const locale = useLocale();
   const { errors, message } = useFormMessages(state);
 
   const values = state.values ?? {};
@@ -65,6 +66,7 @@ export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormPro
             <FormErrorSummary ref={errorRef} idPrefix={ID} fieldErrors={errors} message={message} />
           )}
           {!isEnabled && <FormDisabledNote contactEmail={contactEmail} />}
+          <input type="hidden" name="locale" value={locale} className="NotifyForm__locale" />
           <fieldset disabled={!isEnabled} className="NotifyForm__fields flex flex-col gap-6">
             <Field idPrefix={ID} name="email" label={t('fields.email')} error={errors.email}>
               {(control) => (

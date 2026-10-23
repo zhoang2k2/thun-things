@@ -38,6 +38,7 @@ export const ownerEmail = (lead: Lead, product: Product | undefined, siteUrl: st
   const subject = product ? `[${SHOP}] ${purpose} — ${product.name.vi}` : `[${SHOP}] ${purpose}`;
   const text = [
     `${purpose}`,
+    `${email.locale}: ${lead.locale.toUpperCase()}`,
     ...productLines(product, siteUrl),
     ...line(fields.size, lead.size),
     ...line(fields.quantity, lead.quantity),

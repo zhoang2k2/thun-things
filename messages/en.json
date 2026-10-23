@@ -112,7 +112,8 @@
       "greeting": "Hello,",
       "request": "Request",
       "customerSubject": "Thun Things has received your request",
-      "consentGiven": "Agreed to the privacy policy"
+      "consentGiven": "Agreed to the privacy policy",
+      "locale": "Customer language"
     },
     "notify": {
       "title": "Notify me when it's available",

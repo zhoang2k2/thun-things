@@ -4,8 +4,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { z } from 'zod';
 
-import { DEFAULT_LOCALE } from '@/i18n/messages';
-import { localizedPath } from '@/i18n/routing';
+import { type Locale, isLocale, routing, localizedPath } from '@/i18n/routing';
 import { getProductBySlug } from '@/lib/catalog';
 import type { Product } from '@/lib/catalog/schema';
 import { type FormMessageKey, type FormState, HONEYPOT_FIELD } from '@/lib/leads/formState';
@@ -18,6 +17,11 @@ import { LeadDeliveryError, type Lead } from '@/lib/leads/types';
 // Order: readiness → honeypot → validation → rate limit → delivery. Validation runs before the
 // rate limit so fixing typos never uses up a visitor's five submissions; invalid input costs
 // nothing because nothing is sent.
+
+const submissionLocale = (formData: FormData): Locale => {
+  const locale = formData.get('locale');
+  return isLocale(locale) ? locale : routing.defaultLocale;
+};
 
 const readValues = (formData: FormData): Record<string, string> => {
   const values: Record<string, string> = {};
@@ -58,7 +62,7 @@ const handleSubmission = async <Schema extends z.ZodType>({
   if (!ok) return { status: 'error', message: 'forms.rateLimited', values };
 
   const lead = toLead(parsed.data, {
-    locale: 'vi',
+    locale: submissionLocale(formData),
     consent: true,
     createdAt: new Date().toISOString(),
   });
@@ -77,11 +81,10 @@ const handleSubmission = async <Schema extends z.ZodType>({
 // Without JavaScript the browser posts the form natively and, under Cache Components, the page
 // cannot be re-rendered in place, so those submissions get a 303 to a static result page.
 // Router-driven submissions carry the `next-action` header and keep the in-place state.
-const respond = async (state: FormState): Promise<FormState> => {
+const respond = async (state: FormState, locale: Locale): Promise<FormState> => {
   if ((await headers()).has('next-action')) return state;
-  // Vietnamese result pages until forms carry the locale (P5 Task 5).
   const result = state.status === 'success' ? '/contact/sent' : '/contact/retry';
-  redirect(localizedPath(DEFAULT_LOCALE, result));
+  redirect(localizedPath(locale, result));
 };
 
 const productFields = (product: Product | undefined) =>
@@ -99,7 +102,7 @@ export async function submitContact(_previous: FormState, formData: FormData): P
       ...productFields(productSlug ? getProductBySlug(productSlug) : undefined),
     }),
   });
-  return respond(state);
+  return respond(state, submissionLocale(formData));
 }
 
 export async function submitNotify(_previous: FormState, formData: FormData): Promise<FormState> {
@@ -119,5 +122,5 @@ export async function submitNotify(_previous: FormState, formData: FormData): Pr
       };
     },
   });
-  return respond(state);
+  return respond(state, submissionLocale(formData));
 }
