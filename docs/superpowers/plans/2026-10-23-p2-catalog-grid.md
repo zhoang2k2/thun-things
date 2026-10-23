@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
+> **Historical record.** This plan describes P2 as shipped. The glass layer (V-25) was removed afterwards [USER, 2026-10-23]; references to it below are kept as history. Current rules: UI v3 spec.
+
 **Goal:** Home shows the banner slideshow and a paginated image-only product grid with the hover card and glass layer; every product has a detail page; all data is typed mock data and all images are V-26 placeholders.
 
 **Architecture:** Catalog is a Zod-validated in-repo dataset behind `lib/catalog/index.ts`. Pages are Server Components; interactive pieces (`HeroSlideshow`, `ProductGrid` tiles, glass layer) are small Client Components fed serialisable view models. Status → badge/action rules live in one pure module.
@@ -83,6 +85,8 @@
 - [x] Implement; checks; build; commit `[FEATURE] Add paginated image-only product grid`.
 
 ### Task 5 (FE): Hover card and glass layer
+
+> **Update 2026-10-23 [USER]:** the glass layer (`components/product/glass/`) was removed after P2 merged; the hover card itself is unchanged.
 
 **Files:** Create `components/product/ProductHoverCard.tsx`, `components/product/glass/GlassLayer.tsx`, `components/product/glass/glass.css` (global stylesheet imported by the component; CSS Modules do not work with the Turbopack Tailwind rule); modify `ProductGrid`, `ProductTile` (+ tests).
 

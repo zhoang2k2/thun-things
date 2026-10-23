@@ -31,7 +31,7 @@ These instructions apply repository-wide. Read any more-specific nested `AGENTS.
 - Read environment values through `@/lib/env`. Values prefixed with `NEXT_PUBLIC_` are exposed to the browser; keep secrets server-side.
 - Keep TypeScript strict mode enabled and avoid unjustified `any` or loose casts.
 - Prefer Server Components. Use Client Components only where interaction, client hooks, event listeners, or browser APIs require them.
-- Follow the binding design rules in [`docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md`](docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md#design-rules-binding-user-2026-10-23): **DR-1 no radius** (only the hover-card glass layer may curve) and **DR-2 art/photography/fashion, no "AI slop"** (no gradients, soft shadows, glass panels, pill shapes, decorative icons, emoji, template heroes). Icons: Hugeicons only, minimal and functional.
+- Follow the binding design rules in [`docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md`](docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md#design-rules-binding-user-2026-10-23): **DR-1 no radius** (no exceptions) and **DR-2 art/photography/fashion, no "AI slop"** (no gradients, soft shadows, glass panels, pill shapes, decorative icons, emoji, template heroes). Icons: Hugeicons only, minimal and functional.
 - Preserve semantic HTML, keyboard access, visible focus, WCAG 2.2 AA, and reduced-motion behavior. Follow project skills for detailed accessibility, SEO, and performance rules.
 - Read the relevant local Next.js guide in `node_modules/next/dist/docs/` before writing Next.js code; this installed Next.js version may differ from prior knowledge.
 

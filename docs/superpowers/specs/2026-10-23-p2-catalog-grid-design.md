@@ -48,12 +48,12 @@ The action opens the chat channel from `config/site.ts` when the owner sets one;
 - **Grid (V-09, V-10):** directly under the hero; 1 column on mobile, 4 from `md`; no gaps between cells; 16px side gutters (P2-8); 4:5 images only. Page from `?page=` (missing, non-numeric, or < 1 → page 1; beyond the last → last page). Read inside `<Suspense>` (Cache Components) with a skeleton of the same size.
 - **Pagination:** numbered links plus "Trước" / "Sau" text links, `aria-current="page"`, page 1 links to `/`; hidden when there is one page.
 
-## Hover card (V-14 → V-20, V-25)
+## Hover card (V-14 → V-20)
 
 - **Geometry (P2-9):** the card image sits exactly over the cell image (same image, same size, same position). A 16px photo-print frame surrounds it (1px border + 15px padding) and the info area below holds the name, a price + status row, and a full-width 48px action (P2-7), spaced on the 8-point grid. The card is positioned absolutely, so no other cell moves; the 16px gutters keep edge cards on screen.
 - **Opening (P2-9):** the image stays still; the card is revealed by `clip-path: circle()` growing from the pointer entry point (keyboard: the centre) and shrinks back on close. Reduced motion: fade only. Uses `components/motion/tokens.ts`.
 - **Input:** mouse hover opens and leaving closes; focus within the tile opens and focus leaving closes; `Escape` closes; touch: first tap opens, second tap follows the link.
-- **Glass layer:** one shared element per grid, behind the open card and above the other cells; an organic curved blob about 1.8× the card, `backdrop-filter: blur`, spreads from the pointer on open, retracts on close, drifts and morphs continuously while open. Lives in `components/**/glass/` (the only place DR-1 allows curves). Reduced motion: no drift or spread, fade only. No `backdrop-filter`: flat translucent white.
+- **Glass layer (V-25): removed [USER, 2026-10-23].** Nothing renders behind the open card; see the UI v3 spec for the reason.
 
 ## Product detail page (V-11, V-22)
 
