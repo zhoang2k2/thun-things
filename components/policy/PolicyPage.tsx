@@ -19,9 +19,5 @@ export const policyMetadata = (slug: PolicySlug): Metadata => {
 export const PolicyPage = ({ slug }: { slug: PolicySlug }) => {
   const page = copy.pages[slug];
 
-  return (
-    <PageShell title={page.title}>
-      <p>{page.body}</p>
-    </PageShell>
-  );
+  return <PageShell title={page.title} intro={<p>{page.body}</p>} />;
 };

@@ -11,9 +11,5 @@ export const metadata = buildMetadata({
 });
 
 export default function AboutPage() {
-  return (
-    <PageShell title={page.title}>
-      <p>{page.body}</p>
-    </PageShell>
-  );
+  return <PageShell title={page.title} intro={<p>{page.body}</p>} />;
 }

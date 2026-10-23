@@ -131,7 +131,7 @@ export const copy = {
     contact: {
       title: 'Liên hệ',
       description: 'Liên hệ đặt áo Thun Things.',
-      body: 'Form liên hệ sẽ có mặt tại đây.',
+      body: 'Đặt áo, hỏi size hay hỏi bất cứ điều gì. Thun Things trả lời qua email hoặc Zalo trong 1–2 ngày.',
     },
     privacy: {
       title: 'Chính sách bảo mật',
