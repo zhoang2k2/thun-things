@@ -7,6 +7,8 @@ import { SiteFooter } from '@/components/layout/SiteFooter';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SkipLink } from '@/components/layout/SkipLink';
 import { siteConfig } from '@/config/site';
+import { copy } from '@/content/copy/vi';
+import { buildMetadata } from '@/lib/seo/metadata';
 
 const grotesk = Bricolage_Grotesque({
   subsets: ['latin', 'vietnamese'],
@@ -15,8 +17,8 @@ const grotesk = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: 'Thun Things',
-  description: 'Thun Things — T-shirt brand',
+  ...buildMetadata({ description: copy.site.description, path: '/' }),
+  title: { default: copy.site.name, template: `%s · ${copy.site.name}` },
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
