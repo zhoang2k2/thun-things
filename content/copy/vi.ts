@@ -23,12 +23,19 @@ export const copy = {
   media: {
     placeholderLabel: 'Image',
   },
+  pagination: {
+    label: 'Phân trang',
+    previous: 'Trước',
+    next: 'Sau',
+    page: 'Trang',
+  },
   hero: {
     label: 'Banner',
     pause: 'Tạm dừng',
     play: 'Tiếp tục',
   },
   product: {
+    gridHeading: 'Sản phẩm',
     status: {
       available: 'Còn hàng',
       limited: 'Số lượng giới hạn',

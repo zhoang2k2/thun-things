@@ -40,7 +40,7 @@ The action opens the chat channel from `config/site.ts` when the owner sets one;
 
 ## Home
 
-- **Hero slideshow (V-08):** 4 mock banners (desktop 2400×1350, mobile 1080×1350, placeholders), 70vh, cross-fade, auto-advance 5 s; square progress bars (one per banner, the active one fills over 5 s) that also jump to a banner; a text pause/play control. `prefers-reduced-motion`: starts paused, no cross-fade. Exposed as a carousel region with labelled slides; inactive slides are hidden from assistive tech.
+- **Hero slideshow (V-08):** 4 mock banners (desktop 2400×1350, mobile 1080×1350, placeholders), 70vh, cross-fade, auto-advance 5 s; square progress bars (one per banner, the active one fills over 5 s) that also jump to a banner; a text pause/play control. `prefers-reduced-motion`: starts paused, no cross-fade. Exposed as a carousel region with labelled slides; inactive slides are hidden from assistive tech. The progress bars and pause control sit in a caption-like row **under** the image (ink on canvas) rather than over it, so they stay legible and pass contrast on any banner.
 - **Grid (V-09, V-10):** directly under the hero; 2 columns on mobile, 4 from `md`; no gaps; 4:5 images only. Page from `?page=` (missing, non-numeric, or < 1 → page 1; beyond the last → last page). Read inside `<Suspense>` (Cache Components) with a skeleton of the same size.
 - **Pagination:** numbered links plus "Trước" / "Sau" text links, `aria-current="page"`, page 1 links to `/`; hidden when there is one page.
 
