@@ -6,7 +6,7 @@ export type BadgeTone = 'neutral' | 'accent' | 'muted';
 
 const TONE_CLASSES: Record<BadgeTone, string> = {
   neutral: 'border border-ink text-ink',
-  accent: 'bg-accent text-on-accent',
+  accent: 'border border-accent text-ink',
   muted: 'bg-line text-ink-muted',
 };
 
