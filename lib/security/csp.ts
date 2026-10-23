@@ -27,7 +27,8 @@ export const buildCsp = ({ dev, preview }: CspOptions): string => {
     ['form-action', ["'self'"]],
     ['base-uri', ["'self'"]],
     ['object-src', ["'none'"]],
-    ['upgrade-insecure-requests', []],
+    // Dev only: would break plain-http LAN testing from phones.
+    ...(dev ? [] : ([['upgrade-insecure-requests', []]] as [string, string[]][])),
   ];
   return directives.map(([name, values]) => [name, ...values].join(' ')).join('; ');
 };

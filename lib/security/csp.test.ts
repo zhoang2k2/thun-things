@@ -24,6 +24,10 @@ describe('buildCsp', () => {
     ]);
   });
 
+  it('omits upgrade-insecure-requests in development', () => {
+    expect(buildCsp({ dev: true, preview: false })).not.toContain('upgrade-insecure-requests');
+  });
+
   it('has no unsafe-eval and no vercel.live in production', () => {
     const csp = buildCsp(prod);
     expect(csp).not.toContain('unsafe-eval');
