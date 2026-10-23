@@ -56,7 +56,12 @@ for (const path of NOT_FOUND_PATHS) {
     expect((await firstHop(request, path)).status).toBe(404);
     const response = await page.goto(path);
     expect(response?.status()).toBe(404);
-    await expect(page.getByRole('heading', { level: 1, name: NOT_FOUND_HEADING })).toBeVisible();
+    await expect(
+      page.getByRole('heading', {
+        level: 1,
+        name: path.startsWith('/en/') ? 'Page not found' : NOT_FOUND_HEADING,
+      }),
+    ).toBeVisible();
   });
 }
 
