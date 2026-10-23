@@ -14,7 +14,8 @@ This directory tracks significant technical and architectural choices made durin
 | **ADR-002** | Root-Based Project Structure (No `src/` Directory)           | **Accepted** | 2026-10-15 |
 | **ADR-003** | Vitest and React Testing Library for Testing Baseline        | **Accepted** | 2026-10-15 |
 | **ADR-004** | In-Repository TypeScript Catalog Data with Data-Access Layer | **Accepted** | 2026-10-15 |
-| **ADR-005** | Lean Bootstrap Dependency Policy                             | **Accepted** | 2026-10-15 |
+| **ADR-005** | Lean Bootstrap Dependency Policy                             | Superseded   | 2026-10-15 |
+| **ADR-006** | UI Direction v3 Shell                                        | **Accepted** | 2026-10-23 |
 
 ---
 
@@ -56,7 +57,23 @@ This directory tracks significant technical and architectural choices made durin
 
 ### ADR-005: Lean Bootstrap Dependency Policy
 
+> **Superseded (2026-10-22):** the owner chose to install every roadmap library in P0 (roadmap v2, P0 plan). Libraries are installed but only wired in their phase.
+
 - **Context:** Greenfield projects frequently accumulate dependencies that are not needed until later phases.
 - **Decision:** Defer installation of future libraries (Motion, GSAP, Radix UI, Resend, Anthropic SDK, GA4, Upstash) until their designated phases (P1–P5).
 - **Rationale:** Minimizes security vulnerability surface area, keeps `pnpm install` fast, prevents peer dependency conflicts, and enforces focus on foundational infrastructure.
 - **Consequences:** Future phases install libraries incrementally with clear acceptance tests.
+
+---
+
+### ADR-006: UI Direction v3 Shell
+
+- **Context:** The owner replaced UI Direction v2 with v3 and added binding design rules DR-1 (no radius) and DR-2 (art/photography/fashion, no "AI slop") — see `docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md`.
+- **Decision:**
+  - Typeface **Bricolage Grotesque** via `next/font/google` (`latin` + `vietnamese`); accent `#FF5A1F` as a swappable token with ink text on it.
+  - The shell is Server Components only; owner-editable values (email, socials, nav) live in `config/site.ts`; strings in `content/copy/vi.ts`.
+  - DR-1/DR-2 are enforced by `tests/design-rules.test.ts` (no `rounded-*`, no non-zero `border-radius`, no gradients, no `lucide-react`); the Tailwind radius scale is cleared.
+  - Icons come from Hugeicons only; `lucide-react` was removed.
+  - Every image goes through `MediaImage`, which renders the V-26 placeholder when no source exists.
+  - Policy pages are two static routes: a dynamic `/policy/[slug]` returned `200` for unknown slugs under Partial Prerendering.
+- **Consequences:** Swapping accent, typeface, or contact details touches one token or config entry. New UI that curves or uses gradients fails CI unless it lives in the sanctioned glass-layer directory.

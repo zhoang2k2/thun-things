@@ -1,6 +1,6 @@
 # P1 — Design System & Shell Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** A Vietnamese-only, accessible site shell — tokens, typeface, sticky white header, footer, Button/Badge primitives, and page shells for Home, About, Contact, Policy — that P2 and P3 fill with content.
 
@@ -37,7 +37,7 @@
 
 ### Task 0: Docs
 
-- [ ] Commit spec, roadmap update, this plan, `thun-things.md` superseded note: `[DOCS] Add UI direction v3 spec and P1 plan`.
+- [x] Commit spec, roadmap update, this plan, `thun-things.md` superseded note: `[DOCS] Add UI direction v3 spec and P1 plan`.
 
 ### Task 1 (FE): Tokens, typeface, icon library swap, class helper, motion tokens
 
@@ -50,16 +50,16 @@
 
 - Produces: `cn(...inputs: ClassValue[]): string`; Tailwind utilities `bg-canvas`, `text-ink`, `text-ink-muted`, `bg-accent`, `text-on-accent`, `border-line`, `font-sans`; CSS variable `--header-height: 64px`; `motion` tokens `{ duration: { instant: 0.1, fast: 0.2, normal: 0.35, slow: 0.6, hero: 1 }, ease: { out: [0.16, 1, 0.3, 1], inOut: [0.65, 0, 0.35, 1] }, stagger: 0.05 } as const` (seconds, for `motion`).
 
-- [ ] **Step 1:** Test `lib/cn.test.ts`: `cn('px-2', 'px-4') === 'px-4'`; `cn('a', false && 'b', undefined, 'c') === 'a c'`.
-- [ ] **Step 2:** `pnpm test lib/cn.test.ts` → FAIL (module missing).
-- [ ] **Step 3:** `lib/cn.ts` = `twMerge(clsx(inputs))`.
-- [ ] **Step 3b:** Icons: `pnpm remove lucide-react && pnpm add -E @hugeicons/react @hugeicons/core-free-icons`; update `tech-stack.md` (Hugeicons replaces lucide, wired in P2).
-- [ ] **Step 3c:** Test `tests/design-rules.test.ts` → `no radius outside the glass layer`: scan `app/`, `components/`, `lib/` for `.ts`, `.tsx`, `.css` files; fail on `/\brounded(-[a-z0-9]+)?\b/` or a non-zero `border-radius` (`/border-radius:\s*(?!0\s*[;}])/`) except files under `components/**/glass/`. Also `no gradients`: fail on `bg-gradient-`, `bg-linear-`, `bg-radial-`, `linear-gradient(`, `radial-gradient(`. Also `no lucide imports`: fail on `lucide-react`.
-- [ ] **Step 4:** `globals.css`: `@theme` with the colour tokens above and `--font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif`; `:root { --header-height: 64px }`; `html { scroll-padding-top: var(--header-height) }`; `body` uses `bg-canvas text-ink font-sans antialiased`; `@theme { --radius-*: initial; }` removes Tailwind radius scale; base layer resets native controls (`input, select, textarea, button { border-radius: 0; -webkit-appearance: none; appearance: none }`; the design-rules test allows `border-radius: 0`).
-- [ ] **Step 5:** `layout.tsx`: `Bricolage_Grotesque({ subsets: ['latin', 'vietnamese'], variable: '--font-grotesk', display: 'swap' })` applied to `<html>`.
-- [ ] **Step 6:** `components/motion/tokens.ts` with the values in Interfaces (no consumer yet; P2 hover card and hero use it).
-- [ ] **Step 7:** `pnpm test && pnpm typecheck && pnpm lint && pnpm build` → PASS.
-- [ ] **Step 8:** Commit `[FEATURE] Add design tokens, typeface, design-rule guard, and Hugeicons`.
+- [x] **Step 1:** Test `lib/cn.test.ts`: `cn('px-2', 'px-4') === 'px-4'`; `cn('a', false && 'b', undefined, 'c') === 'a c'`.
+- [x] **Step 2:** `pnpm test lib/cn.test.ts` → FAIL (module missing).
+- [x] **Step 3:** `lib/cn.ts` = `twMerge(clsx(inputs))`.
+- [x] **Step 3b:** Icons: `pnpm remove lucide-react && pnpm add -E @hugeicons/react @hugeicons/core-free-icons`; update `tech-stack.md` (Hugeicons replaces lucide, wired in P2).
+- [x] **Step 3c:** Test `tests/design-rules.test.ts` → `no radius outside the glass layer`: scan `app/`, `components/`, `lib/` for `.ts`, `.tsx`, `.css` files; fail on `/\brounded(-[a-z0-9]+)?\b/` or a non-zero `border-radius` (`/border-radius:\s*(?!0\s*[;}])/`) except files under `components/**/glass/`. Also `no gradients`: fail on `bg-gradient-`, `bg-linear-`, `bg-radial-`, `linear-gradient(`, `radial-gradient(`. Also `no lucide imports`: fail on `lucide-react`.
+- [x] **Step 4:** `globals.css`: `@theme` with the colour tokens above and `--font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif`; `:root { --header-height: 64px }`; `html { scroll-padding-top: var(--header-height) }`; `body` uses `bg-canvas text-ink font-sans antialiased`; `@theme { --radius-*: initial; }` removes Tailwind radius scale; base layer resets native controls (`input, select, textarea, button { border-radius: 0; -webkit-appearance: none; appearance: none }`; the design-rules test allows `border-radius: 0`).
+- [x] **Step 5:** `layout.tsx`: `Bricolage_Grotesque({ subsets: ['latin', 'vietnamese'], variable: '--font-grotesk', display: 'swap' })` applied to `<html>`.
+- [x] **Step 6:** `components/motion/tokens.ts` with the values in Interfaces (no consumer yet; P2 hover card and hero use it).
+- [x] **Step 7:** `pnpm test && pnpm typecheck && pnpm lint && pnpm build` → PASS.
+- [x] **Step 8:** Commit `[FEATURE] Add design tokens, typeface, design-rule guard, and Hugeicons`.
 
 ### Task 2 (FE): Button and Badge primitives
 
@@ -76,16 +76,16 @@
   - `type BadgeTone = 'neutral' | 'accent' | 'muted'`; `Badge({ tone = 'neutral', children })` renders `<span class="Badge Badge--<tone> ...">`.
 - Variant styles: primary `bg-accent text-on-accent`; secondary `border border-ink text-ink bg-canvas`; ghost `text-ink underline-offset-4 hover:underline`.
 
-- [ ] **Step 1:** Tests:
+- [x] **Step 1:** Tests:
   - `defaults to a medium primary button of type button` → role button, `type="button"`, classes contain `Button--primary`, `h-10`.
   - `primary button uses on-accent text` → class contains `text-on-accent`, not `text-white`.
   - `applies size heights` → `sm` → `h-8`, `lg` → `h-12`.
   - `buttonClasses merges custom classes` → `buttonClasses({ className: 'w-full' })` contains `w-full`.
   - `renders badge tone` → `<Badge tone="accent">Còn hàng</Badge>` has class `Badge--accent` and text.
-- [ ] **Step 2:** Run → FAIL.
-- [ ] **Step 3:** Implement both files.
-- [ ] **Step 4:** `pnpm test` → PASS; lint, typecheck.
-- [ ] **Step 5:** Commit `[FEATURE] Add Button and Badge primitives`.
+- [x] **Step 2:** Run → FAIL.
+- [x] **Step 3:** Implement both files.
+- [x] **Step 4:** `pnpm test` → PASS; lint, typecheck.
+- [x] **Step 5:** Commit `[FEATURE] Add Button and Badge primitives`.
 
 ### Task 3 (FE + BE): Copy module, site config, header, footer, layout
 
@@ -105,12 +105,12 @@
   - `SkipLink()` — `<a href="#main">` visually hidden until focused.
 - `layout.tsx` renders `SkipLink`, `SiteHeader`, `<main id="main" tabIndex={-1}>`, `SiteFooter`, passing `siteConfig` values.
 
-- [ ] **Step 1:** Header tests: `renders a banner with the main navigation` (role `banner`; nav named `Điều hướng chính`; links `Giới thiệu` → `/about`, `Liên hệ` → `/contact`; logo link → `/`); `does not render a language switch` (no text `VI`/`EN`).
-- [ ] **Step 2:** Footer tests: `renders policy links` (`Bảo mật` → `/policy/privacy`, `Đổi trả` → `/policy/returns`); `hides email and socials when unset` (no `mailto:` link, no `Mạng xã hội` heading); `shows email and socials when set` (`mailto:hi@example.com`, Instagram link with `rel` containing `noopener`).
-- [ ] **Step 3:** Run → FAIL.
-- [ ] **Step 4:** Implement copy, config, components, layout wiring. Header inner container `mx-auto max-w-screen-2xl px-4 md:px-8`; nav links min height 44 px on mobile.
-- [ ] **Step 5:** `pnpm test`, lint, typecheck, build → PASS.
-- [ ] **Step 6:** Commit `[FEATURE] Add site header, footer, and copy module`.
+- [x] **Step 1:** Header tests: `renders a banner with the main navigation` (role `banner`; nav named `Điều hướng chính`; links `Giới thiệu` → `/about`, `Liên hệ` → `/contact`; logo link → `/`); `does not render a language switch` (no text `VI`/`EN`).
+- [x] **Step 2:** Footer tests: `renders policy links` (`Bảo mật` → `/policy/privacy`, `Đổi trả` → `/policy/returns`); `hides email and socials when unset` (no `mailto:` link, no `Mạng xã hội` heading); `shows email and socials when set` (`mailto:hi@example.com`, Instagram link with `rel` containing `noopener`).
+- [x] **Step 3:** Run → FAIL.
+- [x] **Step 4:** Implement copy, config, components, layout wiring. Header inner container `mx-auto max-w-screen-2xl px-4 md:px-8`; nav links min height 44 px on mobile.
+- [x] **Step 5:** `pnpm test`, lint, typecheck, build → PASS.
+- [x] **Step 6:** Commit `[FEATURE] Add site header, footer, and copy module`.
 
 ### Task 3b (FE): Media component with dummy image fallback (V-26)
 
@@ -125,11 +125,11 @@
 - `ImagePlaceholder({ alt, width, height, className })` → `<div role="img" aria-label={alt} class="ImagePlaceholder bg-placeholder text-placeholder-ink ...">` at `aspect-ratio: width / height` (inline style allowed: runtime value), centred column: Hugeicons `Image01Icon` (24 px, `aria-hidden`) above **bold** `copy.media.placeholderLabel`; square corners.
 - `MediaImage({ src, alt, width, height, sizes, preload, className }: { src?: string; alt: string; width: number; height: number; sizes?: string; preload?: boolean; className?: string })` → `next/image` when `src` is set, otherwise `ImagePlaceholder` with the same box. P2 banners and product photos use only this component.
 
-- [ ] **Step 1:** Tests: `renders a placeholder when src is missing` (role `img` named by `alt`, text `Image` visible, class `ImagePlaceholder`, style aspect ratio `4 / 5` for 1600×2000); `renders the real image when src is set` (`img` element with `alt`, no `ImagePlaceholder`).
-- [ ] **Step 2:** Run → FAIL.
-- [ ] **Step 3:** Implement tokens and components.
-- [ ] **Step 4:** `pnpm test`, lint, typecheck → PASS.
-- [ ] **Step 5:** Commit `[FEATURE] Add media component with dummy image fallback`.
+- [x] **Step 1:** Tests: `renders a placeholder when src is missing` (role `img` named by `alt`, text `Image` visible, class `ImagePlaceholder`, style aspect ratio `4 / 5` for 1600×2000); `renders the real image when src is set` (`img` element with `alt`, no `ImagePlaceholder`).
+- [x] **Step 2:** Run → FAIL.
+- [x] **Step 3:** Implement tokens and components.
+- [x] **Step 4:** `pnpm test`, lint, typecheck → PASS.
+- [x] **Step 5:** Commit `[FEATURE] Add media component with dummy image fallback`.
 
 ### Task 4 (BE): Page shells, metadata helper, robots, sitemap
 
@@ -149,11 +149,11 @@
 - Pages render one `h1` from `copy.pages.*.title` plus a placeholder paragraph from copy; Home `h1` is `Thun Things` with a reserved hero region (`aspect` none, `min-h-[70vh]`, `aria-hidden` decorative block) so P2 drops the slideshow in without layout change.
 - Policy pages: two static routes sharing `PolicyPage` / `policyMetadata(slug)`. A dynamic `/policy/[slug]` was tried and rejected: with Cache Components `dynamicParams` is unavailable and Partial Prerendering streams a `200` before `notFound()` runs, so unknown slugs never got a real 404 (caught by the e2e test).
 
-- [ ] **Step 1:** Tests: `metadata.test.ts` — `builds canonical and open graph from path` (`buildMetadata({ title: 'Giới thiệu', description: 'd', path: '/about' })` → `alternates.canonical === '/about'`, `openGraph.locale === 'vi_VN'`, `metadataBase.href === 'http://localhost:3000/'`). `sitemap.test.ts` — `lists every shell page` (5 URLs, all start with `http://localhost:3000`). Mock `server-only`.
-- [ ] **Step 2:** Run → FAIL.
-- [ ] **Step 3:** Implement helper, robots, sitemap, pages; update home test to still find `h1` `Thun Things`.
-- [ ] **Step 4:** `pnpm test`, lint, typecheck, build → PASS; build output lists `/about`, `/contact`, `/policy/privacy`, `/policy/returns`, `/robots.txt`, `/sitemap.xml` as static.
-- [ ] **Step 5:** Commit `[FEATURE] Add page shells, metadata, robots, and sitemap`.
+- [x] **Step 1:** Tests: `metadata.test.ts` — `builds canonical and open graph from path` (`buildMetadata({ title: 'Giới thiệu', description: 'd', path: '/about' })` → `alternates.canonical === '/about'`, `openGraph.locale === 'vi_VN'`, `metadataBase.href === 'http://localhost:3000/'`). `sitemap.test.ts` — `lists every shell page` (5 URLs, all start with `http://localhost:3000`). Mock `server-only`.
+- [x] **Step 2:** Run → FAIL.
+- [x] **Step 3:** Implement helper, robots, sitemap, pages; update home test to still find `h1` `Thun Things`.
+- [x] **Step 4:** `pnpm test`, lint, typecheck, build → PASS; build output lists `/about`, `/contact`, `/policy/privacy`, `/policy/returns`, `/robots.txt`, `/sitemap.xml` as static.
+- [x] **Step 5:** Commit `[FEATURE] Add page shells, metadata, robots, and sitemap`.
 
 ### Task 5 (FE + BE): Navigation smoke, decisions, status
 
@@ -162,22 +162,22 @@
 - Create: `e2e/navigation.spec.ts`
 - Modify: `docs/decisions/README.md` (ADR-006), `docs/superpowers/plans/2026-10-22-roadmap.md` (P1 status), this plan (ticks)
 
-- [ ] **Step 1:** E2E tests:
+- [x] **Step 1:** E2E tests:
   - `header navigates to about and contact` → click `Giới thiệu` → URL `/about`, `h1` visible; click `Liên hệ` → `/contact`.
   - `policy pages render` → `/policy/privacy` and `/policy/returns` status 200 with one `h1`.
   - `unknown policy returns 404` → `/policy/anything` status 404.
   - `skip link reaches main` → first `Tab` focuses link `Chuyển đến nội dung`; `Enter` → `main` focused; `main` bounding box top ≥ header bottom.
   - `header stays visible after scroll` → scroll 2000 px on `/`, header bounding box top === 0.
-- [ ] **Step 2:** `pnpm test:e2e` → PASS (both smoke and navigation specs).
-- [ ] **Step 3:** ADR-006 "UI Direction v3 shell": Bricolage Grotesque, `#FF5A1F` accent as a swappable default, design rules DR-1/DR-2 and their test, Hugeicons replacing lucide, Server-Components-only shell, owner config in `config/site.ts`.
-- [ ] **Step 4:** Full suite: `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e` → PASS; set roadmap P1 to `IN REVIEW`.
-- [ ] **Step 5:** Commit `[TASK] Add navigation smoke tests and record shell decisions`; push; open PR `[FEATURE] P1 design system and site shell` into `develop`.
+- [x] **Step 2:** `pnpm test:e2e` → PASS (both smoke and navigation specs).
+- [x] **Step 3:** ADR-006 "UI Direction v3 shell": Bricolage Grotesque, `#FF5A1F` accent as a swappable default, design rules DR-1/DR-2 and their test, Hugeicons replacing lucide, Server-Components-only shell, owner config in `config/site.ts`.
+- [x] **Step 4:** Full suite: `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e` → PASS; set roadmap P1 to `IN REVIEW`.
+- [x] **Step 5:** Commit `[TASK] Add navigation smoke tests and record shell decisions`; push; open PR `[FEATURE] P1 design system and site shell` into `develop`.
 
 ## P1 Acceptance (gate for P2)
 
 - [ ] CI green on the PR.
-- [ ] Keyboard-only walkthrough: skip link, header links, footer links all reachable with visible focus.
+- [x] Keyboard-only walkthrough: skip link, header links, footer links all reachable with visible focus.
 - [ ] Lighthouse accessibility ≥ 95 on `/`, `/about`, `/contact`, `/policy/privacy` (run on the Vercel preview or locally with `pnpm build && pnpm start`).
-- [ ] No font CLS (Bricolage Grotesque via `next/font`, `display: 'swap'`, variable font).
+- [x] No font CLS (Bricolage Grotesque via `next/font`, `display: 'swap'`, variable font).
 - [ ] Vercel preview reachable (owner task).
 - [ ] Owner merged the PR; roadmap P1 = `DONE`.
