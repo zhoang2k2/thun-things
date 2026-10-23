@@ -20,7 +20,7 @@ export const organizationJsonLd = (): object => ({
   '@type': 'Organization',
   name: copy.site.name,
   url: siteUrl('/'),
-  logo: siteUrl('/icon.svg'),
+  logo: siteUrl('/apple-icon'),
   ...(siteConfig.contactEmail && { email: siteConfig.contactEmail }),
   ...(siteConfig.socials.length > 0 && { sameAs: siteConfig.socials.map((link) => link.href) }),
 });

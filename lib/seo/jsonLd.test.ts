@@ -51,6 +51,7 @@ describe('site JSON-LD', () => {
       '@type': 'Organization',
       name: 'Thun Things',
       url: 'http://localhost:3000/',
+      logo: 'http://localhost:3000/apple-icon',
     });
     expect(data).not.toHaveProperty('email');
     expect(data).not.toHaveProperty('sameAs');
