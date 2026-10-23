@@ -1,11 +1,17 @@
 'use client';
 
-import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { useActionState } from 'react';
+import { Suspense, useActionState } from 'react';
 
 import { ConsentField } from '@/components/forms/ConsentField';
-import { choiceClasses, controlClasses, Field, RequiredMark } from '@/components/forms/Field';
+import {
+  FALLBACK_PURPOSE,
+  PrefilledProductInput,
+  PrefilledPurpose,
+  PrefilledSize,
+  PurposeChoices,
+  SizeControl,
+} from '@/components/forms/ContactPrefillFields';
+import { controlClasses, Field, RequiredMark } from '@/components/forms/Field';
 import {
   FormDisabledNote,
   FormErrorSummary,
@@ -18,7 +24,7 @@ import { copy } from '@/content/copy/vi';
 import { cn } from '@/lib/cn';
 import { submitContact } from '@/lib/leads/actions';
 import { HONEYPOT_FIELD, initialFormState } from '@/lib/leads/formState';
-import { LEAD_PURPOSES, type LeadPurpose } from '@/lib/leads/schema';
+import type { ContactFormPrefill } from '@/lib/leads/prefill';
 
 const { forms } = copy;
 const { fields } = forms;
@@ -28,21 +34,13 @@ const INPUT = cn(controlClasses, 'h-12');
 
 interface ContactFormProps {
   enabled: boolean;
-  defaultPurpose: LeadPurpose;
-  /** Set when the visitor came from a product; sizes then come from that product. */
-  productSlug?: string;
-  sizes?: readonly string[];
+  /** Resolves from the query string; the form renders (and works) before it does. */
+  prefill: Promise<ContactFormPrefill>;
   contactEmail?: string;
 }
 
 // V-13 order form (P3-1): email and phone/Zalo required, everything else optional.
-export const ContactForm = ({
-  enabled,
-  defaultPurpose,
-  productSlug,
-  sizes,
-  contactEmail,
-}: ContactFormProps) => {
+export const ContactForm = ({ enabled, prefill, contactEmail }: ContactFormProps) => {
   const [state, formAction, pending] = useActionState(submitContact, initialFormState);
   const { errorRef, successRef } = useFormFocus(state);
 
@@ -56,7 +54,6 @@ export const ContactForm = ({
 
   const values = state.values ?? {};
   const errors = state.fieldErrors ?? {};
-  const purpose = values.purpose ?? defaultPurpose;
   const hasSummary = state.status === 'error' || state.status === 'disabled';
   const isEnabled = enabled && state.status !== 'disabled';
 
@@ -85,20 +82,9 @@ export const ContactForm = ({
           <legend className="Field__label mb-4 text-xs font-medium tracking-wide uppercase">
             {fields.purpose}
           </legend>
-          <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
-            {LEAD_PURPOSES.map((option) => (
-              <label key={option} className="ContactForm__choice flex min-h-12 items-center gap-4">
-                <input
-                  type="radio"
-                  name="purpose"
-                  value={option}
-                  defaultChecked={purpose === option}
-                  className={cn(choiceClasses, 'checked:border-[7px]')}
-                />
-                <span className="text-base">{forms.purposes[option]}</span>
-              </label>
-            ))}
-          </div>
+          <Suspense fallback={<PurposeChoices purpose={values.purpose ?? FALLBACK_PURPOSE} />}>
+            <PrefilledPurpose prefill={prefill} submitted={values.purpose} />
+          </Suspense>
         </fieldset>
 
         <div className="ContactForm__row grid gap-8 md:grid-cols-2">
@@ -142,38 +128,11 @@ export const ContactForm = ({
             )}
           </Field>
           <Field idPrefix={ID} name="size" label={fields.size} error={errors.size}>
-            {(control) =>
-              sizes && sizes.length > 0 ? (
-                <span className="relative block">
-                  <select
-                    {...control}
-                    defaultValue={values.size ?? ''}
-                    className={cn(INPUT, 'pr-12')}
-                  >
-                    <option value="">{fields.sizePlaceholder}</option>
-                    {sizes.map((size) => (
-                      <option key={size} value={size}>
-                        {size}
-                      </option>
-                    ))}
-                  </select>
-                  <HugeiconsIcon
-                    icon={ArrowDown01Icon}
-                    size={16}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute top-4 right-4"
-                  />
-                </span>
-              ) : (
-                <input
-                  {...control}
-                  type="text"
-                  maxLength={10}
-                  defaultValue={values.size}
-                  className={INPUT}
-                />
-              )
-            }
+            {(control) => (
+              <Suspense fallback={<SizeControl control={control} value={values.size} />}>
+                <PrefilledSize prefill={prefill} control={control} value={values.size} />
+              </Suspense>
+            )}
           </Field>
           <Field idPrefix={ID} name="quantity" label={fields.quantity} error={errors.quantity}>
             {(control) => (
@@ -221,7 +180,9 @@ export const ContactForm = ({
           defaultChecked={values.consent === 'on'}
         />
         <Honeypot idPrefix={ID} name={HONEYPOT_FIELD} />
-        {productSlug && <input type="hidden" name="productSlug" value={productSlug} />}
+        <Suspense fallback={null}>
+          <PrefilledProductInput prefill={prefill} />
+        </Suspense>
       </fieldset>
 
       {isEnabled && (

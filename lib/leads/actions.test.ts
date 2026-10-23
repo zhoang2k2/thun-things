@@ -6,14 +6,15 @@ import type { Lead } from '@/lib/leads/types';
 import { LeadDeliveryError } from '@/lib/leads/types';
 
 const mocks = vi.hoisted(() => ({
+  requestHeaders: new Headers(),
+  redirect: vi.fn<(path: string) => never>(),
   deliver: vi.fn<(lead: Lead) => Promise<void>>(),
   checkRateLimit: vi.fn<(key: string) => Promise<{ ok: boolean }>>(),
   getFormReadiness: vi.fn<() => { enabled: boolean; reason?: string }>(),
 }));
 
-vi.mock('next/headers', () => ({
-  headers: async () => new Headers({ 'x-forwarded-for': '203.0.113.7' }),
-}));
+vi.mock('next/headers', () => ({ headers: async () => mocks.requestHeaders }));
+vi.mock('next/navigation', () => ({ redirect: mocks.redirect }));
 vi.mock('@/lib/leads/sink', () => ({ getLeadSink: () => ({ deliver: mocks.deliver }) }));
 vi.mock('@/lib/leads/rateLimit', () => ({
   checkRateLimit: mocks.checkRateLimit,
@@ -41,6 +42,10 @@ const VALID_CONTACT = {
 };
 
 beforeEach(() => {
+  mocks.requestHeaders = new Headers({ 'x-forwarded-for': '203.0.113.7', 'next-action': 'abc' });
+  mocks.redirect.mockReset().mockImplementation((path) => {
+    throw new Error(`REDIRECT ${path}`);
+  });
   mocks.deliver.mockReset().mockResolvedValue(undefined);
   mocks.checkRateLimit.mockReset().mockResolvedValue({ ok: true });
   mocks.getFormReadiness.mockReset().mockReturnValue({ enabled: true });
@@ -120,6 +125,26 @@ describe('submitContact', () => {
     expect(errorLog).toHaveBeenCalledWith('[leads] delivery failed:', 'validation_error');
     expect(JSON.stringify(errorLog.mock.calls)).not.toContain('khach@example.com');
     errorLog.mockRestore();
+  });
+});
+
+describe('submissions without JavaScript', () => {
+  beforeEach(() => {
+    mocks.requestHeaders = new Headers({ 'x-forwarded-for': '203.0.113.7' });
+  });
+
+  it('redirects to the static confirmation after delivery', async () => {
+    await expect(submitContact(initialFormState, formData(VALID_CONTACT))).rejects.toThrow(
+      'REDIRECT /contact/sent',
+    );
+    expect(mocks.deliver).toHaveBeenCalledTimes(1);
+  });
+
+  it('redirects to the retry page on errors', async () => {
+    await expect(
+      submitNotify(initialFormState, formData({ productSlug: 'am-ban', consent: 'on' })),
+    ).rejects.toThrow('REDIRECT /contact/retry');
+    expect(mocks.deliver).not.toHaveBeenCalled();
   });
 });
 

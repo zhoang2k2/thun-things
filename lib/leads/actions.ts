@@ -1,6 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import type { z } from 'zod';
 
 import { copy } from '@/content/copy/vi';
@@ -74,11 +75,19 @@ const handleSubmission = async <Schema extends z.ZodType>({
   return { status: 'success' };
 };
 
+// Without JavaScript the browser posts the form natively and, under Cache Components, the page
+// cannot be re-rendered in place, so those submissions get a 303 to a static result page.
+// Router-driven submissions carry the `next-action` header and keep the in-place state.
+const respond = async (state: FormState): Promise<FormState> => {
+  if ((await headers()).has('next-action')) return state;
+  redirect(state.status === 'success' ? '/contact/sent' : '/contact/retry');
+};
+
 const productFields = (product: Product | undefined) =>
   product ? { productId: product.id, productSlug: product.slug } : {};
 
 export async function submitContact(_previous: FormState, formData: FormData): Promise<FormState> {
-  return handleSubmission({
+  const state = await handleSubmission({
     formData,
     schema: contactFormSchema,
     toLead: ({ productSlug, ...form }, base) => ({
@@ -89,10 +98,11 @@ export async function submitContact(_previous: FormState, formData: FormData): P
       ...productFields(productSlug ? getProductBySlug(productSlug) : undefined),
     }),
   });
+  return respond(state);
 }
 
 export async function submitNotify(_previous: FormState, formData: FormData): Promise<FormState> {
-  return handleSubmission({
+  const state = await handleSubmission({
     formData,
     schema: notifyFormSchema,
     toLead: ({ productSlug, email, phone }, base) => {
@@ -108,4 +118,5 @@ export async function submitNotify(_previous: FormState, formData: FormData): Pr
       };
     },
   });
+  return respond(state);
 }

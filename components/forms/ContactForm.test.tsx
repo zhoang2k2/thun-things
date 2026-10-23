@@ -1,10 +1,12 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ContactForm } from '@/components/forms/ContactForm';
 import { copy } from '@/content/copy/vi';
 import type { FormState } from '@/lib/leads/formState';
+import type { ContactFormPrefill } from '@/lib/leads/prefill';
 
 const submitContact = vi.hoisted(() =>
   vi.fn<(previous: FormState, formData: FormData) => Promise<FormState>>(),
@@ -13,18 +15,30 @@ vi.mock('@/lib/leads/actions', () => ({ submitContact }));
 
 const { forms } = copy;
 
+const prefillOf = (prefill: ContactFormPrefill) => Promise.resolve(prefill);
+const ORDER = prefillOf({ purpose: 'order' });
+
+// The prefill promise suspends the first render; awaiting act lets it resolve.
+const renderForm = async (ui: ReactElement) => {
+  await act(async () => {
+    render(ui);
+  });
+};
+
 beforeEach(() => {
   submitContact.mockReset();
 });
 
 describe('ContactForm', () => {
-  it('marks email, phone and consent as required and checks the default purpose', () => {
-    render(<ContactForm enabled defaultPurpose="order" />);
+  it('marks email, phone and consent as required and checks the prefilled purpose', async () => {
+    await renderForm(<ContactForm enabled prefill={ORDER} />);
     expect(screen.getByLabelText(/^Email/)).toHaveAttribute('aria-required', 'true');
     expect(screen.getByLabelText(/^Số điện thoại/)).toHaveAttribute('aria-required', 'true');
     expect(screen.getByRole('checkbox')).toHaveAttribute('aria-required', 'true');
     expect(screen.getByLabelText(/^Tên/)).not.toHaveAttribute('aria-required');
-    expect(screen.getByRole('radio', { name: forms.purposes.order })).toBeChecked();
+    await waitFor(() =>
+      expect(screen.getByRole('radio', { name: forms.purposes.order })).toBeChecked(),
+    );
     expect(screen.getByRole('link', { name: forms.fields.consentLink })).toHaveAttribute(
       'href',
       '/policy/privacy',
@@ -33,9 +47,16 @@ describe('ContactForm', () => {
 
   it('offers the product sizes and sends the product slug', async () => {
     submitContact.mockResolvedValue({ status: 'success' });
-    render(<ContactForm enabled defaultPurpose="notify" productSlug="am-ban" sizes={['S', 'M']} />);
-    expect(screen.getByRole('radio', { name: forms.purposes.notify })).toBeChecked();
-    const size = screen.getByRole('combobox', { name: /^Size/ });
+    await renderForm(
+      <ContactForm
+        enabled
+        prefill={prefillOf({ purpose: 'notify', productSlug: 'am-ban', sizes: ['S', 'M'] })}
+      />,
+    );
+    await waitFor(() =>
+      expect(screen.getByRole('radio', { name: forms.purposes.notify })).toBeChecked(),
+    );
+    const size = await screen.findByRole('combobox', { name: /^Size/ });
     expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
       forms.fields.sizePlaceholder,
       'S',
@@ -50,10 +71,12 @@ describe('ContactForm', () => {
     expect(data.get('website')).toBe('');
   });
 
-  it('uses a free-text size without a product', () => {
-    render(<ContactForm enabled defaultPurpose="other" />);
-    expect(screen.getByRole('textbox', { name: /^Size/ })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: forms.purposes.other })).toBeChecked();
+  it('uses a free-text size without a product', async () => {
+    await renderForm(<ContactForm enabled prefill={prefillOf({ purpose: 'other' })} />);
+    expect(await screen.findByRole('textbox', { name: /^Size/ })).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByRole('radio', { name: forms.purposes.other })).toBeChecked(),
+    );
   });
 
   it('shows field errors linked to their inputs and focuses the summary', async () => {
@@ -62,7 +85,7 @@ describe('ContactForm', () => {
       fieldErrors: { email: forms.errors.emailInvalid, phone: forms.errors.phoneRequired },
       values: { email: 'khach@', name: 'Lan', purpose: 'order' },
     });
-    render(<ContactForm enabled defaultPurpose="order" />);
+    await renderForm(<ContactForm enabled prefill={ORDER} />);
     await userEvent.click(screen.getByRole('button', { name: forms.submit }));
 
     const summary = await screen.findByText(forms.errorSummary);
@@ -84,14 +107,14 @@ describe('ContactForm', () => {
 
   it('shows a form-level message such as the rate limit', async () => {
     submitContact.mockResolvedValue({ status: 'error', message: forms.rateLimited, values: {} });
-    render(<ContactForm enabled defaultPurpose="order" />);
+    await renderForm(<ContactForm enabled prefill={ORDER} />);
     await userEvent.click(screen.getByRole('button', { name: forms.submit }));
     expect(await screen.findByText(forms.rateLimited)).toBeInTheDocument();
   });
 
   it('replaces the form with a confirmation on success', async () => {
     submitContact.mockResolvedValue({ status: 'success' });
-    render(<ContactForm enabled defaultPurpose="order" />);
+    await renderForm(<ContactForm enabled prefill={ORDER} />);
     await userEvent.click(screen.getByRole('button', { name: forms.submit }));
     const success = await screen.findByRole('status');
     expect(success).toHaveTextContent(forms.contact.successTitle);
@@ -99,9 +122,11 @@ describe('ContactForm', () => {
     expect(screen.queryByRole('button', { name: forms.submit })).not.toBeInTheDocument();
   });
 
-  it('renders a disabled form with a note and no submit button', () => {
-    render(<ContactForm enabled={false} defaultPurpose="order" contactEmail="shop@example.com" />);
-    expect(screen.getByText(forms.disabled)).toBeInTheDocument();
+  it('renders a disabled form with a note and no submit button', async () => {
+    await renderForm(
+      <ContactForm enabled={false} prefill={ORDER} contactEmail="shop@example.com" />,
+    );
+    expect(await screen.findByText(forms.disabled)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'shop@example.com' })).toHaveAttribute(
       'href',
       'mailto:shop@example.com',

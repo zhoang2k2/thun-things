@@ -23,3 +23,16 @@ export const resolveContactPrefill = (params: Record<string, SearchParamValue>):
   if (isPurpose(purpose)) return { product, purpose };
   return { product, purpose: product ? 'order' : 'other' };
 };
+
+/** The serialisable part the client form needs. */
+export interface ContactFormPrefill {
+  purpose: LeadPurpose;
+  productSlug?: string;
+  sizes?: string[];
+}
+
+export const toFormPrefill = ({ product, purpose }: ContactPrefill): ContactFormPrefill => ({
+  purpose,
+  productSlug: product?.slug,
+  sizes: product?.sizes,
+});

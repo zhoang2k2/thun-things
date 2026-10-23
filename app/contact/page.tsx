@@ -5,7 +5,7 @@ import { ContactProductSummary } from '@/components/forms/ContactProductSummary'
 import { PageShell } from '@/components/layout/PageShell';
 import { siteConfig } from '@/config/site';
 import { copy } from '@/content/copy/vi';
-import { resolveContactPrefill } from '@/lib/leads/prefill';
+import { type ContactPrefill, resolveContactPrefill, toFormPrefill } from '@/lib/leads/prefill';
 import { getFormReadiness } from '@/lib/leads/readiness';
 import { buildMetadata } from '@/lib/seo/metadata';
 
@@ -17,42 +17,28 @@ export const metadata = buildMetadata({
   path: '/contact',
 });
 
+// The form is part of the prerendered shell so it works without JavaScript; only the
+// query-dependent parts (product summary, purpose, sizes) stream in behind <Suspense>.
 export default function ContactPage({ searchParams }: PageProps<'/contact'>) {
+  const prefill = searchParams.then(resolveContactPrefill);
+
   return (
     <PageShell title={page.title} intro={<p>{page.body}</p>}>
-      <Suspense fallback={<ContactFormSkeleton />}>
-        <ContactSection searchParams={searchParams} />
-      </Suspense>
+      <div className="ContactSection flex flex-col gap-8">
+        <Suspense fallback={null}>
+          <ProductSummarySlot prefill={prefill} />
+        </Suspense>
+        <ContactForm
+          enabled={getFormReadiness().enabled}
+          prefill={prefill.then(toFormPrefill)}
+          contactEmail={siteConfig.contactEmail}
+        />
+      </div>
     </PageShell>
   );
 }
 
-// Reads the query (request-time) inside Suspense so the page shell stays prerendered.
-async function ContactSection({ searchParams }: Pick<PageProps<'/contact'>, 'searchParams'>) {
-  const { product, purpose } = resolveContactPrefill(await searchParams);
-
-  return (
-    <div className="ContactSection flex flex-col gap-8">
-      {product && <ContactProductSummary product={product} />}
-      <ContactForm
-        enabled={getFormReadiness().enabled}
-        defaultPurpose={purpose}
-        productSlug={product?.slug}
-        sizes={product?.sizes}
-        contactEmail={siteConfig.contactEmail}
-      />
-    </div>
-  );
+async function ProductSummarySlot({ prefill }: { prefill: Promise<ContactPrefill> }) {
+  const { product } = await prefill;
+  return product ? <ContactProductSummary product={product} /> : null;
 }
-
-const ContactFormSkeleton = () => (
-  <div aria-hidden="true" className="ContactFormSkeleton flex max-w-3xl flex-col gap-8">
-    <div className="bg-placeholder h-12 w-2/3" />
-    <div className="grid gap-8 md:grid-cols-2">
-      <div className="bg-placeholder h-20" />
-      <div className="bg-placeholder h-20" />
-    </div>
-    <div className="bg-placeholder h-20" />
-    <div className="bg-placeholder h-40" />
-  </div>
-);

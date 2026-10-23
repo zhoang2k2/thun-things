@@ -131,6 +131,18 @@ export const copy = {
       title: 'Giới thiệu',
       description: 'Câu chuyện của Thun Things.',
     },
+    contactSent: {
+      title: 'Đã nhận yêu cầu',
+      description: 'Thun Things đã nhận yêu cầu của bạn.',
+      body: 'Cảm ơn bạn. Thun Things sẽ liên hệ lại qua email hoặc Zalo trong 1–2 ngày.',
+      back: 'Về trang chủ',
+    },
+    contactRetry: {
+      title: 'Chưa gửi được',
+      description: 'Yêu cầu chưa được gửi.',
+      body: 'Vui lòng kiểm tra email, số điện thoại / Zalo và ô đồng ý chính sách bảo mật, rồi gửi lại. Nếu vẫn lỗi, hãy thử lại sau ít phút.',
+      back: 'Quay lại form liên hệ',
+    },
     contact: {
       title: 'Liên hệ',
       description: 'Liên hệ đặt áo Thun Things.',
