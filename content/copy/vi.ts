@@ -140,7 +140,7 @@ export const copy = {
     home: {
       title: 'Thun Things',
       description:
-        'Thun Things bán áo thun nghệ thuật in số lượng nhỏ. Xem các mẫu áo và đặt mua qua trang Liên hệ hoặc Zalo.',
+        'Thun Things bán áo thun nghệ thuật in số lượng nhỏ. Xem các mẫu áo và đặt mua qua trang Liên hệ, chúng mình trả lời qua email hoặc Zalo.',
       heroAlt: 'Banner Thun Things',
     },
     about: {
