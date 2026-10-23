@@ -6,6 +6,10 @@ import { normalizeVietnamesePhone } from '@/lib/leads/phone';
 // Form schemas for the lead server functions. Inputs come from FormData, so every field
 // arrives as a string or is missing; blank optional fields become undefined.
 
+// Client bundles run this schema too. Zod's JIT probe calls `Function("")`, which a CSP without
+// 'unsafe-eval' reports as a violation even though the throw is caught, so opt out of JIT.
+z.config({ jitless: true });
+
 const { errors } = copy.forms;
 
 export const LEAD_PURPOSES = ['order', 'notify', 'other'] as const;
