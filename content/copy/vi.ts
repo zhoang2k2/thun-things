@@ -36,6 +36,13 @@ export const copy = {
   },
   product: {
     gridHeading: 'Sản phẩm',
+    galleryLabel: 'Ảnh sản phẩm',
+    relatedHeading: 'Có thể bạn cũng thích',
+    details: {
+      sizes: 'Size',
+      material: 'Chất liệu',
+      care: 'Bảo quản',
+    },
     status: {
       available: 'Còn hàng',
       limited: 'Số lượng giới hạn',
