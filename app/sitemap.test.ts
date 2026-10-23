@@ -20,3 +20,14 @@ it('lists every shell page and product', () => {
 it('points robots at the sitemap', () => {
   expect(robots().sitemap).toBe('http://localhost:3000/sitemap.xml');
 });
+
+it('never lists the noindex contact result pages', () => {
+  const urls = sitemap().map((entry) => entry.url);
+  expect(urls).not.toContain('http://localhost:3000/contact/sent');
+  expect(urls).not.toContain('http://localhost:3000/contact/retry');
+  expect(new Set(urls).size).toBe(urls.length);
+});
+
+it('lets every crawler fetch every page', () => {
+  expect(robots().rules).toEqual({ userAgent: '*', allow: '/' });
+});
