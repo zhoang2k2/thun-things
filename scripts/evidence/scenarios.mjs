@@ -40,7 +40,7 @@ const scenarios = [
         await page.mouse.move(box.x + box.width * 0.35, box.y + box.height * 0.4, { steps: 6 });
         for (let step = 0; step < 6; step += 1) {
           await snap();
-          await pause(page, 60);
+          await pause(page, 30);
         }
         await snap(4);
       }
@@ -95,6 +95,32 @@ const scenarios = [
       await nav.getByRole('link', { name: 'Trang 2' }).click();
       await page.waitForURL('**/?page=2');
       await page.getByRole('navigation', { name: 'Phân trang' }).scrollIntoViewIfNeeded();
+      await snap(8);
+    },
+  },
+  {
+    name: '06-mobile-product',
+    kind: 'gif',
+    viewport: MOBILE,
+    mobile: true,
+    run: async ({ page, snap }) => {
+      await page.goto('/products/hoang-hon-01');
+      await snap(6);
+      const track = page.locator('.ProductGallery__track');
+      for (let slide = 1; slide < 4; slide += 1) {
+        await track.evaluate(
+          (element, index) =>
+            element.scrollTo({ left: element.clientWidth * index, behavior: 'smooth' }),
+          slide,
+        );
+        for (let step = 0; step < 4; step += 1) {
+          await snap();
+          await pause(page, 80);
+        }
+        await snap(3);
+      }
+      await page.mouse.wheel(0, 500);
+      await pause(page, 300);
       await snap(8);
     },
   },
