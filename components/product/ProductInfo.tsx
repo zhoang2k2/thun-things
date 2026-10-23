@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 
+import { FormIntlProvider } from '@/components/forms/FormIntlProvider';
 import { NotifyForm } from '@/components/forms/NotifyForm';
 import { ProductAction } from '@/components/product/ProductAction';
 import { StatusBadge } from '@/components/product/StatusBadge';
@@ -31,11 +32,13 @@ export const ProductInfo = ({ product }: { product: Product }) => {
       </div>
 
       {soldOut ? (
-        <NotifyForm
-          productSlug={product.slug}
-          enabled={getFormReadiness().enabled}
-          contactEmail={siteConfig.contactEmail}
-        />
+        <FormIntlProvider>
+          <NotifyForm
+            productSlug={product.slug}
+            enabled={getFormReadiness().enabled}
+            contactEmail={siteConfig.contactEmail}
+          />
+        </FormIntlProvider>
       ) : (
         <ProductAction
           slug={product.slug}

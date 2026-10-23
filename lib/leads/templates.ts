@@ -1,4 +1,5 @@
 import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
+import { localizedPath } from '@/i18n/routing';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
 import type { Lead } from '@/lib/leads/types';
@@ -28,7 +29,7 @@ const productLines = (product: Product | undefined, siteUrl: string): string[] =
   if (!product) return [];
   return [
     `${messages.forms.contact.productLabel}: ${product.name.vi} (${formatPriceVND(product.priceVND)})`,
-    `${new URL(`/products/${product.slug}`, siteUrl)}`,
+    `${new URL(localizedPath(DEFAULT_LOCALE, `/products/${product.slug}`), siteUrl)}`,
   ];
 };
 

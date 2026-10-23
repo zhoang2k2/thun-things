@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import { ErrorState } from '@/components/layout/ErrorState';
 import { Button, buttonClasses } from '@/components/ui/Button';
+import { Link } from '@/i18n/navigation';
 
 // The error value is never rendered: its message, digest and stack stay out of the UI.
 export default function RouteError({ retry }: { error: unknown; retry: () => void }) {

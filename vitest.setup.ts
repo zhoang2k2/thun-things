@@ -24,9 +24,12 @@ if (!window.matchMedia) {
 // Run motion animations instantly so enter/exit states are deterministic in tests.
 MotionGlobalConfig.skipAnimations = true;
 
-// Components using the App Router render outside Next in tests.
+// Components using the App Router render outside Next in tests. Pages render at `/vi` with no
+// query unless a test sets `usePathname` / `useSearchParams` with `vi.mocked(...)`.
 vi.mock('next/navigation', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/navigation')>()),
+  usePathname: vi.fn(() => '/vi'),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),

@@ -6,15 +6,15 @@ import sitemap from '@/app/sitemap';
 it('lists every shell page and product', () => {
   const urls = sitemap().map((entry) => entry.url);
   expect(urls.slice(0, 5)).toEqual([
-    'http://localhost:3000/',
-    'http://localhost:3000/about',
-    'http://localhost:3000/contact',
-    'http://localhost:3000/policy/privacy',
-    'http://localhost:3000/policy/returns',
+    'http://localhost:3000/vi',
+    'http://localhost:3000/vi/about',
+    'http://localhost:3000/vi/contact',
+    'http://localhost:3000/vi/policy/privacy',
+    'http://localhost:3000/vi/policy/returns',
   ]);
   const productUrls = urls.filter((url) => url.includes('/products/'));
   expect(productUrls).toHaveLength(24);
-  expect(productUrls[0]).toBe('http://localhost:3000/products/hoang-hon-01');
+  expect(productUrls[0]).toBe('http://localhost:3000/vi/products/hoang-hon-01');
 });
 
 it('points robots at the sitemap', () => {
@@ -23,8 +23,8 @@ it('points robots at the sitemap', () => {
 
 it('never lists the noindex contact result pages', () => {
   const urls = sitemap().map((entry) => entry.url);
-  expect(urls).not.toContain('http://localhost:3000/contact/sent');
-  expect(urls).not.toContain('http://localhost:3000/contact/retry');
+  expect(urls).not.toContain('http://localhost:3000/vi/contact/sent');
+  expect(urls).not.toContain('http://localhost:3000/vi/contact/retry');
   expect(new Set(urls).size).toBe(urls.length);
 });
 

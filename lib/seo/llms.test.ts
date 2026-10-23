@@ -18,14 +18,14 @@ describe('buildLlmsTxt', () => {
     for (const slug of getAllSlugs()) {
       const product = getProductBySlug(slug)!;
       expect(text).toContain(
-        `- [${product.name.vi}](http://localhost:3000/products/${slug}): ${formatPriceVND(product.priceVND)}, ${messages.product.status[product.status]}`,
+        `- [${product.name.vi}](http://localhost:3000/vi/products/${slug}): ${formatPriceVND(product.priceVND)}, ${messages.product.status[product.status]}`,
       );
     }
   });
 
   it('links About, Contact and both policies', () => {
     for (const path of ['/about', '/contact', '/policy/privacy', '/policy/returns']) {
-      expect(text).toContain(`](http://localhost:3000${path})`);
+      expect(text).toContain(`](http://localhost:3000/vi${path})`);
     }
   });
 });

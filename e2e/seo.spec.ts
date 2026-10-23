@@ -1,5 +1,6 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { localizedPath } from '@/i18n/routing';
 import { getAllSlugs } from '@/lib/catalog';
 import { shellPaths } from '@/lib/seo/routes';
 
@@ -8,11 +9,12 @@ import { shellPaths } from '@/lib/seo/routes';
 // compared by path and query only.
 
 const slugs = getAllSlugs();
-const productPaths = slugs.map((slug) => `/products/${slug}`);
-const SITEMAP_PATHS = [...shellPaths, ...productPaths];
-const PUBLIC_PAGES = [...shellPaths, '/?page=2', ...productPaths];
-const RESULT_PAGES = ['/contact/sent', '/contact/retry'];
-const NOT_FOUND = '/does-not-exist';
+const productPaths = slugs.map((slug) => `/vi/products/${slug}`);
+const viShellPaths = shellPaths.map((path) => localizedPath('vi', path));
+const SITEMAP_PATHS = [...viShellPaths, ...productPaths];
+const PUBLIC_PAGES = [...viShellPaths, '/vi?page=2', ...productPaths];
+const RESULT_PAGES = ['/vi/contact/sent', '/vi/contact/retry'];
+const NOT_FOUND = '/vi/does-not-exist';
 const ALL_PAGES = [...PUBLIC_PAGES, ...RESULT_PAGES, NOT_FOUND];
 
 const toPath = (url: string) => {
@@ -23,7 +25,8 @@ const toPath = (url: string) => {
 const open = async (page: Page, path: string) => {
   const response = await page.goto(path);
   // Home streams its grid (and metadata) behind Suspense.
-  if (path === '/' || path.startsWith('/?')) await page.locator('.ProductTile').first().waitFor();
+  if (path === '/vi' || path.startsWith('/vi?'))
+    await page.locator('.ProductTile').first().waitFor();
   return response;
 };
 
@@ -71,12 +74,12 @@ test('public pages carry no noindex; result pages do (3)', async ({ page }) => {
 
 test('canonical points at the main URL (4)', async ({ page }) => {
   const expected: Record<string, string> = {
-    '/?page=2': '/?page=2',
-    '/?page=1': '/',
-    '/contact?product=hoang-hon-01': '/contact',
-    '/contact?product=hoang-hon-01&purpose=order': '/contact',
+    '/vi?page=2': '/vi?page=2',
+    '/vi?page=1': '/vi',
+    '/vi/contact?product=hoang-hon-01': '/vi/contact',
+    '/vi/contact?product=hoang-hon-01&purpose=order': '/vi/contact',
   };
-  for (const path of [...shellPaths, ...productPaths]) expected[path] = path;
+  for (const path of [...viShellPaths, ...productPaths]) expected[path] = path;
   for (const [path, canonical] of Object.entries(expected)) {
     await open(page, path);
     const links = page.locator('link[rel="canonical"]');
@@ -152,8 +155,8 @@ test('each product page links to Home and to another product (11)', async ({ pag
     const hrefs = await page
       .locator('a[href]')
       .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-    expect(hrefs, path).toContain('/');
-    const others = hrefs.filter((href) => href.startsWith('/products/') && href !== path);
+    expect(hrefs, path).toContain('/vi');
+    const others = hrefs.filter((href) => href.startsWith('/vi/products/') && href !== path);
     expect(others.length, path).toBeGreaterThan(0);
   }
 });
@@ -191,7 +194,9 @@ test('every public page and the 404 carry a 1200x630 og:image and twitter:image 
     expect(await metaContent(page, 'meta[name="twitter:image"]'), path).toBeTruthy();
     const image = await metaContent(page, 'meta[property="og:image"]');
     expect(image, path).toBeTruthy();
-    if (path.startsWith('/products/')) expect(image, path).toContain(`${path}/opengraph-image`);
+    if (path.startsWith('/vi/products/')) {
+      expect(image, path).toContain(`${path}/opengraph-image`);
+    }
     expect(await metaContent(page, 'meta[property="og:image:width"]'), path).toBe('1200');
     expect(await metaContent(page, 'meta[property="og:image:height"]'), path).toBe('630');
     const response = await request.get(toPath(image!));
@@ -207,7 +212,7 @@ const LIMITED_BOT_AGENTS = {
 
 for (const [name, userAgent] of Object.entries(LIMITED_BOT_AGENTS)) {
   test(`${name} receives Home metadata inside <head> (5, 6, 10)`, async ({ request }) => {
-    for (const path of ['/', '/?page=2']) {
+    for (const path of ['/vi', '/vi?page=2']) {
       const html = await (await request.get(path, { headers: { 'user-agent': userAgent } })).text();
       const head = html.slice(0, html.indexOf('</head>'));
       expect(head, path).toMatch(/<title>[^<]+<\/title>/);

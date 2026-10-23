@@ -16,7 +16,7 @@ const contactForm = (page: Page) => page.locator('form.ContactForm');
 
 test.describe('contact form', () => {
   test('shows errors, then confirms a valid order', async ({ page }) => {
-    await page.goto('/contact');
+    await page.goto('/vi/contact');
     const form = contactForm(page);
     await form.getByRole('button', { name: 'Gửi' }).click();
 
@@ -47,7 +47,7 @@ test.describe('contact form', () => {
 
   test('prefills the product from a product page', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/products/hoang-hon-01');
+    await page.goto('/vi/products/hoang-hon-01');
     await page.locator('.ProductInfo').getByRole('link', { name: 'Đặt mua' }).click();
     await expect(page).toHaveURL(/\/contact\?product=hoang-hon-01&purpose=order$/);
 
@@ -62,7 +62,7 @@ test.describe('contact form', () => {
   test('works without JavaScript', async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
-    await page.goto('/contact?product=pho-cu');
+    await page.goto('/vi/contact?product=pho-cu');
     await page.getByLabel('Email').fill('khach@example.com');
     await page.getByLabel('Số điện thoại / Zalo').fill('0912345678');
     await page.getByRole('checkbox', { name: /chính sách bảo mật/ }).check();
@@ -70,12 +70,12 @@ test.describe('contact form', () => {
     await expect(page).toHaveURL(/\/contact\/sent$/);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Đã nhận yêu cầu');
 
-    await page.goto('/contact');
+    await page.goto('/vi/contact');
     await contactForm(page).getByRole('button', { name: 'Gửi' }).click();
     await expect(page).toHaveURL(/\/contact\/retry$/);
     await expect(page.getByRole('link', { name: 'Quay lại form liên hệ' })).toBeVisible();
 
-    await page.goto('/products/am-ban');
+    await page.goto('/vi/products/am-ban');
     const notify = page.locator('#notify');
     await notify.getByLabel('Email').fill('a@example.com');
     await notify.getByRole('checkbox').check();
@@ -85,7 +85,7 @@ test.describe('contact form', () => {
   });
 
   test('ignores an unknown product and keeps working', async ({ page }) => {
-    await page.goto('/contact?product=nope');
+    await page.goto('/vi/contact?product=nope');
     await expect(page.getByRole('region', { name: 'Sản phẩm' })).toHaveCount(0);
     await expect(page.getByRole('radio', { name: 'Câu hỏi khác' })).toBeChecked();
     await expect(page.getByRole('textbox', { name: 'Size' })).toBeVisible();
@@ -95,7 +95,7 @@ test.describe('contact form', () => {
 
 test.describe('notify-me form', () => {
   test('requires email or phone, then confirms inline', async ({ page }) => {
-    await page.goto('/products/am-ban');
+    await page.goto('/vi/products/am-ban');
     const section = page.locator('#notify');
     await expect(section.getByRole('heading', { name: 'Báo khi có hàng' })).toBeVisible();
 
@@ -112,7 +112,7 @@ test.describe('notify-me form', () => {
   });
 
   test('available products have no notify-me form', async ({ page }) => {
-    await page.goto('/products/hoang-hon-01');
+    await page.goto('/vi/products/hoang-hon-01');
     await expect(page.locator('#notify')).toHaveCount(0);
   });
 
@@ -123,7 +123,7 @@ test.describe('notify-me form', () => {
       isMobile: true,
     });
     const page = await context.newPage();
-    await page.goto('/products/am-ban');
+    await page.goto('/vi/products/am-ban');
     await page.locator('.ProductOrderBar').getByRole('link', { name: 'Báo khi có hàng' }).tap();
     await expect(page).toHaveURL(/#notify$/);
     await expect(page.locator('#notify').getByLabel('Email')).toBeInViewport();
@@ -133,15 +133,15 @@ test.describe('notify-me form', () => {
 
 test.describe('policy and about content', () => {
   test('policies render structured sections', async ({ page }) => {
-    await page.goto('/policy/privacy');
+    await page.goto('/vi/policy/privacy');
     await expect(page.getByRole('heading', { level: 2, name: 'Bên xử lý dữ liệu' })).toBeVisible();
     await expect(page.getByText(/Resend/)).toBeVisible();
-    await page.goto('/policy/returns');
+    await page.goto('/vi/policy/returns');
     await expect(page.getByRole('heading', { level: 2, name: 'Thời hạn' })).toBeVisible();
   });
 
   test('about shows the text and a photo slot', async ({ page }) => {
-    await page.goto('/about');
+    await page.goto('/vi/about');
     await expect(page.locator('.AboutPage__text p').first()).toBeVisible();
     await expect(page.getByRole('img', { name: 'Xưởng in của Thun Things' })).toBeVisible();
   });

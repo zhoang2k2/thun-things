@@ -12,5 +12,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
     exclude: ['node_modules/**', 'e2e/**', '.next/**'],
+    // next-intl's navigation imports `next/navigation` without an extension, which Node's ESM
+    // resolver rejects; inlining lets Vite resolve it.
+    server: { deps: { inline: ['next-intl'] } },
   },
 });

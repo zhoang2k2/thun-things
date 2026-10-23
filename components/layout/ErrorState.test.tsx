@@ -4,8 +4,8 @@ import { expect, it, vi } from 'vitest';
 
 import { ErrorState } from '@/components/layout/ErrorState';
 import GlobalError from '@/app/global-error';
-import RouteError from '@/app/error';
-import NotFound from '@/app/not-found';
+import RouteError from '@/app/[locale]/error';
+import NotFound from '@/app/[locale]/not-found';
 import { messages, renderWithClientIntl, renderWithIntl } from '@/test/renderWithIntl';
 
 const { errors } = messages;
@@ -13,7 +13,7 @@ const { errors } = messages;
 it('renders a single h1, the body and the action slot', () => {
   render(
     <ErrorState title="Tiêu đề" body="Nội dung">
-      <a href="/x">Đi</a>
+      <a href="#actions">Đi</a>
     </ErrorState>,
   );
   expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
@@ -25,10 +25,10 @@ it('not-found has one h1 and links to home and contact', () => {
   renderWithIntl(<NotFound />);
   expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(errors.notFound.title);
-  expect(screen.getByRole('link', { name: errors.notFound.home })).toHaveAttribute('href', '/');
+  expect(screen.getByRole('link', { name: errors.notFound.home })).toHaveAttribute('href', '/vi');
   expect(screen.getByRole('link', { name: errors.notFound.contact })).toHaveAttribute(
     'href',
-    '/contact',
+    '/vi/contact',
   );
 });
 

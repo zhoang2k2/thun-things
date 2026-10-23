@@ -52,7 +52,7 @@ test.describe('security headers and CSP', () => {
   test('Home: headers, scrolling and a hover card raise no violations', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     const watch = await watchViolations(page);
-    const response = await page.goto('/');
+    const response = await page.goto('/vi');
     expectHeaders(response!.headers());
 
     const tiles = page.locator('.ProductTile');
@@ -66,7 +66,7 @@ test.describe('security headers and CSP', () => {
 
   test('product page: headers and no violations', async ({ page }) => {
     const watch = await watchViolations(page);
-    const response = await page.goto('/products/hoang-hon-01');
+    const response = await page.goto('/vi/products/hoang-hon-01');
     expectHeaders(response!.headers());
     await expect(page.locator('.ProductInfo')).toBeVisible();
 
@@ -76,7 +76,7 @@ test.describe('security headers and CSP', () => {
 
   test('Contact: headers and a valid submit raise no violations', async ({ page }) => {
     const watch = await watchViolations(page);
-    const response = await page.goto('/contact');
+    const response = await page.goto('/vi/contact');
     expectHeaders(response!.headers());
 
     await page.getByLabel('Email').fill('khach@example.com');

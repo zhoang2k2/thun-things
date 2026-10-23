@@ -1,13 +1,13 @@
 'use client';
 
 import { AnimatePresence } from 'motion/react';
-import Link from 'next/link';
 import { useRef } from 'react';
 import type { FocusEvent, KeyboardEvent, MouseEvent, PointerEvent } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
 import type { ActiveCard, OpenCard } from '@/components/product/ProductGrid';
 import { ProductHoverCard } from '@/components/product/ProductHoverCard';
+import { Link } from '@/i18n/navigation';
 import type { ProductCardModel } from '@/lib/catalog';
 import { cn } from '@/lib/cn';
 

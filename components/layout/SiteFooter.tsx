@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import type { NavItem, SocialLink } from '@/config/site';
+import { Link } from '@/i18n/navigation';
 
 interface SiteFooterProps {
   policies: NavItem[];

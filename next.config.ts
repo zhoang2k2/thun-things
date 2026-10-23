@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
   },
   /* config options here */
   cacheComponents: true,
+  // The root layout is `app/[locale]/layout.tsx`, so unmatched URLs need their own document.
+  experimental: { globalNotFound: true },
   partialPrefetching: true,
   images: { formats: ['image/avif', 'image/webp'] },
   turbopack: {

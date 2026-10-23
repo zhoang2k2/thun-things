@@ -1,9 +1,9 @@
 import { Tick02Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import { choiceClasses, FieldError, fieldId, RequiredMark } from '@/components/forms/Field';
+import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
 
 interface ConsentFieldProps {

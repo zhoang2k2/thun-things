@@ -4,6 +4,8 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { z } from 'zod';
 
+import { DEFAULT_LOCALE } from '@/i18n/messages';
+import { localizedPath } from '@/i18n/routing';
 import { getProductBySlug } from '@/lib/catalog';
 import type { Product } from '@/lib/catalog/schema';
 import { type FormMessageKey, type FormState, HONEYPOT_FIELD } from '@/lib/leads/formState';
@@ -77,7 +79,9 @@ const handleSubmission = async <Schema extends z.ZodType>({
 // Router-driven submissions carry the `next-action` header and keep the in-place state.
 const respond = async (state: FormState): Promise<FormState> => {
   if ((await headers()).has('next-action')) return state;
-  redirect(state.status === 'success' ? '/contact/sent' : '/contact/retry');
+  // Vietnamese result pages until forms carry the locale (P5 Task 5).
+  const result = state.status === 'success' ? '/contact/sent' : '/contact/retry';
+  redirect(localizedPath(DEFAULT_LOCALE, result));
 };
 
 const productFields = (product: Product | undefined) =>

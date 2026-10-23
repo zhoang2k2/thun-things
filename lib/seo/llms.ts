@@ -4,12 +4,14 @@ import { createTranslator } from 'next-intl';
 
 import { siteConfig } from '@/config/site';
 import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
+import { localizedPath } from '@/i18n/routing';
 import { getAllSlugs, getProductBySlug } from '@/lib/catalog';
 import { formatPriceVND } from '@/lib/catalog/format';
 import { siteUrl } from '@/lib/seo/metadata';
 
+// Vietnamese pages until the English index (P5 Task 4).
 const link = (label: string, path: string, note?: string): string =>
-  `- [${label}](${siteUrl(path)})${note ? `: ${note}` : ''}`;
+  `- [${label}](${siteUrl(localizedPath(DEFAULT_LOCALE, path))})${note ? `: ${note}` : ''}`;
 
 /** Site index for language models, in the llmstxt.org format. */
 export const buildLlmsTxt = (): string => {

@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ContactForm } from '@/components/forms/ContactForm';
 import type { FormState } from '@/lib/leads/formState';
 import type { ContactFormPrefill } from '@/lib/leads/prefill';
-import { messages, renderWithClientIntl } from '@/test/renderWithIntl';
+import { messages, renderWithFormIntl } from '@/test/renderWithIntl';
 
 const submitContact = vi.hoisted(() =>
   vi.fn<(previous: FormState, formData: FormData) => Promise<FormState>>(),
@@ -21,7 +21,7 @@ const ORDER = prefillOf({ purpose: 'order' });
 // The prefill promise suspends the first render; awaiting act lets it resolve.
 const renderForm = async (ui: ReactElement) => {
   await act(async () => {
-    renderWithClientIntl(ui);
+    renderWithFormIntl(ui);
   });
 };
 
@@ -41,7 +41,7 @@ describe('ContactForm', () => {
     );
     expect(screen.getByRole('link', { name: forms.fields.consentLink })).toHaveAttribute(
       'href',
-      '/policy/privacy',
+      '/vi/policy/privacy',
     );
   });
 

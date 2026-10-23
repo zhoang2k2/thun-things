@@ -2,6 +2,7 @@ import 'server-only';
 
 import { siteConfig } from '@/config/site';
 import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
+import { localizedPath } from '@/i18n/routing';
 import type { Product, ProductStatus } from '@/lib/catalog/schema';
 import { siteUrl } from '@/lib/seo/metadata';
 
@@ -34,7 +35,9 @@ export const websiteJsonLd = (): object => ({
 });
 
 export const productJsonLd = (product: Product): object => {
-  const url = siteUrl(`/products/${product.slug}`);
+  // Vietnamese URLs until JSON-LD becomes locale-aware (P5 Task 4).
+  const path = localizedPath(DEFAULT_LOCALE, `/products/${product.slug}`);
+  const url = siteUrl(path);
   return {
     '@context': CONTEXT,
     '@type': 'Product',
@@ -42,7 +45,7 @@ export const productJsonLd = (product: Product): object => {
     description: product.description.vi,
     sku: product.id,
     url,
-    image: siteUrl(`/products/${product.slug}/opengraph-image`),
+    image: siteUrl(`${path}/opengraph-image`),
     offers: {
       '@type': 'Offer',
       price: product.priceVND,

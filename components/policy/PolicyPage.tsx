@@ -2,7 +2,7 @@ import 'server-only';
 
 import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { PageShell } from '@/components/layout/PageShell';
 import { privacyPolicy } from '@/content/policies/privacy';
@@ -19,10 +19,11 @@ const DOCUMENTS: Record<PolicySlug, PolicyDocument> = {
 const dateFormatter = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'long', timeZone: 'UTC' });
 
 export const policyMetadata = async (slug: PolicySlug): Promise<Metadata> => {
-  const t = await getTranslations(`pages.${slug}`);
+  const [t, locale] = await Promise.all([getTranslations(`pages.${slug}`), getLocale()]);
   return buildMetadata({
     title: t('title'),
     description: t('description'),
+    locale,
     path: `/policy/${slug}`,
   });
 };

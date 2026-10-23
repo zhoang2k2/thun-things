@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import { MediaImage } from '@/components/media/MediaImage';
+import { Link } from '@/i18n/navigation';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
 

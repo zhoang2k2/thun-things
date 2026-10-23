@@ -7,6 +7,7 @@ import { ProductGrid } from '@/components/product/ProductGrid';
 import { ProductInfo } from '@/components/product/ProductInfo';
 import { ProductOrderBar } from '@/components/product/ProductOrderBar';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { isLocale, localizedPath, routing } from '@/i18n/routing';
 import { getAllSlugs, getProductBySlug, getRelatedProducts, toCardModel } from '@/lib/catalog';
 import { productJsonLd } from '@/lib/seo/jsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
@@ -17,19 +18,23 @@ export const generateStaticParams = () => getAllSlugs().map((slug) => ({ slug })
 
 export async function generateMetadata({
   params,
-}: PageProps<'/products/[slug]'>): Promise<Metadata> {
-  const { slug } = await params;
+}: PageProps<'/[locale]/products/[slug]'>): Promise<Metadata> {
+  const { locale: localeParam, slug } = await params;
   const product = getProductBySlug(slug);
   if (!product) return {};
+  const locale = isLocale(localeParam) ? localeParam : routing.defaultLocale;
+  const path = `/products/${slug}`;
   return buildMetadata({
     title: product.name.vi,
     description: product.description.vi,
-    path: `/products/${slug}`,
-    image: { url: `/products/${slug}/opengraph-image`, alt: product.name.vi },
+    locale,
+    path,
+    // The share image lives next to the page, under the locale.
+    image: { url: localizedPath(locale, `${path}/opengraph-image`), alt: product.name.vi },
   });
 }
 
-export default async function ProductPage({ params }: PageProps<'/products/[slug]'>) {
+export default async function ProductPage({ params }: PageProps<'/[locale]/products/[slug]'>) {
   const { slug } = await params;
   const product = getProductBySlug(slug);
   if (!product) notFound();

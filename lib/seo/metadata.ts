@@ -3,12 +3,16 @@ import 'server-only';
 import type { Metadata } from 'next';
 
 import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
+import { type Locale, localizedPath } from '@/i18n/routing';
 import { env } from '@/lib/env';
 
 interface BuildMetadataOptions {
   /** Omit on the home page so the root default title applies. */
   title?: string | { absolute: string };
   description: string;
+  /** Page locale: canonical and share URLs are `/{locale}{path}`. */
+  locale: Locale;
+  /** App path without the locale (`/`, `/about`, `/?page=2`). */
   path: string;
   /** Share image path and alt; defaults to the root wordmark image. */
   image?: { url: string; alt: string };
@@ -28,6 +32,7 @@ const shareImages = (image?: { url: string; alt: string }) => [
 export const buildMetadata = ({
   title,
   description,
+  locale,
   path,
   image,
 }: BuildMetadataOptions): Metadata => ({
@@ -35,11 +40,11 @@ export const buildMetadata = ({
   // An explicit `title: undefined` would override the root layout's default title.
   ...(title && { title }),
   description,
-  alternates: { canonical: path },
+  alternates: { canonical: localizedPath(locale, path) },
   openGraph: {
     title: (typeof title === 'object' ? title.absolute : title) ?? site.name,
     description,
-    url: path,
+    url: localizedPath(locale, path),
     siteName: site.name,
     locale: 'vi_VN',
     type: 'website',

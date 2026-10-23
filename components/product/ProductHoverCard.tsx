@@ -2,8 +2,6 @@
 
 import { useReducedMotion } from 'motion/react';
 import * as m from 'motion/react-m';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import type { MouseEvent } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
@@ -11,6 +9,7 @@ import { motionTokens } from '@/components/motion/tokens';
 import { ProductAction } from '@/components/product/ProductAction';
 import type { ActiveCard } from '@/components/product/ProductGrid';
 import { StatusBadge } from '@/components/product/StatusBadge';
+import { Link, useRouter } from '@/i18n/navigation';
 import type { ProductCardModel } from '@/lib/catalog';
 
 // 16px photo-print frame (8-point grid): the card sits 16px outside the cell on every side but the

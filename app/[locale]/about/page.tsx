@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { MediaImage } from '@/components/media/MediaImage';
 import { PageShell } from '@/components/layout/PageShell';
@@ -8,8 +8,13 @@ import { about } from '@/content/about';
 import { buildMetadata } from '@/lib/seo/metadata';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('pages.about');
-  return buildMetadata({ title: t('title'), description: t('description'), path: '/about' });
+  const [t, locale] = await Promise.all([getTranslations('pages.about'), getLocale()]);
+  return buildMetadata({
+    title: t('title'),
+    description: t('description'),
+    locale,
+    path: '/about',
+  });
 }
 
 // O-05 / V-12: one text block and one photo.

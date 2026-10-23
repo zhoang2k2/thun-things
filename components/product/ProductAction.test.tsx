@@ -15,7 +15,7 @@ describe('ProductAction', () => {
     renderWithClientIntl(<ProductAction slug="mua-nang" status="coming_soon" />);
     expect(screen.getByRole('link', { name: 'Hỏi trước' })).toHaveAttribute(
       'href',
-      '/contact?product=mua-nang&purpose=notify',
+      '/vi/contact?product=mua-nang&purpose=notify',
     );
   });
 
@@ -23,7 +23,7 @@ describe('ProductAction', () => {
     renderWithClientIntl(<ProductAction slug="hoang-hon-01" status="available" />);
     expect(screen.getByRole('link', { name: 'Đặt mua' })).toHaveAttribute(
       'href',
-      '/contact?product=hoang-hon-01&purpose=order',
+      '/vi/contact?product=hoang-hon-01&purpose=order',
     );
   });
 });

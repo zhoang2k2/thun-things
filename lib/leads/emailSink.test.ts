@@ -54,7 +54,7 @@ describe('emailSink', () => {
     expect(owner.subject).toBe(`[Thun Things] Đặt mua — ${product.name.vi}`);
     expect(owner.text).toContain('Đặt mua');
     expect(owner.text).toContain(product.name.vi);
-    expect(owner.text).toContain('https://thun.example/products/hoang-hon-01');
+    expect(owner.text).toContain('https://thun.example/vi/products/hoang-hon-01');
     expect(owner.text).toContain('+84912345678');
     expect(owner.text).toContain('Số lượng: 2');
   });

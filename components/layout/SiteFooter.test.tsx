@@ -12,8 +12,14 @@ const policies = [
 it('renders policy links', () => {
   renderWithIntl(<SiteFooter policies={policies} socials={[]} />);
   expect(screen.getByRole('contentinfo')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Bảo mật' })).toHaveAttribute('href', '/policy/privacy');
-  expect(screen.getByRole('link', { name: 'Đổi trả' })).toHaveAttribute('href', '/policy/returns');
+  expect(screen.getByRole('link', { name: 'Bảo mật' })).toHaveAttribute(
+    'href',
+    '/vi/policy/privacy',
+  );
+  expect(screen.getByRole('link', { name: 'Đổi trả' })).toHaveAttribute(
+    'href',
+    '/vi/policy/returns',
+  );
 });
 
 it('hides email and socials when unset', () => {

@@ -1,0 +1,44 @@
+import './globals.css';
+
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+
+import { grotesk } from '@/components/layout/fonts';
+import { NotFoundState } from '@/components/layout/NotFoundState';
+import { SiteFrame } from '@/components/layout/SiteFrame';
+import { routing } from '@/i18n/routing';
+import { buildMetadata } from '@/lib/seo/metadata';
+
+// URLs that match no route (proxy.ts rewrites unknown locales and products here too). The root
+// layout lives under `[locale]`, so this page brings its own document; it is Vietnamese, the
+// default locale. Next adds the 404 status and noindex.
+export async function generateMetadata(): Promise<Metadata> {
+  const [t, site] = await Promise.all([
+    getTranslations('errors.notFound'),
+    getTranslations('site'),
+  ]);
+  const title = `${t('title')} · ${site('name')}`;
+  return {
+    ...buildMetadata({
+      title: { absolute: title },
+      description: t('description'),
+      locale: routing.defaultLocale,
+      path: '/',
+    }),
+    // A missing page has no canonical URL.
+    alternates: null,
+  };
+}
+
+export default function GlobalNotFound() {
+  return (
+    <html lang={routing.defaultLocale} className={grotesk.variable}>
+      <body>
+        {/* The current path exists in no locale, so the language switch offers each Home. */}
+        <SiteFrame switcherPathname="/">
+          <NotFoundState />
+        </SiteFrame>
+      </body>
+    </html>
+  );
+}

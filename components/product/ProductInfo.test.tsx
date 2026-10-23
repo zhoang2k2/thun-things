@@ -19,7 +19,7 @@ describe('ProductInfo', () => {
     expect(screen.getByRole('heading', { level: 1, name: product.name.vi })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Đặt mua' })).toHaveAttribute(
       'href',
-      `/contact?product=${product.slug}&purpose=order`,
+      `/vi/contact?product=${product.slug}&purpose=order`,
     );
     expect(screen.queryByRole('heading', { name: 'Báo khi có hàng' })).not.toBeInTheDocument();
     expect(screen.queryByRole('form')).not.toBeInTheDocument();

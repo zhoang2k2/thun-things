@@ -24,7 +24,7 @@ test.describe('keyboard-only path', () => {
 
   test('skip link, header, grid card, product, Contact, submit', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/vi');
     await tiles(page).first().waitFor();
 
     await page.keyboard.press('Tab');
@@ -75,7 +75,7 @@ test.describe('reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 
   test('the hero does not autoplay or animate its progress', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/vi');
     const hero = page.locator('.HeroSlideshow');
     const current = hero.locator('.HeroSlideshow__bar[aria-current="true"]');
     await expect(current).toHaveCount(1);
@@ -89,7 +89,7 @@ test.describe('reduced motion', () => {
 
   test('the hover card opens without the circle reveal', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/vi');
     await tiles(page).nth(5).hover();
     const card = tiles(page).nth(5).getByTestId('product-hover-card');
     await expect(card).toBeVisible();
@@ -107,7 +107,7 @@ test.describe('buying-path smoke', () => {
 
   test('Home, product, "Đặt mua", prefilled Contact, success', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/vi');
     const tile = tiles(page).first();
     await tile.hover();
     const card = tile.getByTestId('product-hover-card');

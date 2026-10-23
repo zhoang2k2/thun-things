@@ -132,7 +132,7 @@ describe('submissions without JavaScript', () => {
 
   it('redirects to the static confirmation after delivery', async () => {
     await expect(submitContact(initialFormState, formData(VALID_CONTACT))).rejects.toThrow(
-      'REDIRECT /contact/sent',
+      'REDIRECT /vi/contact/sent',
     );
     expect(mocks.deliver).toHaveBeenCalledTimes(1);
   });
@@ -140,7 +140,7 @@ describe('submissions without JavaScript', () => {
   it('redirects to the retry page on errors', async () => {
     await expect(
       submitNotify(initialFormState, formData({ productSlug: 'am-ban', consent: 'on' })),
-    ).rejects.toThrow('REDIRECT /contact/retry');
+    ).rejects.toThrow('REDIRECT /vi/contact/retry');
     expect(mocks.deliver).not.toHaveBeenCalled();
   });
 });

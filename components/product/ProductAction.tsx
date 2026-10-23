@@ -1,9 +1,9 @@
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import type { ButtonSize } from '@/components/ui/Button';
 import { buttonClasses } from '@/components/ui/Button';
 import { siteConfig } from '@/config/site';
+import { Link } from '@/i18n/navigation';
 import type { ProductStatus } from '@/lib/catalog/schema';
 import { contactHref, presentStatus } from '@/lib/catalog/status';
 

@@ -9,18 +9,18 @@ const horizontalOverflow = (page: Page) =>
 
 test.describe('home grid', () => {
   test('paginates 20 then 4 products and tolerates bad page values', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/vi');
     await expect(tiles(page)).toHaveCount(20);
-    await page.goto('/?page=2');
+    await page.goto('/vi?page=2');
     await expect(tiles(page)).toHaveCount(4);
-    await page.goto('/?page=abc');
+    await page.goto('/vi?page=abc');
     await expect(tiles(page)).toHaveCount(20);
-    await page.goto('/?page=99');
+    await page.goto('/vi?page=99');
     await expect(tiles(page)).toHaveCount(4);
   });
 
   test('pagination links move between pages', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/vi');
     const nav = page.getByRole('navigation', { name: 'Phân trang' });
     await nav.getByRole('link', { name: 'Trang 2' }).click();
     await expect(page).toHaveURL(/\?page=2$/);
@@ -29,7 +29,7 @@ test.describe('home grid', () => {
 
   test('hovering a tile shows the card with price', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/vi');
     await tiles(page).nth(5).hover();
     await expect(card(page)).toBeVisible();
     await expect(card(page)).toContainText('₫');
@@ -37,7 +37,7 @@ test.describe('home grid', () => {
 
   test('the hovered image keeps its position and size inside a 16px frame', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/vi');
     for (const index of [4, 5, 7]) {
       const tile = tiles(page).nth(index);
       await tile.scrollIntoViewIfNeeded();
@@ -75,7 +75,7 @@ test.describe('home grid', () => {
       isMobile: true,
     });
     const page = await context.newPage();
-    await page.goto('/');
+    await page.goto('/vi');
     const first = tiles(page).first();
     const second = tiles(page).nth(1);
     await second.waitFor(); // the grid streams in after the hero
@@ -93,7 +93,7 @@ test.describe('home grid', () => {
   });
 
   test('keyboard focus opens the card and Escape closes it', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/vi');
     const link = tiles(page).first().getByRole('link').first();
     await link.focus();
     await expect(card(page)).toBeVisible();
@@ -104,7 +104,7 @@ test.describe('home grid', () => {
 
 test.describe('product page', () => {
   test('renders the product heading and related products', async ({ page }) => {
-    const response = await page.goto('/products/hoang-hon-01');
+    const response = await page.goto('/vi/products/hoang-hon-01');
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { level: 1, name: 'Hoàng Hôn 01' })).toBeVisible();
     await expect(page.locator('.ProductPage__related .ProductTile')).toHaveCount(4);
@@ -117,7 +117,7 @@ test.describe('product page', () => {
       isMobile: true,
     });
     const page = await context.newPage();
-    await page.goto('/products/hoang-hon-01');
+    await page.goto('/vi/products/hoang-hon-01');
     const counter = page.locator('.ProductGallery__counter');
     await expect(counter).toHaveText('01 / 04');
     await page
@@ -134,18 +134,18 @@ test.describe('product page', () => {
 
   test('desktop keeps the stacked gallery without the order bar', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/products/hoang-hon-01');
+    await page.goto('/vi/products/hoang-hon-01');
     await expect(page.locator('.ProductOrderBar')).toBeHidden();
     await expect(page.locator('.ProductGallery__counter')).toBeHidden();
   });
 
   test('unknown products return 404', async ({ page }) => {
-    const response = await page.goto('/products/nope');
+    const response = await page.goto('/vi/products/nope');
     expect(response?.status()).toBe(404);
   });
 });
 
-for (const path of ['/', '/?page=2', '/products/hoang-hon-01', '/products/am-ban']) {
+for (const path of ['/vi', '/vi?page=2', '/vi/products/hoang-hon-01', '/vi/products/am-ban']) {
   test(`${path} has no serious accessibility violations`, async ({ page }) => {
     await page.goto(path);
     await tiles(page).first().waitFor();

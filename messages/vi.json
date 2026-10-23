@@ -19,6 +19,11 @@
   "a11y": {
     "skipToContent": "Chuyển đến nội dung"
   },
+  "localeSwitcher": {
+    "label": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
   "media": {
     "placeholderLabel": "Image"
   },

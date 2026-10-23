@@ -1,12 +1,12 @@
 import 'server-only';
 
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { PageShell } from '@/components/layout/PageShell';
 import { buttonClasses } from '@/components/ui/Button';
+import { Link } from '@/i18n/navigation';
 import { buildMetadata } from '@/lib/seo/metadata';
 
 type ResultKind = 'contactSent' | 'contactRetry';
@@ -17,11 +17,12 @@ const RESULTS: Record<ResultKind, { path: string; backHref: string }> = {
 };
 
 export const contactResultMetadata = async (kind: ResultKind): Promise<Metadata> => {
-  const t = await getTranslations(`pages.${kind}`);
+  const [t, locale] = await Promise.all([getTranslations(`pages.${kind}`), getLocale()]);
   return {
     ...buildMetadata({
       title: t('title'),
       description: t('description'),
+      locale,
       path: RESULTS[kind].path,
     }),
     robots: { index: false },

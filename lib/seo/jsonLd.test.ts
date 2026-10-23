@@ -31,8 +31,8 @@ describe('productJsonLd', () => {
     expect(data['@type']).toBe('Product');
     expect(data.sku).toBe(base.id);
     expect(data.name).toBe(base.name.vi);
-    expect(data.url).toBe(`http://localhost:3000/products/${base.slug}`);
-    expect(data.image).toBe(`http://localhost:3000/products/${base.slug}/opengraph-image`);
+    expect(data.url).toBe(`http://localhost:3000/vi/products/${base.slug}`);
+    expect(data.image).toBe(`http://localhost:3000/vi/products/${base.slug}/opengraph-image`);
     expect(data.offers).toMatchObject({
       '@type': 'Offer',
       price: base.priceVND,

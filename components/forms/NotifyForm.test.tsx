@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { NotifyForm } from '@/components/forms/NotifyForm';
 import type { FormState } from '@/lib/leads/formState';
-import { messages, renderWithClientIntl } from '@/test/renderWithIntl';
+import { messages, renderWithFormIntl } from '@/test/renderWithIntl';
 
 const submitNotify = vi.hoisted(() =>
   vi.fn<(previous: FormState, formData: FormData) => Promise<FormState>>(),
@@ -24,7 +24,7 @@ describe('NotifyForm', () => {
       fieldErrors: { email: 'forms.errors.contactRequired' },
       values: { email: '', phone: '', productSlug: 'am-ban' },
     });
-    renderWithClientIntl(<NotifyForm productSlug="am-ban" enabled />);
+    renderWithFormIntl(<NotifyForm productSlug="am-ban" enabled />);
     await userEvent.click(screen.getByRole('button', { name: forms.notify.submit }));
     const email = await screen.findByLabelText('Email');
     await waitFor(() => expect(email).toHaveAttribute('aria-invalid', 'true'));
@@ -35,7 +35,7 @@ describe('NotifyForm', () => {
 
   it('replaces the form with an inline confirmation', async () => {
     submitNotify.mockResolvedValue({ status: 'success' });
-    renderWithClientIntl(<NotifyForm productSlug="am-ban" enabled />);
+    renderWithFormIntl(<NotifyForm productSlug="am-ban" enabled />);
     await userEvent.type(screen.getByLabelText('Email'), 'a@example.com');
     await userEvent.click(screen.getByRole('checkbox'));
     await userEvent.click(screen.getByRole('button', { name: forms.notify.submit }));
@@ -44,7 +44,7 @@ describe('NotifyForm', () => {
   });
 
   it('is disabled without configuration', () => {
-    renderWithClientIntl(<NotifyForm productSlug="am-ban" enabled={false} />);
+    renderWithFormIntl(<NotifyForm productSlug="am-ban" enabled={false} />);
     expect(screen.getByText(forms.disabled)).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toBeDisabled();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();

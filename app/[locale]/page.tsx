@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
+import { getLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { HeroSlideshow } from '@/components/home/HeroSlideshow';
@@ -14,13 +15,15 @@ import { homeMetadata } from '@/lib/seo/pageMetadata';
 
 // Metadata reads `searchParams` (request data). The grid already streams inside Suspense below,
 // so the shell stays prerendered and metadata streams in with it.
-export async function generateMetadata({ searchParams }: PageProps<'/'>): Promise<Metadata> {
-  const { page: pageParam } = await searchParams;
-  return homeMetadata(pageParam);
+export async function generateMetadata({
+  searchParams,
+}: PageProps<'/[locale]'>): Promise<Metadata> {
+  const [{ page: pageParam }, locale] = await Promise.all([searchParams, getLocale()]);
+  return homeMetadata(pageParam, locale);
 }
 
 // `searchParams` is request data under Cache Components, so the grid streams inside Suspense.
-const ProductListing = async ({ searchParams }: Pick<PageProps<'/'>, 'searchParams'>) => {
+const ProductListing = async ({ searchParams }: Pick<PageProps<'/[locale]'>, 'searchParams'>) => {
   const { page: pageParam } = await searchParams;
   const { items, page: current, pageCount } = listProducts(pageParam);
 
@@ -32,7 +35,7 @@ const ProductListing = async ({ searchParams }: Pick<PageProps<'/'>, 'searchPara
   );
 };
 
-export default function HomePage({ searchParams }: PageProps<'/'>) {
+export default function HomePage({ searchParams }: PageProps<'/[locale]'>) {
   const t = useTranslations();
   return (
     <div className="HomePage">
