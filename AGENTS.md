@@ -54,6 +54,7 @@ Skill discovery alone does not mean its full instructions have been read. If a r
 | [motion-guidelines](.agents/skills/motion-guidelines/SKILL.md)             | Animation, transitions, gestures, or reduced-motion behavior.                                                                                                                |
 | [security-guidelines](.agents/skills/security-guidelines/SKILL.md)         | Secrets, environment values, APIs, data mutations, analytics, or privacy.                                                                                                    |
 | [testing-quality](.agents/skills/testing-quality/SKILL.md)                 | Test changes and repository quality checks.                                                                                                                                  |
+| [git-pr-workflow](.agents/skills/git-pr-workflow/SKILL.md)                 | Branches, commits, pushing, and PR descriptions (evidence GIFs/screenshots first).                                                                                           |
 | [implementation-workflow](.agents/skills/implementation-workflow/SKILL.md) | Intake, scope, planning, implementation, validation, and reporting.                                                                                                          |
 
 ## 4. Clarification and Implementation
