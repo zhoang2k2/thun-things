@@ -64,6 +64,7 @@ const getLimiter = (): Limiter => {
 
 export const checkRateLimit = (key: string): Promise<RateLimitResult> => getLimiter()(key);
 
+// Relies on Vercel overwriting x-forwarded-for / x-real-ip; spoofable when self-hosted.
 /** First hop of x-forwarded-for (set by Vercel), else x-real-ip, else a shared bucket. */
 export const clientKey = (headers: Headers): string => {
   const forwarded = headers.get('x-forwarded-for')?.split(',')[0]?.trim();

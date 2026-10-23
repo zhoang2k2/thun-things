@@ -1,17 +1,25 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import { HeroSlideshow } from '@/components/home/HeroSlideshow';
 import { Pagination } from '@/components/product/Pagination';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { ProductGridSkeleton } from '@/components/product/ProductGridSkeleton';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { banners } from '@/content/banners';
 import { copy } from '@/content/copy/vi';
 import { listProducts, toCardModel } from '@/lib/catalog';
-import { buildMetadata } from '@/lib/seo/metadata';
+import { organizationJsonLd, websiteJsonLd } from '@/lib/seo/jsonLd';
+import { homeMetadata } from '@/lib/seo/pageMetadata';
 
 const page = copy.pages.home;
 
-export const metadata = buildMetadata({ description: page.description, path: '/' });
+// Metadata reads `searchParams` (request data). The grid already streams inside Suspense below,
+// so the shell stays prerendered and metadata streams in with it.
+export async function generateMetadata({ searchParams }: PageProps<'/'>): Promise<Metadata> {
+  const { page: pageParam } = await searchParams;
+  return homeMetadata(pageParam);
+}
 
 // `searchParams` is request data under Cache Components, so the grid streams inside Suspense.
 const ProductListing = async ({ searchParams }: Pick<PageProps<'/'>, 'searchParams'>) => {
@@ -29,6 +37,8 @@ const ProductListing = async ({ searchParams }: Pick<PageProps<'/'>, 'searchPara
 export default function HomePage({ searchParams }: PageProps<'/'>) {
   return (
     <div className="HomePage">
+      <JsonLd data={organizationJsonLd()} />
+      <JsonLd data={websiteJsonLd()} />
       <h1 className="sr-only">{page.title}</h1>
       <HeroSlideshow banners={banners} />
       <section aria-labelledby="products-heading" className="HomePage__products">

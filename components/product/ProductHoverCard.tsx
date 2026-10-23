@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, useReducedMotion } from 'motion/react';
+import { useReducedMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { MouseEvent } from 'react';
@@ -46,7 +47,7 @@ export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => 
   };
 
   return (
-    <motion.div
+    <m.div
       data-testid="product-hover-card"
       onClick={handleClick}
       className="ProductHoverCard bg-canvas border-line absolute -top-4 -left-4 z-30 w-[calc(100%+32px)] cursor-pointer border p-[15px]"
@@ -79,6 +80,6 @@ export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => 
           className="mt-4 w-full"
         />
       </div>
-    </motion.div>
+    </m.div>
   );
 };

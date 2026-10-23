@@ -1,4 +1,4 @@
-import type { LeadPurpose } from '@/lib/leads/schema';
+import type { LeadPurpose } from '@/lib/leads/purposes';
 
 export interface Lead {
   kind: 'contact' | 'notify';

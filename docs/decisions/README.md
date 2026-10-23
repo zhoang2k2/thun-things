@@ -16,6 +16,7 @@ This directory tracks significant technical and architectural choices made durin
 | **ADR-004** | In-Repository TypeScript Catalog Data with Data-Access Layer | **Accepted** | 2026-10-15 |
 | **ADR-005** | Lean Bootstrap Dependency Policy                             | Superseded   | 2026-10-15 |
 | **ADR-006** | UI Direction v3 Shell                                        | **Accepted** | 2026-10-23 |
+| **ADR-007** | P4 Quality Hardening Decisions                               | **Accepted** | 2026-10-23 |
 
 ---
 
@@ -77,3 +78,15 @@ This directory tracks significant technical and architectural choices made durin
   - Every image goes through `MediaImage`, which renders the V-26 placeholder when no source exists.
   - Policy pages are two static routes: a dynamic `/policy/[slug]` returned `200` for unknown slugs under Partial Prerendering.
 - **Consequences:** Swapping accent, typeface, or contact details touches one token or config entry. New UI that curves or uses gradients fails CI. The glass-layer exemption was removed with the V-25 glass layer (2026-10-23).
+
+---
+
+### ADR-007: P4 Quality Hardening Decisions
+
+- **Context:** P4 adds security headers, performance budgets and SEO/a11y checks on the single-locale MVP, on Next.js 16.4 with Cache Components.
+- **Decision:**
+  - **Static CSP, no nonce.** `lib/security/csp.ts` builds one fixed `Content-Security-Policy` (plus HSTS, `nosniff`, referrer, permissions and frame headers). A nonce would force per-request rendering and drop the prerendered shells Cache Components produces. `script-src` therefore keeps `'unsafe-inline'` because Next emits inline scripts; `'unsafe-eval'` is added in dev only and `https://vercel.live` on Vercel previews only. GA4 in P6 extends `lib/security/csp.ts`.
+  - **Lighthouse as a devDependency.** `lighthouse@13.5.0` is pinned and wired as `pnpm perf` (builds, then reports the median of 3 mobile runs per page against budgets LCP 2500 ms, CLS 0.1, TBT 200 ms). The report is committed under `docs/reports/`. P9 re-measures with real photos.
+  - **Zod stays out of client bundles.** Client components import lead purposes from `lib/leads/purposes.ts` (no Zod); the schema in `lib/leads/schema.ts` is server-only. It also calls `z.config({ jitless: true })` so Zod never probes `Function("")`, which the CSP without `'unsafe-eval'` would report as a violation, if the schema ever returns to the browser.
+  - **Motion features load lazily.** `ProductGrid` wraps its tree in `LazyMotion` with `strict` and a dynamic `features` loader (`components/motion/features.ts`, `domAnimation`), so pages paint before Motion's animation engine downloads; components use the `m` component and a plain `motion` import fails in strict mode.
+- **Consequences:** Pages stay prerendered. The CSP is weaker on inline scripts than a nonce-based one; revisit if Next gains static hash support. Any new third-party origin needs a `lib/security/csp.ts` change and a test.

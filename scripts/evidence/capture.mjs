@@ -106,7 +106,8 @@ const runScenario = async (browser, scenario) => {
       await page.goto(scenario.path);
       await page.waitForLoadState('networkidle');
       const file = join(OUT_DIR, `${scenario.name}.png`);
-      await page.screenshot({ path: file, fullPage: true });
+      // A full-page capture of a bare SVG document never settles in Chromium.
+      await page.screenshot({ path: file, fullPage: !scenario.path.endsWith('.svg') });
       console.log(`  ${file}`);
       return;
     }

@@ -1,6 +1,6 @@
 import { getProductBySlug } from '@/lib/catalog';
 import type { Product } from '@/lib/catalog/schema';
-import { LEAD_PURPOSES, type LeadPurpose } from '@/lib/leads/schema';
+import { LEAD_PURPOSES, type LeadPurpose } from '@/lib/leads/purposes';
 
 type SearchParamValue = string | string[] | undefined;
 
