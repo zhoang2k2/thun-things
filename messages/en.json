@@ -31,12 +31,13 @@
     "label": "Phân trang",
     "previous": "Trước",
     "next": "Sau",
-    "page": "Trang"
+    "page": "Trang {page}"
   },
   "hero": {
     "label": "Banner",
     "pause": "Tạm dừng",
-    "play": "Tiếp tục"
+    "play": "Tiếp tục",
+    "slide": "Banner {index} / {count}"
   },
   "product": {
     "gridHeading": "Sản phẩm",
@@ -136,7 +137,7 @@
     }
   },
   "policy": {
-    "updated": "Cập nhật ngày",
+    "updated": "Cập nhật ngày {date}",
     "draft": "Bản nháp: nội dung chính thức sẽ được cập nhật trước khi mở bán."
   },
   "pages": {

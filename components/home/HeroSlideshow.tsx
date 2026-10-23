@@ -104,7 +104,7 @@ export const HeroSlideshow = ({ banners, intervalMs = 5000 }: HeroSlideshowProps
               <li key={banner.id} className="flex-1">
                 <button
                   type="button"
-                  aria-label={`${t('label')} ${position + 1} / ${count}`}
+                  aria-label={t('slide', { index: position + 1, count })}
                   aria-current={active}
                   onClick={() => goTo(position)}
                   className={cn('HeroSlideshow__bar flex h-11 w-full items-center', CONTROL_FOCUS)}

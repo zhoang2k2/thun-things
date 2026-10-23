@@ -36,7 +36,7 @@ export const Pagination = ({ page, pageCount }: PaginationProps) => {
             <li key={target}>
               <Link
                 href={pageHref(target)}
-                aria-label={`${t('page')} ${target}`}
+                aria-label={t('page', { page: target })}
                 aria-current={current ? 'page' : undefined}
                 className={cn(
                   ITEM_CLASSES,

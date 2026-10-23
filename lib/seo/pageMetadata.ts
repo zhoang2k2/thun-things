@@ -1,6 +1,7 @@
 import 'server-only';
 
 import type { Metadata } from 'next';
+import { createTranslator } from 'next-intl';
 
 import { getMessagesFor } from '@/i18n/messages';
 import type { Locale } from '@/i18n/routing';
@@ -16,11 +17,13 @@ export const homeMetadata = (
   locale: Locale,
 ): Metadata => {
   const { page } = listProducts(pageParam);
-  const { pages, pagination, site } = getMessagesFor(locale);
-  const { description } = pages.home;
+  const messages = getMessagesFor(locale);
+  const { description } = messages.pages.home;
   if (page === 1) return buildMetadata({ description, locale, path: '/' });
 
-  const label = `${pagination.page} ${page}`;
+  const t = createTranslator({ locale, messages });
+  const label = t('pagination.page', { page });
+  const { site } = messages;
   return buildMetadata({
     title: { absolute: `${label} · ${site.name}` },
     description: `${description} ${label}.`,

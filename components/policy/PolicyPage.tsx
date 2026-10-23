@@ -1,7 +1,7 @@
 import 'server-only';
 
 import type { Metadata } from 'next';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 import { PageShell } from '@/components/layout/PageShell';
@@ -16,8 +16,6 @@ const DOCUMENTS: Record<PolicySlug, PolicyDocument> = {
   returns: returnsPolicy,
 };
 
-const dateFormatter = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'long', timeZone: 'UTC' });
-
 export const policyMetadata = async (slug: PolicySlug): Promise<Metadata> => {
   const [t, locale] = await Promise.all([getTranslations(`pages.${slug}`), getLocale()]);
   return buildMetadata({
@@ -30,8 +28,11 @@ export const policyMetadata = async (slug: PolicySlug): Promise<Metadata> => {
 
 export const PolicyPage = ({ slug }: { slug: PolicySlug }) => {
   const t = useTranslations();
+  const format = useFormatter();
   const { updatedAt, sections } = DOCUMENTS[slug];
-  const updated = `${t('policy.updated')} ${dateFormatter.format(new Date(updatedAt))}`;
+  // `updatedAt` is a calendar date, so format it in UTC to keep the day unchanged.
+  const date = format.dateTime(new Date(updatedAt), { dateStyle: 'long', timeZone: 'UTC' });
+  const updated = t('policy.updated', { date });
 
   return (
     <PageShell
