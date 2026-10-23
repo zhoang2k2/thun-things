@@ -23,6 +23,21 @@ export const copy = {
   media: {
     placeholderLabel: 'Image',
   },
+  product: {
+    status: {
+      available: 'Còn hàng',
+      limited: 'Số lượng giới hạn',
+      sold_out: 'Hết hàng',
+      coming_soon: 'Sắp ra mắt',
+      preorder: 'Đặt trước',
+    },
+    actions: {
+      order: 'Đặt mua',
+      preorder: 'Đặt trước',
+      askFirst: 'Hỏi trước',
+      notify: 'Báo khi có hàng',
+    },
+  },
   pages: {
     home: {
       title: 'Thun Things',
