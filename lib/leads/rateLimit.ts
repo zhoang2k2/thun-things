@@ -4,10 +4,11 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
 import { env } from '@/lib/env';
-import { hasUpstash } from '@/lib/leads/readiness';
+import { hasUpstash, leadSinkMode } from '@/lib/leads/readiness';
 
 // 5 submissions per 10 minutes per client. Upstash when configured; otherwise an in-memory
 // window for development and tests (production without Upstash keeps the forms disabled).
+// End-to-end runs (memory sink) never touch Upstash, even when the owner's values are present.
 export const RATE_LIMIT = { max: 5, windowMs: 10 * 60 * 1000 } as const;
 
 export interface RateLimitResult {
@@ -54,7 +55,9 @@ const getLimiter = (): Limiter => {
   if (!limiter) {
     const { UPSTASH_REDIS_REST_URL: url, UPSTASH_REDIS_REST_TOKEN: token } = env;
     limiter =
-      hasUpstash() && url && token ? createUpstashLimiter(url, token) : createMemoryLimiter();
+      leadSinkMode() === 'email' && hasUpstash() && url && token
+        ? createUpstashLimiter(url, token)
+        : createMemoryLimiter();
   }
   return limiter;
 };

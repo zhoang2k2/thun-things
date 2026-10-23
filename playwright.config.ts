@@ -12,5 +12,7 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: false,
     timeout: 180_000,
+    // Test-only: leads stay in memory (no email, no Upstash). Never put real credentials here.
+    env: { E2E_LEADS_SINK: 'memory' },
   },
 });
