@@ -6,14 +6,18 @@
 
 ## Owner decisions for P2 [USER, 2026-10-23]
 
-| ID   | Decision                                                                                                            |
-| ---- | ------------------------------------------------------------------------------------------------------------------- |
-| P2-1 | Use **mock data typed exactly like the catalog schema**; all images render the V-26 placeholder.                    |
-| P2-2 | **24 mock products** (2 pages of 20 + 4).                                                                           |
-| P2-3 | Mock content **looks real**: Vietnamese names and descriptions with character, real VND prices (290.000–450.000 ₫). |
-| P2-4 | Hover card is **about 1.3× the cell**.                                                                              |
-| P2-5 | Card button label **depends on status** (table below).                                                              |
-| P2-6 | P1 counts as DONE on merge; the Vercel preview check moves to P2 acceptance.                                        |
+| ID    | Decision                                                                                                                                                                                                                                                                                    |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-1  | Use **mock data typed exactly like the catalog schema**; all images render the V-26 placeholder.                                                                                                                                                                                            |
+| P2-2  | **24 mock products** (2 pages of 20 + 4).                                                                                                                                                                                                                                                   |
+| P2-3  | Mock content **looks real**: Vietnamese names and descriptions with character, real VND prices (290.000–450.000 ₫).                                                                                                                                                                         |
+| P2-4  | Hover card is **about 1.3× the cell**. _Superseded by P2-9._                                                                                                                                                                                                                                |
+| P2-5  | Card button label **depends on status** (table below).                                                                                                                                                                                                                                      |
+| P2-6  | P1 counts as DONE on merge; the Vercel preview check moves to P2 acceptance.                                                                                                                                                                                                                |
+| P2-7  | Card action button is **large (48px) and spans the card width**.                                                                                                                                                                                                                            |
+| P2-8  | **Mobile grid is one column**; cells are narrower than the screen (16px gutters) so the open card spans the full width. Desktop gets the same 16px gutters so edge cards fit without moving their image.                                                                                    |
+| P2-9  | **The image never moves or resizes.** The card (16px print frame, 8-point spacing) is revealed around it by a **circle spreading from the pointer entry point**, as if the image were lifted into the card; it never pushes other cells. Replaces P2-4 (1.3× card) and the edge-shift rule. |
+| P2-10 | **Mobile product page:** swipeable image carousel with a `01 / 04` counter, info directly below, and an order bar pinned to the bottom of the screen.                                                                                                                                       |
 
 ## Catalog model
 
@@ -41,13 +45,13 @@ The action opens the chat channel from `config/site.ts` when the owner sets one;
 ## Home
 
 - **Hero slideshow (V-08):** 4 mock banners (desktop 2400×1350, mobile 1080×1350, placeholders), 70vh, cross-fade, auto-advance 5 s; square progress bars (one per banner, the active one fills over 5 s) that also jump to a banner; a text pause/play control. `prefers-reduced-motion`: starts paused, no cross-fade. Exposed as a carousel region with labelled slides; inactive slides are hidden from assistive tech. The progress bars and pause control sit in a caption-like row **under** the image (ink on canvas) rather than over it, so they stay legible and pass contrast on any banner.
-- **Grid (V-09, V-10):** directly under the hero; 2 columns on mobile, 4 from `md`; no gaps; 4:5 images only. Page from `?page=` (missing, non-numeric, or < 1 → page 1; beyond the last → last page). Read inside `<Suspense>` (Cache Components) with a skeleton of the same size.
+- **Grid (V-09, V-10):** directly under the hero; 1 column on mobile, 4 from `md`; no gaps between cells; 16px side gutters (P2-8); 4:5 images only. Page from `?page=` (missing, non-numeric, or < 1 → page 1; beyond the last → last page). Read inside `<Suspense>` (Cache Components) with a skeleton of the same size.
 - **Pagination:** numbered links plus "Trước" / "Sau" text links, `aria-current="page"`, page 1 links to `/`; hidden when there is one page.
 
 ## Hover card (V-14 → V-20, V-25)
 
-- **Geometry:** the card image sits exactly over the cell image (same image, same size); a photo-print white frame grows around it — about 15% of the cell width at the sides and top, a deeper bottom margin with name, price, badge, and action — so the card is ~1.3× the cell. Cards on the first or last column are shifted inward so nothing leaves the viewport (no horizontal scroll).
-- **Opening:** scale + fade from the pointer's entry point (`transform-origin` at the pointer); keyboard focus opens from the centre. Uses `components/motion/tokens.ts`.
+- **Geometry (P2-9):** the card image sits exactly over the cell image (same image, same size, same position). A 16px photo-print frame surrounds it (1px border + 15px padding) and the info area below holds the name, a price + status row, and a full-width 48px action (P2-7), spaced on the 8-point grid. The card is positioned absolutely, so no other cell moves; the 16px gutters keep edge cards on screen.
+- **Opening (P2-9):** the image stays still; the card is revealed by `clip-path: circle()` growing from the pointer entry point (keyboard: the centre) and shrinks back on close. Reduced motion: fade only. Uses `components/motion/tokens.ts`.
 - **Input:** mouse hover opens and leaving closes; focus within the tile opens and focus leaving closes; `Escape` closes; touch: first tap opens, second tap follows the link.
 - **Glass layer:** one shared element per grid, behind the open card and above the other cells; an organic curved blob about 1.8× the card, `backdrop-filter: blur`, spreads from the pointer on open, retracts on close, drifts and morphs continuously while open. Lives in `components/**/glass/` (the only place DR-1 allows curves). Reduced motion: no drift or spread, fade only. No `backdrop-filter`: flat translucent white.
 
