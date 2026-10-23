@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { ProductInfo } from '@/components/product/ProductInfo';
+import { ProductOrderBar } from '@/components/product/ProductOrderBar';
 import { copy } from '@/content/copy/vi';
 import { getAllSlugs, getProductBySlug, getRelatedProducts, toCardModel } from '@/lib/catalog';
 import { buildMetadata } from '@/lib/seo/metadata';
@@ -31,12 +32,14 @@ export default async function ProductPage({ params }: PageProps<'/products/[slug
   if (!product) notFound();
 
   const related = getRelatedProducts(product).map(toCardModel);
+  const { front, back, lifestyle = [] } = product.media;
+  const images = [front, ...(back ? [back] : []), ...lifestyle];
 
   return (
     <article className="ProductPage">
       <div className="ProductPage__main grid md:grid-cols-12">
         <div className="ProductPage__gallery md:col-span-7">
-          <ProductGallery product={product} />
+          <ProductGallery images={images} />
         </div>
         <div className="ProductPage__info px-4 py-8 md:col-span-5 md:px-12 md:py-12">
           <div className="md:sticky md:top-[calc(var(--header-height)+48px)]">
@@ -53,6 +56,7 @@ export default async function ProductPage({ params }: PageProps<'/products/[slug
         </h2>
         <ProductGrid products={related} />
       </section>
+      <ProductOrderBar product={product} />
     </article>
   );
 }

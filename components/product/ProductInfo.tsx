@@ -33,7 +33,12 @@ export const ProductInfo = ({ product }: { product: Product }) => {
       {soldOut ? (
         <Link
           href={contactHref(product.slug, 'notify')}
-          className={buttonClasses({ variant: 'secondary', size: 'lg', className: 'self-start' })}
+          // Mobile uses the sticky order bar instead.
+          className={buttonClasses({
+            variant: 'secondary',
+            size: 'lg',
+            className: 'hidden self-start md:inline-flex',
+          })}
         >
           {actions.notify}
         </Link>
@@ -42,7 +47,7 @@ export const ProductInfo = ({ product }: { product: Product }) => {
           slug={product.slug}
           status={product.status}
           size="lg"
-          className="self-start"
+          className="hidden self-start md:inline-flex"
         />
       )}
 

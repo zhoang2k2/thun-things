@@ -45,6 +45,13 @@
     @apply bg-canvas text-ink font-sans antialiased;
   }
 
+  /* Keep the footer clear of the mobile product order bar. */
+  @media (width < 48rem) {
+    body:has(.ProductOrderBar) {
+      padding-bottom: 5rem;
+    }
+  }
+
   /* DR-1: browsers round native controls; force square corners. */
   input,
   select,
