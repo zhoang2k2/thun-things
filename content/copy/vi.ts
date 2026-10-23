@@ -23,6 +23,11 @@ export const copy = {
   media: {
     placeholderLabel: 'Image',
   },
+  hero: {
+    label: 'Banner',
+    pause: 'Tạm dừng',
+    play: 'Tiếp tục',
+  },
   product: {
     status: {
       available: 'Còn hàng',
