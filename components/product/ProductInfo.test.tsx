@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ProductInfo } from '@/components/product/ProductInfo';
 import { getAllSlugs, getProductBySlug } from '@/lib/catalog';
+
+vi.mock('@/lib/leads/actions', () => ({ submitNotify: vi.fn() }));
 
 const firstWith = (status: string) =>
   getAllSlugs()
@@ -18,17 +20,20 @@ describe('ProductInfo', () => {
       'href',
       `/contact?product=${product.slug}&purpose=order`,
     );
-    expect(screen.queryByRole('link', { name: 'Báo khi có hàng' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Báo khi có hàng' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
   });
 
-  it('offers notify-me for sold-out products', () => {
+  it('shows the in-page notify-me form for sold-out products', () => {
     const product = firstWith('sold_out');
-    render(<ProductInfo product={product} />);
+    const { container } = render(<ProductInfo product={product} />);
     expect(screen.getByText('Hết hàng')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Báo khi có hàng' })).toHaveAttribute(
-      'href',
-      `/contact?product=${product.slug}&purpose=notify`,
-    );
+    expect(screen.getByRole('heading', { level: 2, name: 'Báo khi có hàng' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Số điện thoại / Zalo')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(container.querySelector('input[name="productSlug"]')).toHaveValue(product.slug);
+    expect(screen.queryByRole('link', { name: 'Đặt mua' })).not.toBeInTheDocument();
   });
 
   it('lists sizes, material, and care', () => {

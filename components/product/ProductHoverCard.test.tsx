@@ -77,11 +77,4 @@ describe('product hover card', () => {
     fireEvent.pointerDown(link, { pointerType: 'touch' });
     expect(fireEvent.click(link)).toBe(true); // second tap follows the link
   });
-
-  it('renders one shared glass layer while a card is open', () => {
-    const { container } = renderGrid();
-    expect(container.querySelectorAll('.GlassLayer')).toHaveLength(0);
-    fireEvent.pointerEnter(tileOf(available.name), { pointerType: 'mouse' });
-    expect(container.querySelectorAll('.GlassLayer')).toHaveLength(1);
-  });
 });

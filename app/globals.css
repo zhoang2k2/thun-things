@@ -8,6 +8,8 @@
   --color-line: #e5e5e5;
   --color-accent: #ff5a1f;
   --color-on-accent: #111111;
+  /* Form errors: 6.6:1 on canvas, so it works for text as well as borders. */
+  --color-error: #b42318;
   /* V-26 dummy image fallback: light grey fill, dark grey icon and label. */
   --color-placeholder: #ededed;
   --color-placeholder-ink: #2b2b2b;

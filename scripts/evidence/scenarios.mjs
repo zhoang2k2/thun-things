@@ -1,134 +1,133 @@
 // Evidence scenarios for the current phase PR (see the git-pr-workflow skill).
 // `gif` scenarios call `snap(hold)` after each meaningful step; `png` scenarios get a full-page shot.
 // Keep each GIF under 15 s: frames × 140 ms.
+//
+// P3 runs twice:
+//   E2E_LEADS_SINK=memory pnpm evidence          forms enabled, leads kept in memory (no email)
+//   RESEND_API_KEY= LEADS_TO_EMAIL= EVIDENCE_SET=disabled pnpm evidence   disabled form state
 
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844 };
 
-const pause = (page, ms) => page.waitForTimeout(ms);
+const typeSlowly = async (locator, text, snap) => {
+  await locator.click();
+  for (const chunk of text.match(/.{1,4}/g)) {
+    await locator.pressSequentially(chunk);
+    await snap();
+  }
+};
 
 /** @type {import('./capture.mjs').Scenario[]} */
 const scenarios = [
   {
-    name: '01-hero-slideshow',
+    name: '01-contact-form',
     kind: 'gif',
     viewport: DESKTOP,
     run: async ({ page, snap }) => {
-      await page.goto('/');
-      for (let step = 0; step < 24; step += 1) {
-        await snap();
-        await pause(page, 120);
-      }
-      await page.getByRole('button', { name: 'Tạm dừng' }).click();
+      await page.goto('/contact');
+      await snap(5);
+      await page.locator('form.ContactForm').getByRole('button', { name: 'Gửi' }).click();
+      await page.locator('.FormErrorSummary').waitFor();
+      await snap(10);
+      await typeSlowly(page.getByLabel('Email'), 'lan@example.com', snap);
+      await typeSlowly(page.getByLabel('Số điện thoại / Zalo'), '0912 345 678', snap);
+      await page.getByRole('checkbox', { name: /chính sách bảo mật/ }).check();
+      await snap(3);
+      await page.locator('form.ContactForm').getByRole('button', { name: 'Gửi' }).click();
+      await page.getByRole('status').waitFor();
+      await snap(12);
+    },
+  },
+  {
+    name: '02-product-to-contact',
+    kind: 'gif',
+    viewport: DESKTOP,
+    run: async ({ page, snap }) => {
+      await page.goto('/products/hoang-hon-01');
       await snap(6);
-      await page.getByRole('button', { name: 'Banner 4 / 4' }).click();
+      await page.locator('.ProductInfo').getByRole('link', { name: 'Đặt mua' }).click();
+      await page.waitForURL('**/contact?product=hoang-hon-01&purpose=order');
+      await page.getByRole('combobox', { name: 'Size' }).waitFor();
+      await snap(10);
+      await page.getByRole('combobox', { name: 'Size' }).selectOption('M');
+      await page.getByLabel('Số lượng').fill('2');
       await snap(8);
     },
   },
   {
-    name: '02-hover-card',
+    name: '03-notify-me',
     kind: 'gif',
     viewport: DESKTOP,
+    run: async ({ page, snap }) => {
+      await page.goto('/products/am-ban');
+      const section = page.locator('#notify');
+      await snap(5);
+      await section.getByRole('checkbox').check();
+      await section.getByRole('button', { name: 'Báo cho tôi' }).click();
+      await section.locator('.FormErrorSummary').waitFor();
+      await snap(10);
+      await typeSlowly(section.getByLabel('Email'), 'lan@example.com', snap);
+      await section.getByRole('button', { name: 'Báo cho tôi' }).click();
+      await section.getByRole('status').waitFor();
+      await snap(12);
+    },
+  },
+  {
+    name: '04-hover-card-no-glass',
+    kind: 'gif',
+    viewport: DESKTOP,
+    set: 'hover',
     run: async ({ page, snap }) => {
       await page.goto('/');
       const tiles = page.locator('.ProductTile');
       await tiles.nth(4).scrollIntoViewIfNeeded();
       await page.mouse.move(720, 120);
-      await snap(4);
-      for (const index of [5, 6, 7, 4]) {
+      await snap(3);
+      for (const index of [5, 6]) {
         const box = await tiles.nth(index).boundingBox();
         await page.mouse.move(box.x + box.width * 0.35, box.y + box.height * 0.4, { steps: 6 });
-        for (let step = 0; step < 6; step += 1) {
-          await snap();
-          await pause(page, 30);
-        }
-        await snap(4);
+        for (let step = 0; step < 6; step += 1) await snap();
+        await snap(6);
       }
-      await page.mouse.move(720, 60, { steps: 6 });
-      await snap(5);
     },
   },
+  { name: 'contact-desktop', kind: 'png', viewport: DESKTOP, path: '/contact' },
+  { name: 'contact-mobile', kind: 'png', viewport: MOBILE, path: '/contact', mobile: true },
   {
-    name: '03-keyboard-card',
-    kind: 'gif',
+    name: 'contact-product-desktop',
+    kind: 'png',
     viewport: DESKTOP,
-    run: async ({ page, snap }) => {
-      await page.goto('/');
-      const tile = page.locator('.ProductTile').nth(1);
-      await tile.scrollIntoViewIfNeeded();
-      await snap(3);
-      await tile.getByRole('link').first().focus();
-      await snap(8);
-      await page.keyboard.press('Tab');
-      await snap(8);
-      await page.keyboard.press('Escape');
-      await snap(6);
-    },
+    path: '/contact?product=hoang-hon-01&purpose=order',
   },
+  { name: 'product-sold-out-desktop', kind: 'png', viewport: DESKTOP, path: '/products/am-ban' },
   {
-    name: '04-mobile-tap',
-    kind: 'gif',
+    name: 'product-sold-out-mobile',
+    kind: 'png',
     viewport: MOBILE,
+    path: '/products/am-ban',
     mobile: true,
-    run: async ({ page, snap }) => {
-      await page.goto('/');
-      const tile = page.locator('.ProductTile').nth(2);
-      await tile.scrollIntoViewIfNeeded();
-      await snap(4);
-      await tile.getByRole('link').first().tap();
-      await pause(page, 400);
-      await snap(8);
-      await page.getByTestId('product-hover-card').getByText(/₫/).tap();
-      await page.waitForURL('**/products/**');
-      await snap(8);
-    },
   },
+  { name: 'privacy-desktop', kind: 'png', viewport: DESKTOP, path: '/policy/privacy' },
+  { name: 'privacy-mobile', kind: 'png', viewport: MOBILE, path: '/policy/privacy', mobile: true },
+  { name: 'returns-desktop', kind: 'png', viewport: DESKTOP, path: '/policy/returns' },
+  { name: 'about-desktop', kind: 'png', viewport: DESKTOP, path: '/about' },
+  { name: 'about-mobile', kind: 'png', viewport: MOBILE, path: '/about', mobile: true },
+  { name: 'contact-sent-desktop', kind: 'png', viewport: DESKTOP, path: '/contact/sent' },
   {
-    name: '05-pagination',
-    kind: 'gif',
+    name: 'contact-disabled-desktop',
+    kind: 'png',
     viewport: DESKTOP,
-    run: async ({ page, snap }) => {
-      await page.goto('/');
-      const nav = page.getByRole('navigation', { name: 'Phân trang' });
-      await nav.scrollIntoViewIfNeeded();
-      await snap(5);
-      await nav.getByRole('link', { name: 'Trang 2' }).click();
-      await page.waitForURL('**/?page=2');
-      await page.getByRole('navigation', { name: 'Phân trang' }).scrollIntoViewIfNeeded();
-      await snap(8);
-    },
+    path: '/contact',
+    set: 'disabled',
   },
   {
-    name: '06-mobile-product',
-    kind: 'gif',
+    name: 'notify-disabled-mobile',
+    kind: 'png',
     viewport: MOBILE,
+    path: '/products/am-ban',
     mobile: true,
-    run: async ({ page, snap }) => {
-      await page.goto('/products/hoang-hon-01');
-      await snap(6);
-      const track = page.locator('.ProductGallery__track');
-      for (let slide = 1; slide < 4; slide += 1) {
-        await track.evaluate(
-          (element, index) =>
-            element.scrollTo({ left: element.clientWidth * index, behavior: 'smooth' }),
-          slide,
-        );
-        for (let step = 0; step < 4; step += 1) {
-          await snap();
-          await pause(page, 80);
-        }
-        await snap(3);
-      }
-      await page.mouse.wheel(0, 500);
-      await pause(page, 300);
-      await snap(8);
-    },
+    set: 'disabled',
   },
-  { name: 'home-desktop', kind: 'png', viewport: DESKTOP, path: '/' },
-  { name: 'home-mobile', kind: 'png', viewport: MOBILE, path: '/', mobile: true },
-  { name: 'product-desktop', kind: 'png', viewport: DESKTOP, path: '/products/am-ban' },
-  { name: 'product-mobile', kind: 'png', viewport: MOBILE, path: '/products/am-ban', mobile: true },
-  { name: 'product-404', kind: 'png', viewport: DESKTOP, path: '/products/nope' },
 ];
 
 export default scenarios;

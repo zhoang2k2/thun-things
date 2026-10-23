@@ -1,16 +1,16 @@
-import Link from 'next/link';
-
+import { NotifyForm } from '@/components/forms/NotifyForm';
 import { ProductAction } from '@/components/product/ProductAction';
 import { StatusBadge } from '@/components/product/StatusBadge';
-import { buttonClasses } from '@/components/ui/Button';
+import { siteConfig } from '@/config/site';
 import { copy } from '@/content/copy/vi';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
-import { contactHref } from '@/lib/catalog/status';
+import { getFormReadiness } from '@/lib/leads/readiness';
 
-const { details, actions } = copy.product;
+const { details } = copy.product;
 
-// V-11 right column; V-22 notify-me slot for sold-out products (P3 swaps in the form).
+// V-11 right column; V-22 in-page notify-me form for sold-out products (P3).
+// Readiness is read when the page is prerendered; the server function re-checks it per request.
 export const ProductInfo = ({ product }: { product: Product }) => {
   const soldOut = product.status === 'sold_out';
 
@@ -31,22 +31,17 @@ export const ProductInfo = ({ product }: { product: Product }) => {
       </div>
 
       {soldOut ? (
-        <Link
-          href={contactHref(product.slug, 'notify')}
-          // Mobile uses the sticky order bar instead.
-          className={buttonClasses({
-            variant: 'secondary',
-            size: 'lg',
-            className: 'hidden self-start md:inline-flex',
-          })}
-        >
-          {actions.notify}
-        </Link>
+        <NotifyForm
+          productSlug={product.slug}
+          enabled={getFormReadiness().enabled}
+          contactEmail={siteConfig.contactEmail}
+        />
       ) : (
         <ProductAction
           slug={product.slug}
           status={product.status}
           size="lg"
+          // Mobile uses the sticky order bar instead.
           className="hidden self-start md:inline-flex"
         />
       )}

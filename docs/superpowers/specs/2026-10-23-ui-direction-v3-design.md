@@ -38,16 +38,16 @@ Every row was stated or chosen by the owner on 2026-10-23 unless tagged otherwis
 
 ### Hover card
 
-| ID   | Decision                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| V-14 | On hover, a card appears over the hovered cell. It **expands from the pointer's entry point**, is **larger than the cell, and overlaps neighbouring cells**. **The hovered image never moves or resizes and no other cell moves**; the card is revealed around the image by a circle from the pointer (P2-9).                                                                                                                   |
-| V-15 | The cell's image becomes the card's image section: **same image, same size**; the card frame and info grow around and below it. The frame is a **photo-print border**: a white margin around the image with a deeper bottom margin that holds name, price, and status (square corners). Frame: **16px** (8-point grid); full-width 48px action (P2-7, P2-9).                                                                    |
-| V-25 | Behind the open card sits a **glass layer**: transparent with background blur. It is **a separate, larger element, not an HTML wrapper of the card**, and has **no fixed shape**: an **organic curved blob**. It **spreads from the pointer when the card opens, retracts when it closes, and drifts/morphs slowly and continuously while open**. Moving to another product closes it and opens a new one (it does not travel). |
-| V-16 | Card content: name, price, status badge, and a "message" button. Statuses `available`, `limited`, `preorder`, `coming_soon` show the button; `sold_out` shows the badge only.                                                                                                                                                                                                                                                   |
-| V-17 | Clicking the card opens the product detail page.                                                                                                                                                                                                                                                                                                                                                                                |
-| V-18 | Keyboard focus opens the card exactly like hover; Enter opens the product detail page.                                                                                                                                                                                                                                                                                                                                          |
-| V-19 | Touch (mobile, 1 column): first tap opens the card, second tap opens the product detail page. The open card spans the full screen width (P2-8).                                                                                                                                                                                                                                                                                 |
-| V-20 | The "message" button opens a direct chat channel (Zalo / Messenger / Instagram). No channel exists yet, so it temporarily links to the Contact page with the product prefilled.                                                                                                                                                                                                                                                 |
+| ID   | Decision                                                                                                                                                                                                                                                                                                                                                     |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| V-14 | On hover, a card appears over the hovered cell. It **expands from the pointer's entry point**, is **larger than the cell, and overlaps neighbouring cells**. **The hovered image never moves or resizes and no other cell moves**; the card is revealed around the image by a circle from the pointer (P2-9).                                                |
+| V-15 | The cell's image becomes the card's image section: **same image, same size**; the card frame and info grow around and below it. The frame is a **photo-print border**: a white margin around the image with a deeper bottom margin that holds name, price, and status (square corners). Frame: **16px** (8-point grid); full-width 48px action (P2-7, P2-9). |
+| V-25 | ~~Glass layer behind the open card~~ **Removed [USER, 2026-10-23]:** the blur blob opened late (shape first, blur after) and felt too large; no layer sits behind the card for now. A pointer-following liquid lens limited to the product grid was discussed and parked.                                                                                    |
+| V-16 | Card content: name, price, status badge, and a "message" button. Statuses `available`, `limited`, `preorder`, `coming_soon` show the button; `sold_out` shows the badge only.                                                                                                                                                                                |
+| V-17 | Clicking the card opens the product detail page.                                                                                                                                                                                                                                                                                                             |
+| V-18 | Keyboard focus opens the card exactly like hover; Enter opens the product detail page.                                                                                                                                                                                                                                                                       |
+| V-19 | Touch (mobile, 1 column): first tap opens the card, second tap opens the product detail page. The open card spans the full screen width (P2-8).                                                                                                                                                                                                              |
+| V-20 | The "message" button opens a direct chat channel (Zalo / Messenger / Instagram). No channel exists yet, so it temporarily links to the Contact page with the product prefilled.                                                                                                                                                                              |
 
 ### Image fallback
 
@@ -75,9 +75,9 @@ Every row was stated or chosen by the owner on 2026-10-23 unless tagged otherwis
 
 No rounded corners anywhere in UI: buttons, badges, inputs, cards, images, menus, focus rings, progress bars, pagination. Native controls that the browser rounds (inputs, selects, radios, checkboxes on iOS/Safari) are reset to square.
 
-- **Only exception:** the V-25 glass layer, whose organic curve is the point of the effect. It is drawn as its own shape (SVG path / clip-path), never via `border-radius` on a UI box.
+- **No exceptions.** The V-25 glass layer, the former sole exception, was removed [USER, 2026-10-23]. A future curved element needs an explicit owner decision and a matching test exemption.
 - **Not covered:** icon stroke caps. Hugeicons free set (rounded strokes) is accepted.
-- **Enforcement:** Tailwind radius theme values are removed and a test fails if `rounded-` utilities or `border-radius` appear outside the glass-layer files.
+- **Enforcement:** Tailwind radius theme values are removed and a test fails if `rounded-` utilities or non-zero `border-radius` appear anywhere in `app/`, `components/`, or `lib/`.
 
 ### DR-2 — Art, photography, fashion; no "AI slop"
 
@@ -88,7 +88,7 @@ The site should read as a photographer's or fashion label's work, not a generate
 **Do not** (unless a numbered decision above makes an explicit exception):
 
 - gradients (including "sunset" gradients of the accent colour), mesh or noise-gradient backgrounds;
-- soft or blurred drop shadows, glow, neumorphism; glassmorphism panels (V-25 is the single sanctioned glass element);
+- soft or blurred drop shadows, glow, neumorphism; glassmorphism panels or blur layers;
 - rounded cards, pill buttons, pill badges;
 - decorative icons, icon-in-circle feature rows, emoji in UI, sparkle/AI symbols;
 - default "AI" typefaces (Inter, Space Grotesk as defaults) and centred hero + headline + two-button templates;
@@ -116,12 +116,9 @@ Agents use these until the owner supplies a value; each lives in one token or co
 
 8-point grid (project skill `8-point-grid`): spacing in multiples of 8 px with a 4 px half-step for icon/text gaps; line-heights in multiples of 4 px. Control heights: 32 / 40 / 48 px; touch targets at least 44 px (mobile controls use 48 px).
 
-## Technical notes for the glass layer (P2)
+## Glass layer (removed)
 
-- One shared instance for the whole grid, positioned under the open card; animated with `transform`/`opacity` plus a morphing SVG path or `clip-path: path()`; `backdrop-filter: blur()` on the shape.
-- `prefers-reduced-motion`: no drift or spread; the blob appears static and fades.
-- No `backdrop-filter` support: fall back to a flat translucent white fill.
-- Must keep INP < 200 ms on hover; blur radius and blob size are tuned against that budget.
+V-25 was built in P2 and removed on 2026-10-23 at the owner's request. Root cause of the reported lag, for whoever revisits it: the blur sat inside a parent whose `opacity` was animated, and an ancestor with `opacity < 1` isolates `backdrop-filter`, so the blur only appeared once the fade finished. Animate `transform` (and the fill colour) on the blurred element itself instead.
 
 ## Phase mapping
 

@@ -1,9 +1,7 @@
 'use client';
 
-import { AnimatePresence } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { GlassLayer } from '@/components/product/glass/GlassLayer';
 import { ProductTile } from '@/components/product/ProductTile';
 import type { ProductCardModel } from '@/lib/catalog';
 
@@ -23,7 +21,7 @@ interface ProductGridProps {
 
 // V-09: 1 column on mobile, 4 from md, no gaps between cells. The 16px gutters equal the card
 // frame, so an edge card fits on screen without moving its image (P2-8).
-// Holds the single open card and glass layer.
+// Holds the single open card.
 export const ProductGrid = ({ products }: ProductGridProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<ActiveCard | null>(null);
@@ -75,7 +73,6 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
           />
         ))}
       </ul>
-      <AnimatePresence>{active && <GlassLayer key={active.id} active={active} />}</AnimatePresence>
     </div>
   );
 };

@@ -1,5 +1,8 @@
 // Captures PR evidence: GIFs (≤ 15 s) and PNG screenshots from scripted Playwright scenarios.
 // Usage: `pnpm evidence` (builds first). Output: evidence-out/ (git-ignored).
+// Scenarios with a `set` (e.g. 'disabled') only run when EVIDENCE_SET matches; such runs add to
+// evidence-out/ instead of clearing it, so states that need a different server environment can be
+// captured from a second build.
 import { spawn } from 'node:child_process';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -13,7 +16,7 @@ import scenarios from './scenarios.mjs';
 /**
  * @typedef {{ page: import('@playwright/test').Page, snap: (hold?: number) => Promise<void> }} RunContext
  * @typedef {{ name: string, kind: 'gif' | 'png', viewport: { width: number, height: number },
- *   mobile?: boolean, path?: string, run?: (context: RunContext) => Promise<void> }} Scenario
+ *   mobile?: boolean, path?: string, set?: string, run?: (context: RunContext) => Promise<void> }} Scenario
  */
 
 const { GIFEncoder, quantize, applyPalette } = gifenc;
@@ -121,13 +124,16 @@ const runScenario = async (browser, scenario) => {
   }
 };
 
+const EVIDENCE_SET = process.env.EVIDENCE_SET;
+
 const main = async () => {
-  rmSync(OUT_DIR, { recursive: true, force: true });
+  if (!EVIDENCE_SET) rmSync(OUT_DIR, { recursive: true, force: true });
   mkdirSync(OUT_DIR, { recursive: true });
+  const selected = scenarios.filter((scenario) => scenario.set === EVIDENCE_SET);
   const server = await startServer();
   const browser = await chromium.launch();
   try {
-    for (const scenario of scenarios) await runScenario(browser, scenario);
+    for (const scenario of selected) await runScenario(browser, scenario);
   } finally {
     await browser.close();
     process.kill(-server.pid);

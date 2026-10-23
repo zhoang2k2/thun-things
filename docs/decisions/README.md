@@ -76,4 +76,4 @@ This directory tracks significant technical and architectural choices made durin
   - Icons come from Hugeicons only; `lucide-react` was removed.
   - Every image goes through `MediaImage`, which renders the V-26 placeholder when no source exists.
   - Policy pages are two static routes: a dynamic `/policy/[slug]` returned `200` for unknown slugs under Partial Prerendering.
-- **Consequences:** Swapping accent, typeface, or contact details touches one token or config entry. New UI that curves or uses gradients fails CI unless it lives in the sanctioned glass-layer directory.
+- **Consequences:** Swapping accent, typeface, or contact details touches one token or config entry. New UI that curves or uses gradients fails CI. The glass-layer exemption was removed with the V-25 glass layer (2026-10-23).
