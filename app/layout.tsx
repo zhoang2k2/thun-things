@@ -3,17 +3,13 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Thun Things',
-  description: 'Thun Things technical foundation',
+  description: 'Thun Things — T-shirt brand',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="vi" suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
+    <html lang="vi">
+      <body>{children}</body>
     </html>
   );
 }

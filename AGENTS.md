@@ -18,7 +18,7 @@ These instructions apply repository-wide. Read any more-specific nested `AGENTS.
 
 ## 1. Product Decisions and Scope
 
-- Treat `thun-things.md` as the source of truth for product strategy, UX, data models, and phases.
+- Treat `thun-things.md` as the source of truth for product strategy, UX, and data models. Phase order, FE/BE/Owner roles, and the binding rules R1–R4 (phase gate, fast-track, one PR per phase, environment ownership) live in [`docs/superpowers/plans/2026-10-22-roadmap.md`](docs/superpowers/plans/2026-10-22-roadmap.md).
 - Preserve decision tags: `[USER]` is confirmed and binding; `[PROPOSED]` awaits approval; `[ASSUMPTION]` is unverified; `[OPEN]` is unresolved. Never present a proposal or assumption as a confirmed decision.
 - Implement only the explicitly authorized task. Do not start future phases or silently change product guardrails, architecture, schemas, or existing behavior.
 - Prefer a small, understandable change. Do not refactor unrelated code, duplicate existing utilities, create speculative abstractions, or introduce dependencies without clear justification and owner approval.
