@@ -1,6 +1,6 @@
 // Runs Lighthouse (mobile preset, default throttling) against the production build and checks the
 // P4 performance budgets. Usage: `pnpm perf` (builds first).
-// Output: docs/reports/lighthouse-p4-<date>/<page>.report.html (the median run) plus summary.json.
+// Output: docs/reports/lighthouse-p5-<date>/<page>.report.html (the median run) plus summary.json.
 // Exits non-zero when any page misses a budget.
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -18,13 +18,13 @@ const DATE = new Date().toLocaleDateString('sv-SE');
 // observed paint shifts the estimate by whole round trips), so each page runs RUNS times and the
 // run with the median LCP is reported, as Lighthouse's variability guide recommends.
 const RUNS = 3;
-const OUT_DIR = join('docs', 'reports', `lighthouse-p4-${DATE}`);
+const OUT_DIR = join('docs', 'reports', `lighthouse-p5-${DATE}`);
 
 const PAGES = [
-  { name: 'home', path: '/' },
-  { name: 'product-hoang-hon-01', path: '/products/hoang-hon-01' },
-  { name: 'contact', path: '/contact' },
-  { name: 'policy-privacy', path: '/policy/privacy' },
+  { name: 'home-vi', path: '/vi' },
+  { name: 'home-en', path: '/en' },
+  { name: 'product-hoang-hon-01', path: '/vi/products/hoang-hon-01' },
+  { name: 'contact', path: '/en/contact' },
 ];
 
 // Budgets [USER, P4 spec criterion 14]: LCP < 2.5 s, CLS < 0.1, TBT < 200 ms.
