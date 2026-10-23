@@ -103,6 +103,12 @@ export const copy = {
       successTitle: 'Đã nhận yêu cầu',
       successBody: 'Cảm ơn bạn. Thun Things sẽ liên hệ lại qua email hoặc Zalo trong 1–2 ngày.',
     },
+    email: {
+      greeting: 'Xin chào,',
+      request: 'Yêu cầu',
+      customerSubject: 'Thun Things đã nhận yêu cầu của bạn',
+      consentGiven: 'Đã đồng ý chính sách bảo mật',
+    },
     notify: {
       title: 'Báo khi có hàng',
       intro: 'Để lại email hoặc số điện thoại, Thun Things sẽ báo khi mẫu này có lại.',
