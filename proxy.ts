@@ -4,14 +4,13 @@ import createMiddleware from 'next-intl/middleware';
 
 import { isLocale, routing } from '@/i18n/routing';
 import { getAllSlugs } from '@/lib/catalog';
+import { shellPaths } from '@/lib/seo/routes';
 
 const handleI18nRouting = createMiddleware(routing);
 
 const knownSlugs = new Set(getAllSlugs());
 
-// Matches no route (`[locale]` has no catch-all), so Next renders app/global-not-found.tsx with
-// a real 404 status.
-const NOT_FOUND_PATH = '/vi/__not-found';
+const pagePaths = new Set<string>([...shellPaths, '/contact/sent', '/contact/retry']);
 
 // Pages that existed before locale routing. Links shared before P5 keep working through a
 // permanent redirect to the Vietnamese page.
@@ -28,8 +27,11 @@ const isKnownSlug = (segment: string | undefined) => {
   }
 };
 
-const notFound = (request: NextRequest) =>
-  NextResponse.rewrite(new URL(NOT_FOUND_PATH, request.url));
+const notFound = (request: NextRequest) => {
+  const candidate = request.nextUrl.pathname.split('/')[1];
+  const locale = isLocale(candidate) ? candidate : routing.defaultLocale;
+  return NextResponse.rewrite(new URL(`/${locale}/not-found-page`, request.url), { status: 404 });
+};
 
 /** Where an unprefixed pre-P5 page now lives, or `undefined` when the path was never a page. */
 const legacyTarget = (pathname: string): string | undefined => {
@@ -49,11 +51,12 @@ export function proxy(request: NextRequest) {
 
   const [, first, ...rest] = pathname.split('/');
   if (isLocale(first)) {
-    // Partial Prerendering streams a 200 before notFound() can run in /[locale]/products/[slug],
-    // so unknown slugs (and their share images) are rejected here, before rendering.
-    if (rest[0] === 'products' && rest.length > 1 && !isKnownSlug(rest[1])) {
-      return notFound(request);
-    }
+    const pagePath = `/${rest.join('/')}`;
+    const productPage =
+      rest[0] === 'products' &&
+      isKnownSlug(rest[1]) &&
+      (rest.length === 2 || (rest.length === 3 && rest[2] === 'opengraph-image'));
+    if (!pagePaths.has(pagePath) && !productPage) return notFound(request);
     return handleI18nRouting(request);
   }
 

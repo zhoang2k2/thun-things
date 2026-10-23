@@ -9,9 +9,10 @@ import { SiteFrame } from '@/components/layout/SiteFrame';
 import { routing } from '@/i18n/routing';
 import { buildMetadata } from '@/lib/seo/metadata';
 
-// URLs that match no route (proxy.ts rewrites unknown locales and products here too). The root
-// layout lives under `[locale]`, so this page brings its own document; it is Vietnamese, the
-// default locale. Next adds the 404 status and noindex.
+// Fallback for URLs that match no route and never reach proxy.ts (its matcher skips Next
+// internals); proxy.ts rewrites every other miss to `/{locale}/not-found-page`. The root layout
+// lives under `[locale]`, so this page brings its own document; it is Vietnamese, the default
+// locale. Next adds the 404 status and noindex.
 export async function generateMetadata(): Promise<Metadata> {
   const [t, site] = await Promise.all([
     getTranslations('errors.notFound'),

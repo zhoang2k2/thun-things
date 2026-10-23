@@ -29,6 +29,7 @@ MotionGlobalConfig.skipAnimations = true;
 vi.mock('next/navigation', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/navigation')>()),
   usePathname: vi.fn(() => '/vi'),
+  useSelectedLayoutSegment: vi.fn(() => null),
   useSearchParams: vi.fn(() => new URLSearchParams()),
   useRouter: () => ({
     push: vi.fn(),

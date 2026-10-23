@@ -1,5 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams, useSelectedLayoutSegment } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import type { ReadonlyURLSearchParams } from 'next/navigation';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -25,6 +25,7 @@ const links = () => {
 
 afterEach(() => {
   at('/vi');
+  vi.mocked(useSelectedLayoutSegment).mockReturnValue(null);
 });
 
 describe('LocaleSwitcher', () => {
@@ -60,6 +61,7 @@ describe('LocaleSwitcher', () => {
 
   it('links each Home on Home', () => {
     at('/vi');
+    vi.mocked(useSelectedLayoutSegment).mockReturnValue(null);
     renderWithClientIntl(<LocaleSwitcher />);
     expect(links().vi).toHaveAttribute('href', '/vi');
     expect(links().en).toHaveAttribute('href', '/en');
@@ -71,4 +73,21 @@ describe('LocaleSwitcher', () => {
     expect(links().vi).toHaveAttribute('href', '/vi');
     expect(links().en).toHaveAttribute('href', '/en');
   });
+});
+
+it('offers Home links on the rewritten locale 404', () => {
+  at('/en/missing');
+  vi.mocked(useSelectedLayoutSegment).mockReturnValue('not-found-page');
+  renderWithClientIntl(<LocaleSwitcher />);
+  expect(links().vi).toHaveAttribute('href', '/vi');
+  expect(links().en).toHaveAttribute('href', '/en');
+});
+
+it('falls back to path-only links while the query is unavailable', () => {
+  at('/vi/contact');
+  vi.mocked(useSearchParams).mockImplementation(() => {
+    throw new Promise(() => {});
+  });
+  renderWithClientIntl(<LocaleSwitcher />);
+  expect(links().en).toHaveAttribute('href', '/en/contact');
 });

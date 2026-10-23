@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useSelectedLayoutSegment } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
@@ -14,6 +14,8 @@ interface LocaleSwitcherProps {
    */
   pathname?: string;
 }
+
+const NOT_FOUND_SEGMENT = 'not-found-page';
 
 const LINK_CLASSES =
   'LocaleSwitcher__link focus-visible:outline-ink inline-flex min-h-11 items-center underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 aria-[current=true]:underline';
@@ -44,7 +46,8 @@ const LocaleLinks = ({ href }: { href: string }) => {
 };
 
 // The query is request data: prerendered pages render the path-only links (which also work
-// without JavaScript), and the browser fills in the query.
+// without JavaScript, dropping the query: accepted exception, spec section 3 and ADR-008), and
+// the browser fills in the query.
 const CurrentPathLinks = () => {
   const pathname = usePathname();
   const query = useSearchParams().toString();
@@ -56,10 +59,13 @@ const PathOnlyLinks = () => <LocaleLinks href={usePathname()} />;
 /** VI / EN text links to the same path and query in each locale (spec section 3). */
 export const LocaleSwitcher = ({ pathname }: LocaleSwitcherProps) => {
   const t = useTranslations('localeSwitcher');
+  // proxy.ts rewrites unknown URLs to `/{locale}/not-found-page`; the requested path exists in no
+  // locale, so each link goes to that locale's Home.
+  const fixedPath = useSelectedLayoutSegment() === NOT_FOUND_SEGMENT ? '/' : pathname;
   return (
     <nav aria-label={t('label')} className="LocaleSwitcher">
-      {pathname ? (
-        <LocaleLinks href={pathname} />
+      {fixedPath ? (
+        <LocaleLinks href={fixedPath} />
       ) : (
         <Suspense fallback={<PathOnlyLinks />}>
           <CurrentPathLinks />
