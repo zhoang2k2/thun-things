@@ -49,6 +49,12 @@ Every row was stated or chosen by the owner on 2026-10-23 unless tagged otherwis
 | V-19 | Touch (mobile, 2 columns): first tap opens the card, second tap opens the product detail page.                                                                                                                                                                                                                                                                                                                                  |
 | V-20 | The "message" button opens a direct chat channel (Zalo / Messenger / Instagram). No channel exists yet, so it temporarily links to the Contact page with the product prefilled.                                                                                                                                                                                                                                                 |
 
+### Image fallback
+
+| ID   | Decision [USER, 2026-10-23]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| V-26 | Every image and banner renders through one media component that shows a **dummy placeholder** when no image is supplied: **light grey fill**, a **bold "Image" text label**, and an **image icon in dark grey (near-black)**, at the image's real aspect ratio. Development of P1–P3 must never be blocked by missing photos; the owner supplies real images later. This placeholder is an explicit, temporary exception to DR-2 ("no placeholder imagery in shipped UI"); real images are required before launch (P9). |
+
 ### Status and waitlist
 
 | ID   | Decision                                                                                       |
@@ -86,7 +92,7 @@ The site should read as a photographer's or fashion label's work, not a generate
 - rounded cards, pill buttons, pill badges;
 - decorative icons, icon-in-circle feature rows, emoji in UI, sparkle/AI symbols;
 - default "AI" typefaces (Inter, Space Grotesk as defaults) and centred hero + headline + two-button templates;
-- three-column feature grids, testimonial carousels, stock illustrations, generic placeholder imagery in shipped UI.
+- three-column feature grids, testimonial carousels, stock illustrations, generic placeholder imagery in shipped UI (the V-26 dummy placeholder is the one temporary exception until launch).
 
 **Icons:** minimal and functional only (arrows, close, play/pause); library **Hugeicons** (`@hugeicons/react` + `@hugeicons/core-free-icons`); `lucide-react` is removed. Prefer a text label where it reads naturally.
 

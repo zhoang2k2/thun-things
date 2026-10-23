@@ -112,6 +112,25 @@
 - [ ] **Step 5:** `pnpm test`, lint, typecheck, build → PASS.
 - [ ] **Step 6:** Commit `[FEATURE] Add site header, footer, and copy module`.
 
+### Task 3b (FE): Media component with dummy image fallback (V-26)
+
+**Files:**
+
+- Create: `components/media/ImagePlaceholder.tsx`, `components/media/MediaImage.tsx`, `components/media/MediaImage.test.tsx`
+- Modify: `app/globals.css` (tokens), `content/copy/vi.ts` (`media.placeholderLabel: 'Image'`)
+
+**Interfaces:**
+
+- Tokens: `--color-placeholder: #ededed` (light grey fill), `--color-placeholder-ink: #2b2b2b` (dark grey, 11:1 on the fill).
+- `ImagePlaceholder({ alt, width, height, className })` → `<div role="img" aria-label={alt} class="ImagePlaceholder bg-placeholder text-placeholder-ink ...">` at `aspect-ratio: width / height` (inline style allowed: runtime value), centred column: Hugeicons `Image01Icon` (24 px, `aria-hidden`) above **bold** `copy.media.placeholderLabel`; square corners.
+- `MediaImage({ src, alt, width, height, sizes, priority, className }: { src?: string; alt: string; width: number; height: number; sizes?: string; priority?: boolean; className?: string })` → `next/image` when `src` is set, otherwise `ImagePlaceholder` with the same box. P2 banners and product photos use only this component.
+
+- [ ] **Step 1:** Tests: `renders a placeholder when src is missing` (role `img` named by `alt`, text `Image` visible, class `ImagePlaceholder`, style aspect ratio `4 / 5` for 1600×2000); `renders the real image when src is set` (`img` element with `alt`, no `ImagePlaceholder`).
+- [ ] **Step 2:** Run → FAIL.
+- [ ] **Step 3:** Implement tokens and components.
+- [ ] **Step 4:** `pnpm test`, lint, typecheck → PASS.
+- [ ] **Step 5:** Commit `[FEATURE] Add media component with dummy image fallback`.
+
 ### Task 4 (BE): Page shells, metadata helper, robots, sitemap
 
 **Files:**
