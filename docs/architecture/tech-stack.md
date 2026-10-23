@@ -28,18 +28,19 @@ All packages are installed in P0 and pinned to exact versions (`.npmrc` `save-ex
 
 ### Tooling
 
-| Package                                                      | Version                       | Purpose                                              |
-| ------------------------------------------------------------ | ----------------------------- | ---------------------------------------------------- |
-| `typescript`                                                 | 5.9.3                         | Strict type checking                                 |
-| `@types/node`, `@types/react`, `@types/react-dom`            | 22.20.5, 19.3.0, 19.3.0       | Types                                                |
-| `tailwindcss`, `@tailwindcss/turbopack`                      | 4.3.3                         | Styling via the Turbopack CSS loader                 |
-| `eslint`, `eslint-config-next`                               | 9.39.5, 16.4.2                | Lint (flat config)                                   |
-| `prettier`, `prettier-plugin-tailwindcss`                    | 3.9.10, 0.8.1                 | Formatting, Tailwind class sorting                   |
-| `vitest`, `@vitejs/plugin-react`, `jsdom`                    | 5.0.5, 6.1.2, 30.1.3          | Unit and component tests                             |
-| `@testing-library/react`, `/dom`, `/jest-dom`, `/user-event` | 16.3.3, 10.4.2, 7.0.1, 14.6.8 | Component testing                                    |
-| `@playwright/test`                                           | 1.64.1                        | Browser smoke tests (`pnpm test:e2e`)                |
-| `@axe-core/playwright`                                       | 4.14.0                        | Accessibility audits (wired in P4)                   |
-| `gifenc`, `pngjs`                                            | 1.0.3, 7.0.0                  | PR evidence GIF encoding (`pnpm evidence`), dev only |
+| Package                                                      | Version                       | Purpose                                               |
+| ------------------------------------------------------------ | ----------------------------- | ----------------------------------------------------- |
+| `typescript`                                                 | 5.9.3                         | Strict type checking                                  |
+| `@types/node`, `@types/react`, `@types/react-dom`            | 22.20.5, 19.3.0, 19.3.0       | Types                                                 |
+| `tailwindcss`, `@tailwindcss/turbopack`                      | 4.3.3                         | Styling via the Turbopack CSS loader                  |
+| `eslint`, `eslint-config-next`                               | 9.39.5, 16.4.2                | Lint (flat config)                                    |
+| `prettier`, `prettier-plugin-tailwindcss`                    | 3.9.10, 0.8.1                 | Formatting, Tailwind class sorting                    |
+| `vitest`, `@vitejs/plugin-react`, `jsdom`                    | 5.0.5, 6.1.2, 30.1.3          | Unit and component tests                              |
+| `@testing-library/react`, `/dom`, `/jest-dom`, `/user-event` | 16.3.3, 10.4.2, 7.0.1, 14.6.8 | Component testing                                     |
+| `@playwright/test`                                           | 1.64.1                        | Browser smoke tests (`pnpm test:e2e`)                 |
+| `@axe-core/playwright`                                       | 4.14.0                        | Accessibility audits (wired in P4)                    |
+| `lighthouse`                                                 | 13.5.0                        | Mobile performance budgets (`pnpm perf`, wired in P4) |
+| `gifenc`, `pngjs`                                            | 1.0.3, 7.0.0                  | PR evidence GIF encoding (`pnpm evidence`), dev only  |
 
 Note: `eslint@9` is flagged deprecated upstream; it is the version `eslint-config-next@16.4.2` scaffolds with. Revisit when `eslint-config-next` supports ESLint 10.
 
