@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 
+import { MotionGlobalConfig } from 'motion';
 import { vi } from 'vitest';
 
 // Server modules guard themselves with `server-only`; tests run them directly.
@@ -19,3 +20,19 @@ if (!window.matchMedia) {
       dispatchEvent: () => false,
     }) as MediaQueryList;
 }
+
+// Run motion animations instantly so enter/exit states are deterministic in tests.
+MotionGlobalConfig.skipAnimations = true;
+
+// Components using the App Router render outside Next in tests.
+vi.mock('next/navigation', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/navigation')>()),
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
