@@ -123,7 +123,7 @@
 
 - Tokens: `--color-placeholder: #ededed` (light grey fill), `--color-placeholder-ink: #2b2b2b` (dark grey, 11:1 on the fill).
 - `ImagePlaceholder({ alt, width, height, className })` → `<div role="img" aria-label={alt} class="ImagePlaceholder bg-placeholder text-placeholder-ink ...">` at `aspect-ratio: width / height` (inline style allowed: runtime value), centred column: Hugeicons `Image01Icon` (24 px, `aria-hidden`) above **bold** `copy.media.placeholderLabel`; square corners.
-- `MediaImage({ src, alt, width, height, sizes, priority, className }: { src?: string; alt: string; width: number; height: number; sizes?: string; priority?: boolean; className?: string })` → `next/image` when `src` is set, otherwise `ImagePlaceholder` with the same box. P2 banners and product photos use only this component.
+- `MediaImage({ src, alt, width, height, sizes, preload, className }: { src?: string; alt: string; width: number; height: number; sizes?: string; preload?: boolean; className?: string })` → `next/image` when `src` is set, otherwise `ImagePlaceholder` with the same box. P2 banners and product photos use only this component.
 
 - [ ] **Step 1:** Tests: `renders a placeholder when src is missing` (role `img` named by `alt`, text `Image` visible, class `ImagePlaceholder`, style aspect ratio `4 / 5` for 1600×2000); `renders the real image when src is set` (`img` element with `alt`, no `ImagePlaceholder`).
 - [ ] **Step 2:** Run → FAIL.
