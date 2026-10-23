@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { join, relative } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
@@ -9,8 +9,6 @@ import { describe, expect, it } from 'vitest';
 const ROOT = join(__dirname, '..');
 const SCANNED_DIRS = ['app', 'components', 'lib'];
 const SCANNED_EXTENSIONS = ['.ts', '.tsx', '.css'];
-// The hover-card glass layer is the only element allowed to curve (V-25).
-const GLASS_LAYER_SEGMENT = `${sep}glass${sep}`;
 
 const listSourceFiles = (dir: string): string[] => {
   let entries: string[];
@@ -30,9 +28,8 @@ const listSourceFiles = (dir: string): string[] => {
 
 const sourceFiles = SCANNED_DIRS.flatMap((dir) => listSourceFiles(join(ROOT, dir)));
 
-const findViolations = (pattern: RegExp, skipGlass = false) =>
+const findViolations = (pattern: RegExp) =>
   sourceFiles
-    .filter((file) => !(skipGlass && file.includes(GLASS_LAYER_SEGMENT)))
     .filter((file) => pattern.test(readFileSync(file, 'utf8')))
     .map((file) => relative(ROOT, file));
 
@@ -41,9 +38,9 @@ describe('design rules', () => {
     expect(sourceFiles.length).toBeGreaterThan(0);
   });
 
-  it('uses no radius outside the glass layer', () => {
-    expect(findViolations(/\brounded(-[a-z0-9[\]]+)?\b/, true)).toEqual([]);
-    expect(findViolations(/border-radius:(?!\s*0\s*[;}!])/, true)).toEqual([]);
+  it('uses no radius', () => {
+    expect(findViolations(/\brounded(-[a-z0-9[\]]+)?\b/)).toEqual([]);
+    expect(findViolations(/border-radius:(?!\s*0\s*[;}!])/)).toEqual([]);
   });
 
   it('uses no gradients', () => {
