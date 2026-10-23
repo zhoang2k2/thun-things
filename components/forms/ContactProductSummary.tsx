@@ -1,17 +1,18 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { MediaImage } from '@/components/media/MediaImage';
-import { copy } from '@/content/copy/vi';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
 
 /** The product the visitor came from, shown above the contact form. */
 export const ContactProductSummary = ({ product }: { product: Product }) => {
+  const t = useTranslations('forms.contact');
   const { front } = product.media;
 
   return (
     <section
-      aria-label={copy.forms.contact.productLabel}
+      aria-label={t('productLabel')}
       className="ContactProductSummary border-line flex max-w-3xl items-center gap-4 border p-4"
     >
       <div className="ContactProductSummary__image w-16 shrink-0">
@@ -24,9 +25,7 @@ export const ContactProductSummary = ({ product }: { product: Product }) => {
         />
       </div>
       <div className="ContactProductSummary__text flex flex-col gap-1">
-        <p className="text-ink-muted text-xs tracking-wide uppercase">
-          {copy.forms.contact.productLabel}
-        </p>
+        <p className="text-ink-muted text-xs tracking-wide uppercase">{t('productLabel')}</p>
         <Link
           href={`/products/${product.slug}`}
           className="focus-visible:outline-ink font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2"

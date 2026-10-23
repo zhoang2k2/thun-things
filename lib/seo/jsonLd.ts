@@ -1,11 +1,12 @@
 import 'server-only';
 
 import { siteConfig } from '@/config/site';
-import { copy } from '@/content/copy/vi';
+import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
 import type { Product, ProductStatus } from '@/lib/catalog/schema';
 import { siteUrl } from '@/lib/seo/metadata';
 
 const CONTEXT = 'https://schema.org';
+const { site } = getMessagesFor(DEFAULT_LOCALE);
 
 const AVAILABILITY: Record<ProductStatus, string> = {
   available: 'InStock',
@@ -18,7 +19,7 @@ const AVAILABILITY: Record<ProductStatus, string> = {
 export const organizationJsonLd = (): object => ({
   '@context': CONTEXT,
   '@type': 'Organization',
-  name: copy.site.name,
+  name: site.name,
   url: siteUrl('/'),
   logo: siteUrl('/apple-icon'),
   ...(siteConfig.contactEmail && { email: siteConfig.contactEmail }),
@@ -28,7 +29,7 @@ export const organizationJsonLd = (): object => ({
 export const websiteJsonLd = (): object => ({
   '@context': CONTEXT,
   '@type': 'WebSite',
-  name: copy.site.name,
+  name: site.name,
   url: siteUrl('/'),
 });
 

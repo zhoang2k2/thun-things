@@ -1,9 +1,10 @@
 import 'server-only';
 
 import type { Metadata } from 'next';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 import { PageShell } from '@/components/layout/PageShell';
-import { copy } from '@/content/copy/vi';
 import { privacyPolicy } from '@/content/policies/privacy';
 import { returnsPolicy } from '@/content/policies/returns';
 import type { PolicyDocument } from '@/content/policies/types';
@@ -17,28 +18,28 @@ const DOCUMENTS: Record<PolicySlug, PolicyDocument> = {
 
 const dateFormatter = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'long', timeZone: 'UTC' });
 
-export const policyMetadata = (slug: PolicySlug): Metadata => {
-  const page = copy.pages[slug];
+export const policyMetadata = async (slug: PolicySlug): Promise<Metadata> => {
+  const t = await getTranslations(`pages.${slug}`);
   return buildMetadata({
-    title: page.title,
-    description: page.description,
+    title: t('title'),
+    description: t('description'),
     path: `/policy/${slug}`,
   });
 };
 
 export const PolicyPage = ({ slug }: { slug: PolicySlug }) => {
-  const page = copy.pages[slug];
+  const t = useTranslations();
   const { updatedAt, sections } = DOCUMENTS[slug];
-  const updated = `${copy.policy.updated} ${dateFormatter.format(new Date(updatedAt))}`;
+  const updated = `${t('policy.updated')} ${dateFormatter.format(new Date(updatedAt))}`;
 
   return (
     <PageShell
-      title={page.title}
+      title={t(`pages.${slug}.title`)}
       intro={
         <>
-          <p>{page.description}</p>
+          <p>{t(`pages.${slug}.description`)}</p>
           <p className="mt-2 text-sm">
-            <time dateTime={updatedAt}>{updated}</time> · {copy.policy.draft}
+            <time dateTime={updatedAt}>{updated}</time> · {t('policy.draft')}
           </p>
         </>
       }

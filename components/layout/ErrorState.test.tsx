@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 
@@ -6,7 +6,9 @@ import { ErrorState } from '@/components/layout/ErrorState';
 import GlobalError from '@/app/global-error';
 import RouteError from '@/app/error';
 import NotFound from '@/app/not-found';
-import { copy } from '@/content/copy/vi';
+import { messages, renderWithClientIntl, renderWithIntl } from '@/test/renderWithIntl';
+
+const { errors } = messages;
 
 it('renders a single h1, the body and the action slot', () => {
   render(
@@ -20,14 +22,11 @@ it('renders a single h1, the body and the action slot', () => {
 });
 
 it('not-found has one h1 and links to home and contact', () => {
-  render(<NotFound />);
+  renderWithIntl(<NotFound />);
   expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy.errors.notFound.title);
-  expect(screen.getByRole('link', { name: copy.errors.notFound.home })).toHaveAttribute(
-    'href',
-    '/',
-  );
-  expect(screen.getByRole('link', { name: copy.errors.notFound.contact })).toHaveAttribute(
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(errors.notFound.title);
+  expect(screen.getByRole('link', { name: errors.notFound.home })).toHaveAttribute('href', '/');
+  expect(screen.getByRole('link', { name: errors.notFound.contact })).toHaveAttribute(
     'href',
     '/contact',
   );
@@ -37,19 +36,22 @@ it('error page retries and never shows the error details', async () => {
   const retry = vi.fn();
   const error = Object.assign(new Error('secret detail'), { digest: 'digest-123' });
   vi.spyOn(console, 'error').mockImplementation(() => {});
-  render(<RouteError error={error} retry={retry} />);
+  renderWithClientIntl(<RouteError error={error} retry={retry} />);
   expect(screen.queryByText(/secret detail/)).not.toBeInTheDocument();
   expect(screen.queryByText(/digest-123/)).not.toBeInTheDocument();
   expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-  await userEvent.click(screen.getByRole('button', { name: copy.errors.generic.retry }));
+  await userEvent.click(screen.getByRole('button', { name: errors.generic.retry }));
   expect(retry).toHaveBeenCalledTimes(1);
 });
 
-it('global error renders a retry button without the error details', () => {
+it('global error renders a retry button without the error details', async () => {
   vi.spyOn(console, 'error').mockImplementation(() => {});
-  render(<GlobalError error={new Error('secret detail')} retry={() => {}} />, {
-    container: document.documentElement,
+  // Its copy loads lazily, so let the import settle inside act.
+  await act(async () => {
+    render(<GlobalError error={new Error('secret detail')} retry={() => {}} />, {
+      container: document.documentElement,
+    });
   });
+  expect(await screen.findByRole('button', { name: errors.generic.retry })).toBeInTheDocument();
   expect(screen.queryByText(/secret detail/)).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: copy.errors.generic.retry })).toBeInTheDocument();
 });

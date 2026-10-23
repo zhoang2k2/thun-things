@@ -4,10 +4,9 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { z } from 'zod';
 
-import { copy } from '@/content/copy/vi';
 import { getProductBySlug } from '@/lib/catalog';
 import type { Product } from '@/lib/catalog/schema';
-import { type FormState, HONEYPOT_FIELD } from '@/lib/leads/formState';
+import { type FormMessageKey, type FormState, HONEYPOT_FIELD } from '@/lib/leads/formState';
 import { checkRateLimit, clientKey } from '@/lib/leads/rateLimit';
 import { getFormReadiness } from '@/lib/leads/readiness';
 import { contactFormSchema, notifyFormSchema, toFieldErrors } from '@/lib/leads/schema';
@@ -17,8 +16,6 @@ import { LeadDeliveryError, type Lead } from '@/lib/leads/types';
 // Order: readiness → honeypot → validation → rate limit → delivery. Validation runs before the
 // rate limit so fixing typos never uses up a visitor's five submissions; invalid input costs
 // nothing because nothing is sent.
-
-const { forms } = copy;
 
 const readValues = (formData: FormData): Record<string, string> => {
   const values: Record<string, string> = {};
@@ -36,7 +33,7 @@ interface SubmissionSpec<Schema extends z.ZodType> {
   toLead: (
     form: z.output<Schema>,
     base: Pick<Lead, 'locale' | 'consent' | 'createdAt'>,
-  ) => Lead | string;
+  ) => Lead | FormMessageKey;
 }
 
 const handleSubmission = async <Schema extends z.ZodType>({
@@ -44,7 +41,7 @@ const handleSubmission = async <Schema extends z.ZodType>({
   schema,
   toLead,
 }: SubmissionSpec<Schema>): Promise<FormState> => {
-  if (!getFormReadiness().enabled) return { status: 'disabled', message: forms.disabled };
+  if (!getFormReadiness().enabled) return { status: 'disabled', message: 'forms.disabled' };
 
   const values = readValues(formData);
   // Bots get the same success as people, so they learn nothing.
@@ -56,7 +53,7 @@ const handleSubmission = async <Schema extends z.ZodType>({
   }
 
   const { ok } = await checkRateLimit(clientKey(await headers()));
-  if (!ok) return { status: 'error', message: forms.rateLimited, values };
+  if (!ok) return { status: 'error', message: 'forms.rateLimited', values };
 
   const lead = toLead(parsed.data, {
     locale: 'vi',
@@ -70,7 +67,7 @@ const handleSubmission = async <Schema extends z.ZodType>({
   } catch (error) {
     const reason = error instanceof LeadDeliveryError ? error.reason : 'unexpected';
     console.error('[leads] delivery failed:', reason);
-    return { status: 'error', message: forms.deliveryFailed, values };
+    return { status: 'error', message: 'forms.deliveryFailed', values };
   }
   return { status: 'success' };
 };
@@ -107,7 +104,7 @@ export async function submitNotify(_previous: FormState, formData: FormData): Pr
     schema: notifyFormSchema,
     toLead: ({ productSlug, email, phone }, base) => {
       const product = getProductBySlug(productSlug);
-      if (!product) return forms.unknownProduct;
+      if (!product) return 'forms.unknownProduct';
       return {
         ...base,
         kind: 'notify',

@@ -1,17 +1,17 @@
+import { useTranslations } from 'next-intl';
+
 import { NotifyForm } from '@/components/forms/NotifyForm';
 import { ProductAction } from '@/components/product/ProductAction';
 import { StatusBadge } from '@/components/product/StatusBadge';
 import { siteConfig } from '@/config/site';
-import { copy } from '@/content/copy/vi';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
 import { getFormReadiness } from '@/lib/leads/readiness';
 
-const { details } = copy.product;
-
 // V-11 right column; V-22 in-page notify-me form for sold-out products (P3).
 // Readiness is read when the page is prerendered; the server function re-checks it per request.
 export const ProductInfo = ({ product }: { product: Product }) => {
+  const t = useTranslations('product.details');
   const soldOut = product.status === 'sold_out';
 
   return (
@@ -51,7 +51,7 @@ export const ProductInfo = ({ product }: { product: Product }) => {
       <dl className="ProductInfo__details border-line grid grid-cols-[auto_1fr] gap-x-8 gap-y-4 border-t pt-6 text-sm leading-5">
         {product.sizes && (
           <>
-            <dt className="text-ink-muted tracking-wide uppercase">{details.sizes}</dt>
+            <dt className="text-ink-muted tracking-wide uppercase">{t('sizes')}</dt>
             <dd>
               <ul className="flex flex-wrap gap-2">
                 {product.sizes.map((size) => (
@@ -65,13 +65,13 @@ export const ProductInfo = ({ product }: { product: Product }) => {
         )}
         {product.material && (
           <>
-            <dt className="text-ink-muted tracking-wide uppercase">{details.material}</dt>
+            <dt className="text-ink-muted tracking-wide uppercase">{t('material')}</dt>
             <dd>{product.material.vi}</dd>
           </>
         )}
         {product.care && (
           <>
-            <dt className="text-ink-muted tracking-wide uppercase">{details.care}</dt>
+            <dt className="text-ink-muted tracking-wide uppercase">{t('care')}</dt>
             <dd>{product.care.vi}</dd>
           </>
         )}

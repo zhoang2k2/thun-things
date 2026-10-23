@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { formatPriceVND } from '@/lib/catalog/format';
 import { contactHref, presentStatus } from '@/lib/catalog/status';
+import { product } from '@/messages/vi.json';
 
 describe('presentStatus', () => {
   it.each([
@@ -11,7 +12,15 @@ describe('presentStatus', () => {
     ['coming_soon', 'Sắp ra mắt', 'neutral', { label: 'Hỏi trước', purpose: 'notify' }],
     ['sold_out', 'Hết hàng', 'muted', undefined],
   ] as const)('%s → %s', (status, label, tone, action) => {
-    expect(presentStatus(status)).toEqual({ label, tone, action });
+    const presentation = presentStatus(status);
+    expect(presentation.tone).toBe(tone);
+    expect(product.status[status]).toBe(label);
+    expect(
+      presentation.action && {
+        label: product.actions[presentation.action.labelKey],
+        purpose: presentation.action.purpose,
+      },
+    ).toEqual(action);
   });
 });
 

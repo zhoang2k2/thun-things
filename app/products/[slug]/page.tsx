@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { ProductInfo } from '@/components/product/ProductInfo';
 import { ProductOrderBar } from '@/components/product/ProductOrderBar';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { copy } from '@/content/copy/vi';
 import { getAllSlugs, getProductBySlug, getRelatedProducts, toCardModel } from '@/lib/catalog';
 import { productJsonLd } from '@/lib/seo/jsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
@@ -34,6 +34,7 @@ export default async function ProductPage({ params }: PageProps<'/products/[slug
   const product = getProductBySlug(slug);
   if (!product) notFound();
 
+  const t = await getTranslations('product');
   const related = getRelatedProducts(product).map(toCardModel);
   const { front, back, lifestyle = [] } = product.media;
   const images = [front, ...(back ? [back] : []), ...lifestyle];
@@ -56,7 +57,7 @@ export default async function ProductPage({ params }: PageProps<'/products/[slug
           id="related-heading"
           className="px-4 pb-6 text-sm font-medium tracking-wide uppercase md:px-8"
         >
-          {copy.product.relatedHeading}
+          {t('relatedHeading')}
         </h2>
         <ProductGrid products={related} />
       </section>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import type { ButtonSize } from '@/components/ui/Button';
 import { buttonClasses } from '@/components/ui/Button';
@@ -15,8 +16,11 @@ interface ProductActionProps {
 
 // V-16/V-20: chat channel when configured, otherwise the Contact page with the product prefilled.
 export const ProductAction = ({ slug, status, size = 'sm', className }: ProductActionProps) => {
+  const t = useTranslations('product.actions');
   const { action } = presentStatus(status);
   if (!action) return null;
+
+  const label = t(action.labelKey);
 
   const classes = buttonClasses({ size, className: `ProductAction ${className ?? ''}` });
   const { chatChannel } = siteConfig;
@@ -24,14 +28,14 @@ export const ProductAction = ({ slug, status, size = 'sm', className }: ProductA
   if (chatChannel) {
     return (
       <a href={chatChannel.href} target="_blank" rel="noopener noreferrer" className={classes}>
-        {action.label}
+        {label}
       </a>
     );
   }
 
   return (
     <Link href={contactHref(slug, action.purpose)} className={classes}>
-      {action.label}
+      {label}
     </Link>
   );
 };

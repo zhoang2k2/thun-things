@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { getAllSlugs, getProductBySlug } from '@/lib/catalog';
 import { formatPriceVND } from '@/lib/catalog/format';
-import { presentStatus } from '@/lib/catalog/status';
 import { buildLlmsTxt } from '@/lib/seo/llms';
+import messages from '@/messages/vi.json';
 
 describe('buildLlmsTxt', () => {
   const text = buildLlmsTxt();
@@ -18,7 +18,7 @@ describe('buildLlmsTxt', () => {
     for (const slug of getAllSlugs()) {
       const product = getProductBySlug(slug)!;
       expect(text).toContain(
-        `- [${product.name.vi}](http://localhost:3000/products/${slug}): ${formatPriceVND(product.priceVND)}, ${presentStatus(product.status).label}`,
+        `- [${product.name.vi}](http://localhost:3000/products/${slug}): ${formatPriceVND(product.priceVND)}, ${messages.product.status[product.status]}`,
       );
     }
   });

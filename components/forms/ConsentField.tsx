@@ -1,12 +1,10 @@
 import { Tick02Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { choiceClasses, FieldError, fieldId, RequiredMark } from '@/components/forms/Field';
-import { copy } from '@/content/copy/vi';
 import { cn } from '@/lib/cn';
-
-const { fields } = copy.forms;
 
 interface ConsentFieldProps {
   idPrefix: string;
@@ -16,6 +14,7 @@ interface ConsentFieldProps {
 
 // P3-4: required consent, linking the privacy policy (opens a new tab so the form keeps its input).
 export const ConsentField = ({ idPrefix, error, defaultChecked }: ConsentFieldProps) => {
+  const t = useTranslations('forms.fields');
   const id = fieldId(idPrefix, 'consent');
   const errorId = error ? `${id}-error` : undefined;
 
@@ -41,13 +40,13 @@ export const ConsentField = ({ idPrefix, error, defaultChecked }: ConsentFieldPr
           />
         </span>
         <label htmlFor={id} className="ConsentField__label text-sm leading-6">
-          {fields.consentBefore}
+          {t('consentBefore')}
           <Link
             href="/policy/privacy"
             target="_blank"
             className="focus-visible:outline-ink underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
           >
-            {fields.consentLink}
+            {t('consentLink')}
           </Link>
           <RequiredMark />
         </label>

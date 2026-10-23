@@ -1,8 +1,9 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { getAllSlugs, getProductBySlug, toCardModel } from '@/lib/catalog';
+import { renderWithClientIntl } from '@/test/renderWithIntl';
 
 const byStatus = (status: string) =>
   toCardModel(
@@ -14,7 +15,7 @@ const byStatus = (status: string) =>
 const available = byStatus('available');
 const soldOut = byStatus('sold_out');
 
-const renderGrid = () => render(<ProductGrid products={[available, soldOut]} />);
+const renderGrid = () => renderWithClientIntl(<ProductGrid products={[available, soldOut]} />);
 const tileOf = (name: string) =>
   screen
     .getAllByRole('listitem')

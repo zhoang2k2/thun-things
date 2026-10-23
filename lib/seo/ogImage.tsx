@@ -3,10 +3,11 @@ import { join } from 'node:path';
 
 import { ImageResponse } from 'next/og';
 
-import { copy } from '@/content/copy/vi';
+import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
-import { presentStatus } from '@/lib/catalog/status';
+
+const { site, product: productMessages } = getMessagesFor(DEFAULT_LOCALE);
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -53,7 +54,7 @@ const Wordmark = ({ size }: { size: number }) => (
       textTransform: 'uppercase',
     }}
   >
-    {copy.site.name}
+    {site.name}
   </div>
 );
 
@@ -63,13 +64,12 @@ export const renderWordmarkImage = async () =>
       <div style={{ display: 'flex', width: 120, height: 16, background: ACCENT }} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
         <Wordmark size={200} />
-        <div style={{ display: 'flex', fontSize: 36, color: INK }}>{copy.site.description}</div>
+        <div style={{ display: 'flex', fontSize: 36, color: INK }}>{site.description}</div>
       </div>
     </div>,
   );
 
 export const renderProductImage = async (product: Product) => {
-  const status = presentStatus(product.status);
   return respond(
     <div style={{ ...frameStyle, flexDirection: 'row', gap: 56 }}>
       <div
@@ -97,7 +97,7 @@ export const renderProductImage = async (product: Product) => {
                     : '#ffffff',
               }}
             >
-              {status.label}
+              {productMessages.status[product.status]}
             </div>
           </div>
         </div>

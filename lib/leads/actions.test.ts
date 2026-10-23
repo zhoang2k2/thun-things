@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { copy } from '@/content/copy/vi';
 import { initialFormState } from '@/lib/leads/formState';
 import type { Lead } from '@/lib/leads/types';
 import { LeadDeliveryError } from '@/lib/leads/types';
@@ -23,8 +22,6 @@ vi.mock('@/lib/leads/rateLimit', () => ({
 vi.mock('@/lib/leads/readiness', () => ({ getFormReadiness: mocks.getFormReadiness }));
 
 const { submitContact, submitNotify } = await import('@/lib/leads/actions');
-
-const { forms } = copy;
 
 const formData = (entries: Record<string, string>) => {
   const data = new FormData();
@@ -88,9 +85,9 @@ describe('submitContact', () => {
     );
     expect(state.status).toBe('error');
     expect(state.fieldErrors).toEqual({
-      email: forms.errors.emailInvalid,
-      phone: forms.errors.phoneRequired,
-      consent: forms.errors.consentRequired,
+      email: 'forms.errors.emailInvalid',
+      phone: 'forms.errors.phoneRequired',
+      consent: 'forms.errors.consentRequired',
     });
     expect(state.values).toMatchObject({ email: 'khach@', name: 'Lan' });
     expect(mocks.deliver).not.toHaveBeenCalled();
@@ -99,14 +96,14 @@ describe('submitContact', () => {
   it('refuses when rate limited', async () => {
     mocks.checkRateLimit.mockResolvedValue({ ok: false });
     const state = await submitContact(initialFormState, formData(VALID_CONTACT));
-    expect(state).toMatchObject({ status: 'error', message: forms.rateLimited });
+    expect(state).toMatchObject({ status: 'error', message: 'forms.rateLimited' });
     expect(mocks.deliver).not.toHaveBeenCalled();
   });
 
   it('refuses when the form is disabled', async () => {
     mocks.getFormReadiness.mockReturnValue({ enabled: false, reason: 'email' });
     const state = await submitContact(initialFormState, formData(VALID_CONTACT));
-    expect(state).toEqual({ status: 'disabled', message: forms.disabled });
+    expect(state).toEqual({ status: 'disabled', message: 'forms.disabled' });
     expect(mocks.deliver).not.toHaveBeenCalled();
   });
 
@@ -121,7 +118,7 @@ describe('submitContact', () => {
     const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
     mocks.deliver.mockRejectedValue(new LeadDeliveryError('validation_error'));
     const state = await submitContact(initialFormState, formData(VALID_CONTACT));
-    expect(state).toMatchObject({ status: 'error', message: forms.deliveryFailed });
+    expect(state).toMatchObject({ status: 'error', message: 'forms.deliveryFailed' });
     expect(errorLog).toHaveBeenCalledWith('[leads] delivery failed:', 'validation_error');
     expect(JSON.stringify(errorLog.mock.calls)).not.toContain('khach@example.com');
     errorLog.mockRestore();
@@ -168,7 +165,7 @@ describe('submitNotify', () => {
       initialFormState,
       formData({ productSlug: 'am-ban', email: '', phone: '', consent: 'on' }),
     );
-    expect(state.fieldErrors).toEqual({ email: forms.errors.contactRequired });
+    expect(state.fieldErrors).toEqual({ email: 'forms.errors.contactRequired' });
     expect(mocks.deliver).not.toHaveBeenCalled();
   });
 
@@ -177,7 +174,7 @@ describe('submitNotify', () => {
       initialFormState,
       formData({ productSlug: 'nope', phone: '0912345678', consent: 'on' }),
     );
-    expect(state).toMatchObject({ status: 'error', message: forms.unknownProduct });
+    expect(state).toMatchObject({ status: 'error', message: 'forms.unknownProduct' });
     expect(mocks.deliver).not.toHaveBeenCalled();
   });
 });

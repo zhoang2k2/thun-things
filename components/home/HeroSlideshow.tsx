@@ -1,10 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
 import type { Banner } from '@/content/banners';
-import { copy } from '@/content/copy/vi';
 import { cn } from '@/lib/cn';
 import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
 
@@ -21,6 +21,7 @@ const CONTROL_FOCUS =
 
 // V-08: owner banners, ~70vh, 5 s autoplay, square progress bars, pause control.
 export const HeroSlideshow = ({ banners, intervalMs = 5000 }: HeroSlideshowProps) => {
+  const t = useTranslations('hero');
   const reducedMotion = usePrefersReducedMotion();
   const [index, setIndex] = useState(0);
   const [playState, setPlayState] = useState<PlayState>('auto');
@@ -51,7 +52,7 @@ export const HeroSlideshow = ({ banners, intervalMs = 5000 }: HeroSlideshowProps
   };
 
   return (
-    <section aria-roledescription="carousel" aria-label={copy.hero.label} className="HeroSlideshow">
+    <section aria-roledescription="carousel" aria-label={t('label')} className="HeroSlideshow">
       <div className="HeroSlideshow__stage relative h-[70vh] overflow-hidden">
         {banners.map((banner, position) => {
           const active = position === index;
@@ -103,7 +104,7 @@ export const HeroSlideshow = ({ banners, intervalMs = 5000 }: HeroSlideshowProps
               <li key={banner.id} className="flex-1">
                 <button
                   type="button"
-                  aria-label={`${copy.hero.label} ${position + 1} / ${count}`}
+                  aria-label={`${t('label')} ${position + 1} / ${count}`}
                   aria-current={active}
                   onClick={() => goTo(position)}
                   className={cn('HeroSlideshow__bar flex h-11 w-full items-center', CONTROL_FOCUS)}
@@ -133,7 +134,7 @@ export const HeroSlideshow = ({ banners, intervalMs = 5000 }: HeroSlideshowProps
             CONTROL_FOCUS,
           )}
         >
-          {playing ? copy.hero.pause : copy.hero.play}
+          {playing ? t('pause') : t('play')}
         </button>
       </div>
     </section>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import type { NavItem, SocialLink } from '@/config/site';
-import { copy } from '@/content/copy/vi';
 
 interface SiteFooterProps {
   policies: NavItem[];
@@ -14,13 +14,14 @@ const LINK_CLASSES =
 const HEADING_CLASSES = 'SiteFooter__heading text-ink-muted mb-2 text-xs tracking-wide uppercase';
 
 export const SiteFooter = ({ policies, contactEmail, socials }: SiteFooterProps) => {
+  const t = useTranslations();
   const hasSocials = socials.length > 0;
 
   return (
     <footer className="SiteFooter border-line mt-24 overflow-hidden border-t">
       <div className="SiteFooter__columns mx-auto grid max-w-screen-2xl gap-8 px-4 py-12 text-sm md:grid-cols-3 md:px-8">
         <section className="SiteFooter__group">
-          <h2 className={HEADING_CLASSES}>{copy.footer.policyLabel}</h2>
+          <h2 className={HEADING_CLASSES}>{t('footer.policyLabel')}</h2>
           <ul className="SiteFooter__list flex flex-col gap-2">
             {policies.map((item) => (
               <li key={item.href}>
@@ -33,7 +34,7 @@ export const SiteFooter = ({ policies, contactEmail, socials }: SiteFooterProps)
         </section>
         {contactEmail && (
           <section className="SiteFooter__group">
-            <h2 className={HEADING_CLASSES}>{copy.footer.emailLabel}</h2>
+            <h2 className={HEADING_CLASSES}>{t('footer.emailLabel')}</h2>
             <a href={`mailto:${contactEmail}`} className={`SiteFooter__link ${LINK_CLASSES}`}>
               {contactEmail}
             </a>
@@ -41,7 +42,7 @@ export const SiteFooter = ({ policies, contactEmail, socials }: SiteFooterProps)
         )}
         {hasSocials && (
           <section className="SiteFooter__group">
-            <h2 className={HEADING_CLASSES}>{copy.footer.socialLabel}</h2>
+            <h2 className={HEADING_CLASSES}>{t('footer.socialLabel')}</h2>
             <ul className="SiteFooter__list flex flex-col gap-2">
               {socials.map((social) => (
                 <li key={social.href}>
@@ -63,7 +64,7 @@ export const SiteFooter = ({ policies, contactEmail, socials }: SiteFooterProps)
         aria-hidden="true"
         className="SiteFooter__wordmark px-2 text-[14.5vw] leading-[0.8] font-extrabold tracking-tighter whitespace-nowrap uppercase"
       >
-        {copy.site.name}
+        {t('site.name')}
       </p>
     </footer>
   );

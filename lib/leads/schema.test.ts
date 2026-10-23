@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { copy } from '@/content/copy/vi';
 import { contactFormSchema, notifyFormSchema, toFieldErrors } from '@/lib/leads/schema';
+import messages from '@/messages/vi.json';
 
-const { errors } = copy.forms;
+// The schema returns message keys; the form components translate them.
+const errors = Object.fromEntries(
+  Object.keys(messages.forms.errors).map((key) => [key, `forms.errors.${key}`]),
+) as Record<keyof typeof messages.forms.errors, string>;
 
 const VALID_CONTACT = {
   purpose: 'order',
@@ -109,5 +112,29 @@ describe('notifyFormSchema', () => {
     expect(notifyErrors({ productSlug: 'am-ban', email: 'a@example.com' })).toEqual({
       consent: errors.consentRequired,
     });
+  });
+});
+
+describe('error messages', () => {
+  it('are keys that exist in the messages', () => {
+    const results = [
+      contactFormSchema.safeParse({ purpose: 'spam', quantity: '0', message: 'x'.repeat(1001) }),
+      contactFormSchema.safeParse({ ...VALID_CONTACT, email: 'khach@', phone: '12345' }),
+      notifyFormSchema.safeParse({ productSlug: '', email: '', phone: '' }),
+      notifyFormSchema.safeParse({ productSlug: 'x'.repeat(81), email: 'a@example.com' }),
+    ];
+    const keys = results.flatMap((result) =>
+      result.success ? [] : Object.values(toFieldErrors(result.error)),
+    );
+    expect(keys.length).toBeGreaterThan(0);
+    for (const key of keys) {
+      const value = key
+        .split('.')
+        .reduce<unknown>(
+          (node, part) => (node as Record<string, unknown> | undefined)?.[part],
+          messages,
+        );
+      expect(typeof value, key).toBe('string');
+    }
   });
 });

@@ -1,7 +1,8 @@
-import { render, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { expect, it } from 'vitest';
 
 import { SiteHeader } from '@/components/layout/SiteHeader';
+import { renderWithIntl } from '@/test/renderWithIntl';
 
 const nav = [
   { href: '/about', label: 'Giới thiệu' },
@@ -9,7 +10,7 @@ const nav = [
 ];
 
 it('renders a banner with the main navigation', () => {
-  render(<SiteHeader nav={nav} />);
+  renderWithIntl(<SiteHeader nav={nav} />);
   const banner = screen.getByRole('banner');
   const navigation = within(banner).getByRole('navigation', { name: 'Điều hướng chính' });
   expect(within(navigation).getByRole('link', { name: 'Giới thiệu' })).toHaveAttribute(
@@ -24,6 +25,6 @@ it('renders a banner with the main navigation', () => {
 });
 
 it('does not render a language switch', () => {
-  render(<SiteHeader nav={nav} />);
+  renderWithIntl(<SiteHeader nav={nav} />);
   expect(screen.queryByText(/^(VI|EN)$/)).not.toBeInTheDocument();
 });

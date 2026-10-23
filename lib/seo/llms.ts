@@ -1,10 +1,11 @@
 import 'server-only';
 
+import { createTranslator } from 'next-intl';
+
 import { siteConfig } from '@/config/site';
-import { copy } from '@/content/copy/vi';
+import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
 import { getAllSlugs, getProductBySlug } from '@/lib/catalog';
 import { formatPriceVND } from '@/lib/catalog/format';
-import { presentStatus } from '@/lib/catalog/status';
 import { siteUrl } from '@/lib/seo/metadata';
 
 const link = (label: string, path: string, note?: string): string =>
@@ -12,29 +13,35 @@ const link = (label: string, path: string, note?: string): string =>
 
 /** Site index for language models, in the llmstxt.org format. */
 export const buildLlmsTxt = (): string => {
+  // A translator because the policy links carry dotted message keys.
+  const t = createTranslator({
+    locale: DEFAULT_LOCALE,
+    messages: getMessagesFor(DEFAULT_LOCALE),
+  });
+
   const products = getAllSlugs().flatMap((slug) => {
     const product = getProductBySlug(slug);
     if (!product) return [];
-    const note = `${formatPriceVND(product.priceVND)}, ${presentStatus(product.status).label}`;
+    const note = `${formatPriceVND(product.priceVND)}, ${t(`product.status.${product.status}`)}`;
     return [link(product.name.vi, `/products/${slug}`, note)];
   });
 
   const pages = [
-    link(copy.pages.about.title, '/about', copy.pages.about.description),
-    link(copy.pages.contact.title, '/contact', copy.pages.contact.description),
-    ...siteConfig.policies.map((policy) => link(policy.label, policy.href)),
+    link(t('pages.about.title'), '/about', t('pages.about.description')),
+    link(t('pages.contact.title'), '/contact', t('pages.contact.description')),
+    ...siteConfig.policies.map((policy) => link(t(policy.labelKey), policy.href)),
   ];
 
   return [
-    `# ${copy.site.name}`,
+    `# ${t('site.name')}`,
     '',
-    `> ${copy.pages.home.description}`,
+    `> ${t('pages.home.description')}`,
     '',
-    '## Sản phẩm',
+    `## ${t('llms.products')}`,
     '',
     ...products,
     '',
-    '## Trang',
+    `## ${t('llms.pages')}`,
     '',
     ...pages,
     '',

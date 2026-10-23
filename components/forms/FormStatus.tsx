@@ -1,14 +1,16 @@
+import { useTranslations } from 'next-intl';
 import type { ReactNode, Ref } from 'react';
 
 import { fieldId } from '@/components/forms/Field';
-import { copy } from '@/content/copy/vi';
 
 const LINK = 'underline underline-offset-4';
 
 interface FormErrorSummaryProps {
   ref?: Ref<HTMLDivElement>;
   idPrefix: string;
+  /** Translated first error per field. */
   fieldErrors?: Record<string, string>;
+  /** Translated form-level message. */
   message?: string;
 }
 
@@ -19,6 +21,7 @@ export const FormErrorSummary = ({
   fieldErrors,
   message,
 }: FormErrorSummaryProps) => {
+  const t = useTranslations('forms');
   const entries = Object.entries(fieldErrors ?? {});
   const headingId = `${idPrefix}-error-summary`;
 
@@ -31,7 +34,7 @@ export const FormErrorSummary = ({
       className="FormErrorSummary border-error border-2 p-4 focus-visible:outline-none"
     >
       <p id={headingId} className="FormErrorSummary__title text-error font-medium">
-        {entries.length > 0 ? copy.forms.errorSummary : message}
+        {entries.length > 0 ? t('errorSummary') : message}
       </p>
       {entries.length > 0 && (
         <ul className="FormErrorSummary__list mt-2 flex flex-col gap-1 text-sm leading-6">
@@ -49,19 +52,22 @@ export const FormErrorSummary = ({
 };
 
 /** Shown instead of the submit button when email or rate limiting is not configured. */
-export const FormDisabledNote = ({ contactEmail }: { contactEmail?: string }) => (
-  <div className="FormDisabledNote border-ink border p-4 text-sm leading-6">
-    <p>{copy.forms.disabled}</p>
-    {contactEmail && (
-      <p>
-        {copy.forms.disabledEmail}{' '}
-        <a href={`mailto:${contactEmail}`} className={LINK}>
-          {contactEmail}
-        </a>
-      </p>
-    )}
-  </div>
-);
+export const FormDisabledNote = ({ contactEmail }: { contactEmail?: string }) => {
+  const t = useTranslations('forms');
+  return (
+    <div className="FormDisabledNote border-ink border p-4 text-sm leading-6">
+      <p>{t('disabled')}</p>
+      {contactEmail && (
+        <p>
+          {t('disabledEmail')}{' '}
+          <a href={`mailto:${contactEmail}`} className={LINK}>
+            {contactEmail}
+          </a>
+        </p>
+      )}
+    </div>
+  );
+};
 
 interface FormSuccessProps {
   ref?: Ref<HTMLDivElement>;
@@ -82,9 +88,18 @@ export const FormSuccess = ({ ref, title, children }: FormSuccessProps) => (
 );
 
 /** Off-screen honeypot: hidden from people and assistive tech, filled by naive bots. */
-export const Honeypot = ({ idPrefix, name }: { idPrefix: string; name: string }) => (
-  <div aria-hidden="true" className="Honeypot absolute -left-[9999px] h-px w-px overflow-hidden">
-    <label htmlFor={fieldId(idPrefix, name)}>{copy.forms.honeypotLabel}</label>
-    <input type="text" id={fieldId(idPrefix, name)} name={name} tabIndex={-1} autoComplete="off" />
-  </div>
-);
+export const Honeypot = ({ idPrefix, name }: { idPrefix: string; name: string }) => {
+  const t = useTranslations('forms');
+  return (
+    <div aria-hidden="true" className="Honeypot absolute -left-[9999px] h-px w-px overflow-hidden">
+      <label htmlFor={fieldId(idPrefix, name)}>{t('honeypotLabel')}</label>
+      <input
+        type="text"
+        id={fieldId(idPrefix, name)}
+        name={name}
+        tabIndex={-1}
+        autoComplete="off"
+      />
+    </div>
+  );
+};

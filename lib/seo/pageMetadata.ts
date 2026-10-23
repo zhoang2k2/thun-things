@@ -2,7 +2,7 @@ import 'server-only';
 
 import type { Metadata } from 'next';
 
-import { copy } from '@/content/copy/vi';
+import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
 import { listProducts } from '@/lib/catalog';
 import { buildMetadata } from '@/lib/seo/metadata';
 
@@ -12,12 +12,13 @@ import { buildMetadata } from '@/lib/seo/metadata';
  */
 export const homeMetadata = (pageParam: string | string[] | undefined): Metadata => {
   const { page } = listProducts(pageParam);
-  const { description } = copy.pages.home;
+  const { pages, pagination, site } = getMessagesFor(DEFAULT_LOCALE);
+  const { description } = pages.home;
   if (page === 1) return buildMetadata({ description, path: '/' });
 
-  const label = `${copy.pagination.page} ${page}`;
+  const label = `${pagination.page} ${page}`;
   return buildMetadata({
-    title: { absolute: `${label} · ${copy.site.name}` },
+    title: { absolute: `${label} · ${site.name}` },
     description: `${description} ${label}.`,
     path: `/?page=${page}`,
   });

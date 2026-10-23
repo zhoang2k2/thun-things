@@ -1,19 +1,19 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ContactForm } from '@/components/forms/ContactForm';
-import { copy } from '@/content/copy/vi';
 import type { FormState } from '@/lib/leads/formState';
 import type { ContactFormPrefill } from '@/lib/leads/prefill';
+import { messages, renderWithClientIntl } from '@/test/renderWithIntl';
 
 const submitContact = vi.hoisted(() =>
   vi.fn<(previous: FormState, formData: FormData) => Promise<FormState>>(),
 );
 vi.mock('@/lib/leads/actions', () => ({ submitContact }));
 
-const { forms } = copy;
+const { forms } = messages;
 
 const prefillOf = (prefill: ContactFormPrefill) => Promise.resolve(prefill);
 const ORDER = prefillOf({ purpose: 'order' });
@@ -21,7 +21,7 @@ const ORDER = prefillOf({ purpose: 'order' });
 // The prefill promise suspends the first render; awaiting act lets it resolve.
 const renderForm = async (ui: ReactElement) => {
   await act(async () => {
-    render(ui);
+    renderWithClientIntl(ui);
   });
 };
 
@@ -82,7 +82,7 @@ describe('ContactForm', () => {
   it('shows field errors linked to their inputs and focuses the summary', async () => {
     submitContact.mockResolvedValue({
       status: 'error',
-      fieldErrors: { email: forms.errors.emailInvalid, phone: forms.errors.phoneRequired },
+      fieldErrors: { email: 'forms.errors.emailInvalid', phone: 'forms.errors.phoneRequired' },
       values: { email: 'khach@', name: 'Lan', purpose: 'order' },
     });
     await renderForm(<ContactForm enabled prefill={ORDER} />);
@@ -106,7 +106,7 @@ describe('ContactForm', () => {
   });
 
   it('shows a form-level message such as the rate limit', async () => {
-    submitContact.mockResolvedValue({ status: 'error', message: forms.rateLimited, values: {} });
+    submitContact.mockResolvedValue({ status: 'error', message: 'forms.rateLimited', values: {} });
     await renderForm(<ContactForm enabled prefill={ORDER} />);
     await userEvent.click(screen.getByRole('button', { name: forms.submit }));
     expect(await screen.findByText(forms.rateLimited)).toBeInTheDocument();

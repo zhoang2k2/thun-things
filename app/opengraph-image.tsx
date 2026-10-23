@@ -1,7 +1,7 @@
-import { copy } from '@/content/copy/vi';
+import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
 import { OG_SIZE, renderWordmarkImage } from '@/lib/seo/ogImage';
 
-export const alt = copy.site.name;
+export const alt = getMessagesFor(DEFAULT_LOCALE).site.name;
 export const size = OG_SIZE;
 export const contentType = 'image/png';
 

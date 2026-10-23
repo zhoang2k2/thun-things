@@ -2,12 +2,14 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import { Bricolage_Grotesque } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, getTranslations } from 'next-intl/server';
 
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SkipLink } from '@/components/layout/SkipLink';
 import { siteConfig } from '@/config/site';
-import { copy } from '@/content/copy/vi';
+import { pickClientMessages } from '@/i18n/clientMessages';
 import { buildMetadata } from '@/lib/seo/metadata';
 
 const grotesk = Bricolage_Grotesque({
@@ -16,25 +18,38 @@ const grotesk = Bricolage_Grotesque({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  ...buildMetadata({ description: copy.site.description, path: '/' }),
-  title: { default: copy.site.name, template: `%s · ${copy.site.name}` },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('site');
+  return {
+    ...buildMetadata({ description: t('description'), path: '/' }),
+    title: { default: t('name'), template: `%s · ${t('name')}` },
+  };
+}
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+export default async function RootLayout({ children }: LayoutProps<'/'>) {
+  const [messages, t] = await Promise.all([getMessages(), getTranslations()]);
+
   return (
     <html lang="vi" className={grotesk.variable}>
       <body>
-        <SkipLink />
-        <SiteHeader nav={siteConfig.nav} />
-        <main id="main" tabIndex={-1} className="Main focus:outline-none">
-          {children}
-        </main>
-        <SiteFooter
-          policies={siteConfig.policies}
-          contactEmail={siteConfig.contactEmail}
-          socials={siteConfig.socials}
-        />
+        {/* Only the namespaces Client Components translate reach the browser. */}
+        <NextIntlClientProvider messages={pickClientMessages(messages)}>
+          <SkipLink />
+          <SiteHeader
+            nav={siteConfig.nav.map(({ href, labelKey }) => ({ href, label: t(labelKey) }))}
+          />
+          <main id="main" tabIndex={-1} className="Main focus:outline-none">
+            {children}
+          </main>
+          <SiteFooter
+            policies={siteConfig.policies.map(({ href, labelKey }) => ({
+              href,
+              label: t(labelKey),
+            }))}
+            contactEmail={siteConfig.contactEmail}
+            socials={siteConfig.socials}
+          />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

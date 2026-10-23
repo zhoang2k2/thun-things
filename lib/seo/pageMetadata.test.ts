@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { copy } from '@/content/copy/vi';
 import { getAllSlugs, getProductBySlug } from '@/lib/catalog';
 import { homeMetadata } from '@/lib/seo/pageMetadata';
+import messages from '@/messages/vi.json';
 
 import { generateMetadata as productMetadata } from '@/app/products/[slug]/page';
 
@@ -49,7 +49,7 @@ describe('description length', () => {
   };
 
   it('keeps every page description within 50-160 characters and unique', () => {
-    const descriptions = Object.values(copy.pages).map((page) => page.description);
+    const descriptions = Object.values(messages.pages).map((page) => page.description);
     descriptions.forEach(inRange);
     expect(new Set(descriptions).size).toBe(descriptions.length);
   });

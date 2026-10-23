@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
 import { HeroSlideshow } from '@/components/home/HeroSlideshow';
@@ -7,12 +8,9 @@ import { ProductGrid } from '@/components/product/ProductGrid';
 import { ProductGridSkeleton } from '@/components/product/ProductGridSkeleton';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { banners } from '@/content/banners';
-import { copy } from '@/content/copy/vi';
 import { listProducts, toCardModel } from '@/lib/catalog';
 import { organizationJsonLd, websiteJsonLd } from '@/lib/seo/jsonLd';
 import { homeMetadata } from '@/lib/seo/pageMetadata';
-
-const page = copy.pages.home;
 
 // Metadata reads `searchParams` (request data). The grid already streams inside Suspense below,
 // so the shell stays prerendered and metadata streams in with it.
@@ -35,15 +33,16 @@ const ProductListing = async ({ searchParams }: Pick<PageProps<'/'>, 'searchPara
 };
 
 export default function HomePage({ searchParams }: PageProps<'/'>) {
+  const t = useTranslations();
   return (
     <div className="HomePage">
       <JsonLd data={organizationJsonLd()} />
       <JsonLd data={websiteJsonLd()} />
-      <h1 className="sr-only">{page.title}</h1>
+      <h1 className="sr-only">{t('pages.home.title')}</h1>
       <HeroSlideshow banners={banners} />
       <section aria-labelledby="products-heading" className="HomePage__products">
         <h2 id="products-heading" className="sr-only">
-          {copy.product.gridHeading}
+          {t('product.gridHeading')}
         </h2>
         <Suspense fallback={<ProductGridSkeleton />}>
           <ProductListing searchParams={searchParams} />

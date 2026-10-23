@@ -1,9 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
-import { copy } from '@/content/copy/vi';
 import type { ImageAsset } from '@/lib/catalog/schema';
 
 const plate = (value: number) => String(value).padStart(2, '0');
@@ -11,6 +11,7 @@ const plate = (value: number) => String(value).padStart(2, '0');
 // V-11 (P2-10): stacked images on desktop; on mobile a swipeable, snap-scrolling carousel with a
 // plate-number counter so the product info and order bar are reached quickly.
 export const ProductGallery = ({ images }: { images: ImageAsset[] }) => {
+  const t = useTranslations('product');
   const trackRef = useRef<HTMLUListElement>(null);
   const [current, setCurrent] = useState(0);
 
@@ -23,7 +24,7 @@ export const ProductGallery = ({ images }: { images: ImageAsset[] }) => {
   return (
     <section
       aria-roledescription="carousel"
-      aria-label={copy.product.galleryLabel}
+      aria-label={t('galleryLabel')}
       className="ProductGallery relative"
     >
       <ul

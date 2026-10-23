@@ -1,6 +1,6 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
-import { copy } from '@/content/copy/vi';
 import { cn } from '@/lib/cn';
 
 interface PaginationProps {
@@ -15,18 +15,18 @@ const ITEM_CLASSES =
 
 // V-09: numbered pages with text previous/next links; page 1 lives at `/`.
 export const Pagination = ({ page, pageCount }: PaginationProps) => {
+  const t = useTranslations('pagination');
   if (pageCount < 2) return null;
 
   const pages = Array.from({ length: pageCount }, (_, position) => position + 1);
-  const { pagination } = copy;
 
   return (
-    <nav aria-label={pagination.label} className="Pagination flex justify-center px-4 py-12">
+    <nav aria-label={t('label')} className="Pagination flex justify-center px-4 py-12">
       <ul className="Pagination__list flex items-center gap-2">
         {page > 1 && (
           <li>
             <Link href={pageHref(page - 1)} className={cn(ITEM_CLASSES, 'hover:underline')}>
-              {pagination.previous}
+              {t('previous')}
             </Link>
           </li>
         )}
@@ -36,7 +36,7 @@ export const Pagination = ({ page, pageCount }: PaginationProps) => {
             <li key={target}>
               <Link
                 href={pageHref(target)}
-                aria-label={`${pagination.page} ${target}`}
+                aria-label={`${t('page')} ${target}`}
                 aria-current={current ? 'page' : undefined}
                 className={cn(
                   ITEM_CLASSES,
@@ -51,7 +51,7 @@ export const Pagination = ({ page, pageCount }: PaginationProps) => {
         {page < pageCount && (
           <li>
             <Link href={pageHref(page + 1)} className={cn(ITEM_CLASSES, 'hover:underline')}>
-              {pagination.next}
+              {t('next')}
             </Link>
           </li>
         )}

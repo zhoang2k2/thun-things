@@ -1,8 +1,12 @@
-import { copy } from '@/content/copy/vi';
-
 export interface NavItem {
   href: string;
   label: string;
+}
+
+/** A link whose label is a message key, translated where it is rendered. */
+export interface NavLink {
+  href: string;
+  labelKey: 'nav.about' | 'nav.contact' | 'footer.privacy' | 'footer.returns';
 }
 
 export interface SocialLink {
@@ -11,28 +15,26 @@ export interface SocialLink {
 }
 
 interface SiteConfig {
-  name: string;
   /** Owner: set the shop email to show it in the footer. Hidden while undefined. */
   contactEmail?: string;
   /** Owner: add Instagram / TikTok / Facebook links. Hidden while empty. */
   socials: SocialLink[];
   /** Owner: Zalo / Messenger / Instagram DM link for ordering (V-20). Contact page until set. */
   chatChannel?: { label: string; href: string };
-  nav: NavItem[];
-  policies: NavItem[];
+  nav: NavLink[];
+  policies: NavLink[];
 }
 
 export const siteConfig: SiteConfig = {
-  name: copy.site.name,
   contactEmail: undefined,
   socials: [],
   chatChannel: undefined,
   nav: [
-    { href: '/about', label: copy.nav.about },
-    { href: '/contact', label: copy.nav.contact },
+    { href: '/about', labelKey: 'nav.about' },
+    { href: '/contact', labelKey: 'nav.contact' },
   ],
   policies: [
-    { href: '/policy/privacy', label: copy.footer.privacy },
-    { href: '/policy/returns', label: copy.footer.returns },
+    { href: '/policy/privacy', labelKey: 'footer.privacy' },
+    { href: '/policy/returns', labelKey: 'footer.returns' },
   ],
 };
