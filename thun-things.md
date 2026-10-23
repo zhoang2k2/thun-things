@@ -15,6 +15,8 @@
 
 ---
 
+> **Superseded (2026-10-23) [USER]:** UI Direction v3 in [`docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md`](./docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md) replaces v2 wherever they conflict (no `/shop` page, image-only grid with hover card, banner slideshow hero, sticky white header).
+
 ## UI Direction v2 (2026-10-14) — supersedes conflicting UI text below
 
 The owner revisited the UI mindset through a user-journey Q&A (what the user sees, can do, and how they interact). Where older sections conflict with this block, **this block wins**. Items marked [USER] were chosen by the owner; [PROPOSED] are agent additions awaiting confirmation.
