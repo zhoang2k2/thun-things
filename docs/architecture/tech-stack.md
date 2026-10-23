@@ -22,7 +22,7 @@ All packages are installed in P0 and pinned to exact versions (`.npmrc` `save-ex
 | `clsx`, `tailwind-merge`                         | 2.1.1, 3.7.0  | P1       | Class composition                                                          |
 | `resend`                                         | 6.34.1        | P3       | Contact form email                                                         |
 | `@upstash/ratelimit`, `@upstash/redis`           | 2.2.0, 1.39.0 | P3       | Serverless rate limiting                                                   |
-| `next-intl`                                      | 4.14.9        | P5       | `/vi`, `/en` routing and messages                                          |
+| `next-intl`                                      | 4.14.9        | P5       | `/vi`, `/en` routing, typed messages and localized metadata (P5; ADR-008)  |
 | `@next/third-parties`                            | 16.4.2        | P6       | GA4 loader (after consent)                                                 |
 | `@anthropic-ai/sdk`                              | 1.1.0         | P8       | Claude rationale for quiz results                                          |
 
