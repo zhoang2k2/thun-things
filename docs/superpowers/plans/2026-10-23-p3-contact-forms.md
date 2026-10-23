@@ -112,9 +112,9 @@
 
 ## P3 Acceptance (gate for P4)
 
-- [ ] CI green; evidence in the PR.
-- [ ] Owner receives a real notification email from the Vercel preview (owner verifies; agents cannot use real credentials).
-- [ ] Honeypot and rate limit tested; forms show a clear disabled state when configuration is missing.
+- [x] CI green; evidence in the PR.
+- [x] Owner receives a real notification email from the Vercel preview (owner confirmed 2026-10-23; HTML formatting moved to P9, Sheet sink to P10).
+- [x] Honeypot and rate limit tested; forms show a clear disabled state when configuration is missing.
 - [ ] Owner merged the PR; roadmap P3 = `DONE`.
 
 ## Implementation notes (2026-10-23)

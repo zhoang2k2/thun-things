@@ -53,4 +53,4 @@ Only the variables already in `.env.example` are used: `RESEND_API_KEY`, `LEADS_
 
 ## Out of scope
 
-Chat channel integration (owner link only, V-20), analytics events (P6), i18n (P5), storing leads anywhere but email (P10).
+Chat channel integration (owner link only, V-20), analytics events (P6), i18n (P5), HTML email templates (P9), storing leads anywhere but email, e.g. Google Sheet (P10).
