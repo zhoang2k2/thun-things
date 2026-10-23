@@ -117,6 +117,21 @@ export const copy = {
       success: 'Đã ghi nhận. Thun Things sẽ báo bạn khi có hàng.',
     },
   },
+  errors: {
+    notFound: {
+      title: 'Không tìm thấy trang',
+      description:
+        'Trang bạn đang tìm không tồn tại hoặc đã được chuyển đi. Quay về trang chủ Thun Things hoặc liên hệ với chúng tôi.',
+      body: 'Trang này không tồn tại hoặc đã được chuyển đi. Bạn có thể quay về trang chủ hoặc nhắn cho chúng tôi.',
+      home: 'Về trang chủ',
+      contact: 'Liên hệ',
+    },
+    generic: {
+      title: 'Có lỗi xảy ra',
+      body: 'Trang chưa tải được. Bạn thử lại sau ít giây, hoặc quay về trang chủ.',
+      retry: 'Thử lại',
+    },
+  },
   policy: {
     updated: 'Cập nhật ngày',
     draft: 'Bản nháp: nội dung chính thức sẽ được cập nhật trước khi mở bán.',
