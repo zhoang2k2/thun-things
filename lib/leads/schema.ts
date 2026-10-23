@@ -2,18 +2,18 @@ import { z } from 'zod';
 
 import { copy } from '@/content/copy/vi';
 import { normalizeVietnamesePhone } from '@/lib/leads/phone';
+import { LEAD_PURPOSES } from '@/lib/leads/purposes';
 
 // Form schemas for the lead server functions. Inputs come from FormData, so every field
 // arrives as a string or is missing; blank optional fields become undefined.
 
-// Client bundles run this schema too. Zod's JIT probe calls `Function("")`, which a CSP without
-// 'unsafe-eval' reports as a violation even though the throw is caught, so opt out of JIT.
+// Zod's JIT probe calls `Function("")`, which a CSP without 'unsafe-eval' reports as a violation
+// even though the throw is caught. No client component imports this module any more (client code
+// takes `LEAD_PURPOSES` from the zod-free `purposes` module), so this is defence in depth in case
+// a future client import brings the schema back into the browser.
 z.config({ jitless: true });
 
 const { errors } = copy.forms;
-
-export const LEAD_PURPOSES = ['order', 'notify', 'other'] as const;
-export type LeadPurpose = (typeof LEAD_PURPOSES)[number];
 
 const toText = (value: unknown): string => (typeof value === 'string' ? value.trim() : '');
 const toOptionalText = (value: unknown): string | undefined => toText(value) || undefined;

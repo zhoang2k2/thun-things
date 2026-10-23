@@ -8,7 +8,7 @@ import { choiceClasses, controlClasses, type FieldControlProps } from '@/compone
 import { copy } from '@/content/copy/vi';
 import { cn } from '@/lib/cn';
 import type { ContactFormPrefill } from '@/lib/leads/prefill';
-import { LEAD_PURPOSES, type LeadPurpose } from '@/lib/leads/schema';
+import { LEAD_PURPOSES, type LeadPurpose } from '@/lib/leads/purposes';
 
 // Contact form parts that depend on `?product=&purpose=`. Each renders inside <Suspense> whose
 // fallback is the same control without a product, so the form works before the query streams
