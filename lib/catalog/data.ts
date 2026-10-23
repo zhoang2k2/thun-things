@@ -156,7 +156,7 @@ export const rawProducts = [
     slug: 'mua-nang',
     name: { vi: 'Mùa Nắng', en: 'Dry Season' },
     description: {
-      vi: 'Vệt vàng nghệ loang như nắng trưa trên tường vôi.',
+      vi: 'Vệt vàng nghệ loang như nắng trưa trên bức tường vôi cũ.',
       en: 'A turmeric smear like noon light on a limewashed wall.',
     },
     priceVND: 360000,
@@ -210,7 +210,7 @@ export const rawProducts = [
     slug: 'dem-trang',
     name: { vi: 'Đêm Trắng', en: 'White Night' },
     description: {
-      vi: 'Áo đen với một chấm trăng duy nhất ở vai phải.',
+      vi: 'Áo đen với một chấm trăng nhỏ duy nhất ở vai phải áo.',
       en: 'A black tee with a single moon dot on the right shoulder.',
     },
     priceVND: 330000,

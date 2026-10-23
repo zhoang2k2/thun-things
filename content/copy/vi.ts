@@ -124,37 +124,44 @@ export const copy = {
   pages: {
     home: {
       title: 'Thun Things',
-      description: 'Áo thun Thun Things.',
+      description:
+        'Thun Things bán áo thun nghệ thuật in số lượng nhỏ. Xem các mẫu áo và đặt mua qua trang Liên hệ hoặc Zalo.',
       heroAlt: 'Banner Thun Things',
     },
     about: {
       title: 'Giới thiệu',
-      description: 'Câu chuyện của Thun Things.',
+      description:
+        'Câu chuyện của Thun Things: những chiếc áo thun nghệ thuật được làm với số lượng nhỏ, từng mẫu một.',
     },
     contactSent: {
       title: 'Đã nhận yêu cầu',
-      description: 'Thun Things đã nhận yêu cầu của bạn.',
+      description:
+        'Thun Things đã nhận yêu cầu của bạn và sẽ liên hệ lại qua email hoặc Zalo trong thời gian sớm nhất.',
       body: 'Cảm ơn bạn. Thun Things sẽ liên hệ lại qua email hoặc Zalo trong 1–2 ngày.',
       back: 'Về trang chủ',
     },
     contactRetry: {
       title: 'Chưa gửi được',
-      description: 'Yêu cầu chưa được gửi.',
+      description:
+        'Yêu cầu của bạn chưa được gửi đi. Vui lòng kiểm tra lại thông tin liên hệ rồi thử gửi lại một lần nữa.',
       body: 'Vui lòng kiểm tra email, số điện thoại / Zalo và ô đồng ý chính sách bảo mật, rồi gửi lại. Nếu vẫn lỗi, hãy thử lại sau ít phút.',
       back: 'Quay lại form liên hệ',
     },
     contact: {
       title: 'Liên hệ',
-      description: 'Liên hệ đặt áo Thun Things.',
+      description:
+        'Liên hệ Thun Things để đặt áo thun, hỏi size hoặc cần hỗ trợ. Chúng mình trả lời qua email hoặc Zalo.',
       body: 'Đặt áo, hỏi size hay hỏi bất cứ điều gì. Thun Things trả lời qua email hoặc Zalo trong 1–2 ngày.',
     },
     privacy: {
       title: 'Chính sách bảo mật',
-      description: 'Cách Thun Things xử lý thông tin của bạn.',
+      description:
+        'Chính sách bảo mật của Thun Things: cách chúng mình thu thập, sử dụng và bảo vệ thông tin của bạn.',
     },
     returns: {
       title: 'Chính sách đổi trả',
-      description: 'Điều kiện đổi trả và đặt trước tại Thun Things.',
+      description:
+        'Chính sách đổi trả của Thun Things: điều kiện đổi trả áo và quy định khi đặt trước các mẫu số lượng nhỏ.',
     },
   },
 } as const;
