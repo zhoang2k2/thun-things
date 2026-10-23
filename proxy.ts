@@ -42,8 +42,10 @@ const legacyTarget = (pathname: string): string | undefined => {
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  // `/` → `/vi` (P5-1: no language detection).
-  if (pathname === '/') return handleI18nRouting(request);
+  // `/` → `/vi`, query kept (P5-1: no language detection, so the redirect is permanent).
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL(`/${routing.defaultLocale}${search}`, request.url), 308);
+  }
 
   const [, first, ...rest] = pathname.split('/');
   if (isLocale(first)) {
@@ -64,8 +66,10 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Everything but Next internals, metadata routes and files with an extension.
+  // Everything but Next internals and the unprefixed metadata routes. Dotted paths are not
+  // excluded: `/vi/products/a.b` must still reach the unknown-product 404 and `/fr.x` the site 404
+  // (there is no public/ folder to serve files from).
   matcher: [
-    '/((?!_next/|_vercel/|robots\\.txt|sitemap\\.xml|llms\\.txt|manifest\\.webmanifest|icon\\.svg|apple-icon|opengraph-image|.*\\..*).*)',
+    '/((?!_next/|__nextjs|_vercel/|robots\\.txt$|sitemap\\.xml$|llms\\.txt$|manifest\\.webmanifest$|icon\\.svg$|apple-icon$|opengraph-image$).*)',
   ],
 };

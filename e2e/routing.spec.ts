@@ -13,10 +13,9 @@ const firstHop = async (request: APIRequestContext, path: string) => {
   return { status: response.status(), target: target && `${target.pathname}${target.search}` };
 };
 
-test('/ redirects to /vi', async ({ request }) => {
-  const { status, target } = await firstHop(request, '/');
-  expect([307, 308]).toContain(status);
-  expect(target).toBe('/vi');
+test('/ redirects permanently to /vi, keeping the query', async ({ request }) => {
+  expect(await firstHop(request, '/')).toEqual({ status: 308, target: '/vi' });
+  expect(await firstHop(request, '/?page=2')).toEqual({ status: 308, target: '/vi?page=2' });
 });
 
 const LEGACY_LINKS = [
@@ -38,7 +37,21 @@ for (const path of LEGACY_LINKS) {
   });
 }
 
-for (const path of ['/fr', '/vi-VN', '/EN', '/fr/about', '/en/products/nope', '/products/nope']) {
+const NOT_FOUND_PATHS = [
+  '/fr',
+  '/vi-VN',
+  '/EN',
+  '/fr/about',
+  '/en/products/nope',
+  '/products/nope',
+  // Dotted paths still go through proxy.ts (unknown product, unknown locale).
+  '/vi/products/nope.html',
+  '/en/products/a.b',
+  '/fr.x',
+  '/fr.x/about',
+];
+
+for (const path of NOT_FOUND_PATHS) {
   test(`${path} is a 404 with the not-found page`, async ({ page, request }) => {
     expect((await firstHop(request, path)).status).toBe(404);
     const response = await page.goto(path);

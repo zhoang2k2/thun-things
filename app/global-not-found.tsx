@@ -18,16 +18,14 @@ export async function generateMetadata(): Promise<Metadata> {
     getTranslations('site'),
   ]);
   const title = `${t('title')} · ${site('name')}`;
-  return {
-    ...buildMetadata({
-      title: { absolute: title },
-      description: t('description'),
-      locale: routing.defaultLocale,
-      path: '/',
-    }),
-    // A missing page has no canonical URL.
-    alternates: null,
-  };
+  const { openGraph, ...metadata } = buildMetadata({
+    title: { absolute: title },
+    description: t('description'),
+    locale: routing.defaultLocale,
+    path: '/',
+  });
+  // A missing page has no URL of its own: no canonical, no `og:url`.
+  return { ...metadata, alternates: null, openGraph: { ...openGraph, url: undefined } };
 }
 
 export default function GlobalNotFound() {
