@@ -8,18 +8,27 @@ interface ImagePlaceholderProps {
   alt: string;
   width: number;
   height: number;
+  /** Fill the parent box instead of reserving the image's aspect ratio. */
+  fill?: boolean;
   className?: string;
 }
 
 // V-26: temporary stand-in for photos the owner has not supplied yet.
-export const ImagePlaceholder = ({ alt, width, height, className }: ImagePlaceholderProps) => (
+export const ImagePlaceholder = ({
+  alt,
+  width,
+  height,
+  fill,
+  className,
+}: ImagePlaceholderProps) => (
   <div
     role="img"
     aria-label={alt}
     // Runtime aspect ratio from the image's real dimensions.
-    style={{ aspectRatio: `${width} / ${height}` }}
+    style={fill ? undefined : { aspectRatio: `${width} / ${height}` }}
     className={cn(
-      'ImagePlaceholder bg-placeholder text-placeholder-ink flex w-full flex-col items-center justify-center gap-2',
+      'ImagePlaceholder bg-placeholder text-placeholder-ink flex flex-col items-center justify-center gap-2',
+      fill ? 'h-full w-full' : 'w-full',
       className,
     )}
   >

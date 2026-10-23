@@ -36,18 +36,18 @@ Applies roadmap rule R3 ([`docs/superpowers/plans/2026-10-22-roadmap.md`](../../
 - Edge states that a reviewer cannot easily reproduce: 404, empty, error, disabled form, reduced motion.
 - Docs-only or tooling-only PRs: no evidence; say so in one line.
 
-### How to capture (until `pnpm evidence` exists — planned in P2)
+### How to capture
 
-1. `pnpm build && pnpm start --port 3101` (a dedicated port; never reuse another project's server). Stop it afterwards.
-2. A Playwright script opens each scenario, takes a screenshot per step into `frames/<NN-feature>/`, and repeats a frame to hold on meaningful states.
-3. Assemble frames into GIFs (e.g. Pillow in a scratch virtualenv, ~140 ms per frame, 64-colour palette). Do not add image tooling to the project dependencies for this.
-4. Look at the frames before publishing; anything wrong becomes a fix or a "Known gaps" line.
+1. Edit `scripts/evidence/scenarios.mjs` for the phase: one `gif` scenario per feature (call `snap(hold)` after each meaningful step) and `png` scenarios for each new or changed page at 1440 / 390 px.
+2. `pnpm evidence` — builds, serves on port 3101 (never reuses another server), writes `evidence-out/` (git-ignored). GIFs are capped at 15 s automatically.
+3. **Review every file** (extract a few GIF frames if needed). Anything wrong becomes a fix or a "Known gaps" line.
 
 ### Where to host
 
-- Orphan branch **`evidence`**, one folder per PR: `pr-<number>/<NN-feature>.gif`, `pr-<number>/<page>-<desktop|mobile>.png`. Never merge it into `develop`.
-- Commit with plumbing (`git hash-object -w`, `git mktree`, `git commit-tree` with the previous `evidence` commit as parent, `git update-ref`) so the working tree is untouched, then push `evidence:evidence`.
-- Embed with raw URLs (the repo is public): `https://raw.githubusercontent.com/zhoang2k2/thun-things/evidence/pr-<n>/<file>`. Verify one URL returns `200 image/*` before editing the PR.
+- `pnpm evidence:publish <pr-number>` commits `evidence-out/` to the orphan **`evidence`** branch under `pr-<number>/` with git plumbing (working tree untouched; parent = current remote `evidence`), pushes it, and prints the Markdown evidence table. Set `EVIDENCE_COMMIT_TRAILER` to append the session's attribution trailer.
+- Never merge `evidence` into `develop`. The repo is public, so raw URLs render inline: `https://raw.githubusercontent.com/zhoang2k2/thun-things/evidence/pr-<n>/<file>`. Verify one URL returns `200 image/*` before editing the PR.
+- Order: open the PR → `pnpm evidence:publish <n>` → `gh pr edit <n> --body-file`.
+- When republishing over the same file names, append `?v=<short-head-sha>` to every evidence URL; `raw.githubusercontent.com` caches for several minutes.
 
 ## 5. PR description template
 

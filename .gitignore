@@ -49,3 +49,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# PR evidence output (published to the evidence branch, never committed here)
+/evidence-out/

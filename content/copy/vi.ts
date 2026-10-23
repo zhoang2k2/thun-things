@@ -23,6 +23,40 @@ export const copy = {
   media: {
     placeholderLabel: 'Image',
   },
+  pagination: {
+    label: 'Phân trang',
+    previous: 'Trước',
+    next: 'Sau',
+    page: 'Trang',
+  },
+  hero: {
+    label: 'Banner',
+    pause: 'Tạm dừng',
+    play: 'Tiếp tục',
+  },
+  product: {
+    gridHeading: 'Sản phẩm',
+    galleryLabel: 'Ảnh sản phẩm',
+    relatedHeading: 'Có thể bạn cũng thích',
+    details: {
+      sizes: 'Size',
+      material: 'Chất liệu',
+      care: 'Bảo quản',
+    },
+    status: {
+      available: 'Còn hàng',
+      limited: 'Số lượng giới hạn',
+      sold_out: 'Hết hàng',
+      coming_soon: 'Sắp ra mắt',
+      preorder: 'Đặt trước',
+    },
+    actions: {
+      order: 'Đặt mua',
+      preorder: 'Đặt trước',
+      askFirst: 'Hỏi trước',
+      notify: 'Báo khi có hàng',
+    },
+  },
   pages: {
     home: {
       title: 'Thun Things',

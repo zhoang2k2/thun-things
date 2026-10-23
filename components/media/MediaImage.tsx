@@ -11,6 +11,8 @@ interface MediaImageProps {
   sizes?: string;
   /** Next 16 replacement for `priority`; set on the LCP image only. */
   preload?: boolean;
+  /** Cover the positioned parent (hero banners) instead of keeping the intrinsic ratio. */
+  fill?: boolean;
   className?: string;
 }
 
@@ -22,10 +24,26 @@ export const MediaImage = ({
   height,
   sizes,
   preload,
+  fill,
   className,
 }: MediaImageProps) => {
   if (!src) {
-    return <ImagePlaceholder alt={alt} width={width} height={height} className={className} />;
+    return (
+      <ImagePlaceholder alt={alt} width={width} height={height} fill={fill} className={className} />
+    );
+  }
+
+  if (fill) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes ?? '100vw'}
+        preload={preload}
+        className={cn('MediaImage object-cover', className)}
+      />
+    );
   }
 
   return (

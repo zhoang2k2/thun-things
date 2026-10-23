@@ -14,6 +14,18 @@
 
   /* DR-1: no radius. Clears the whole radius scale. */
   --radius-*: initial;
+
+  /* Hero progress bar; duration is set per slideshow interval. */
+  --animate-hero-progress: hero-progress linear forwards;
+
+  @keyframes hero-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 }
 
 @theme inline {
@@ -31,6 +43,13 @@
 
   body {
     @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  /* Keep the footer clear of the mobile product order bar. */
+  @media (width < 48rem) {
+    body:has(.ProductOrderBar) {
+      padding-bottom: 5rem;
+    }
   }
 
   /* DR-1: browsers round native controls; force square corners. */
