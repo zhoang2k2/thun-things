@@ -35,20 +35,61 @@ test.describe('home grid', () => {
     await expect(card(page)).toContainText('₫');
   });
 
-  test('edge tiles do not overflow the viewport', async ({ page }) => {
+  test('the hovered image keeps its position and size inside a 16px frame', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    for (const index of [4, 7]) {
+    for (const index of [4, 5, 7]) {
       const tile = tiles(page).nth(index);
+      await tile.scrollIntoViewIfNeeded();
+      const before = await tile.boundingBox();
+      const neighbour = await tiles(page)
+        .nth(index === 7 ? 6 : index + 1)
+        .boundingBox();
       await tile.hover();
-      // The previous card may still be animating out, so scope to this tile.
       const tileCard = tile.getByTestId('product-hover-card');
       await expect(tileCard).toBeVisible();
-      const box = await tileCard.boundingBox();
-      expect(box!.x).toBeGreaterThanOrEqual(0);
-      expect(box!.x + box!.width).toBeLessThanOrEqual(1440);
+      await page.waitForTimeout(500);
+      const image = await tileCard.locator('.ProductHoverCard__image').boundingBox();
+      const cardBox = await tileCard.boundingBox();
+      for (const key of ['x', 'y', 'width', 'height'] as const) {
+        expect(Math.abs(image![key] - before![key])).toBeLessThanOrEqual(0.5);
+      }
+      expect(Math.abs(cardBox!.x - (before!.x - 16))).toBeLessThanOrEqual(0.5);
+      expect(Math.abs(cardBox!.y - (before!.y - 16))).toBeLessThanOrEqual(0.5);
+      expect(Math.abs(cardBox!.width - (before!.width + 32))).toBeLessThanOrEqual(0.5);
       expect(await horizontalOverflow(page)).toBe(0);
+      // Other cells never move.
+      expect(
+        await tiles(page)
+          .nth(index === 7 ? 6 : index + 1)
+          .boundingBox(),
+      ).toEqual(neighbour);
+      await page.mouse.move(720, 10);
     }
+  });
+
+  test('mobile shows one column and the card spans the screen', async ({ browser }) => {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      hasTouch: true,
+      isMobile: true,
+    });
+    const page = await context.newPage();
+    await page.goto('/');
+    const first = tiles(page).first();
+    const second = tiles(page).nth(1);
+    await second.waitFor(); // the grid streams in after the hero
+    const [a, b] = [await first.boundingBox(), await second.boundingBox()];
+    expect(a!.width).toBeCloseTo(390 - 32, 0);
+    expect(b!.y).toBeGreaterThan(a!.y);
+    await first.scrollIntoViewIfNeeded();
+    await first.getByRole('link').first().tap();
+    const tileCard = first.getByTestId('product-hover-card');
+    await expect(tileCard).toBeVisible();
+    const cardBox = await tileCard.boundingBox();
+    expect(cardBox!.x).toBeCloseTo(0, 0);
+    expect(cardBox!.width).toBeCloseTo(390, 0);
+    await context.close();
   });
 
   test('keyboard focus opens the card and Escape closes it', async ({ page }) => {
@@ -67,6 +108,35 @@ test.describe('product page', () => {
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { level: 1, name: 'Hoàng Hôn 01' })).toBeVisible();
     await expect(page.locator('.ProductPage__related .ProductTile')).toHaveCount(4);
+  });
+
+  test('mobile shows a swipeable gallery and a sticky order bar', async ({ browser }) => {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      hasTouch: true,
+      isMobile: true,
+    });
+    const page = await context.newPage();
+    await page.goto('/products/hoang-hon-01');
+    const counter = page.locator('.ProductGallery__counter');
+    await expect(counter).toHaveText('01 / 04');
+    await page
+      .locator('.ProductGallery__track')
+      .evaluate((track) => track.scrollTo({ left: track.clientWidth, behavior: 'instant' }));
+    await expect(counter).toHaveText('02 / 04');
+    const bar = page.locator('.ProductOrderBar');
+    await expect(bar).toBeVisible();
+    await expect(bar.getByRole('link', { name: 'Đặt mua' })).toBeVisible();
+    const barBox = await bar.boundingBox();
+    expect(Math.round(barBox!.y + barBox!.height)).toBe(844);
+    await context.close();
+  });
+
+  test('desktop keeps the stacked gallery without the order bar', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/products/hoang-hon-01');
+    await expect(page.locator('.ProductOrderBar')).toBeHidden();
+    await expect(page.locator('.ProductGallery__counter')).toBeHidden();
   });
 
   test('unknown products return 404', async ({ page }) => {

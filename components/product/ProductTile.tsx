@@ -11,7 +11,7 @@ import { ProductHoverCard } from '@/components/product/ProductHoverCard';
 import type { ProductCardModel } from '@/lib/catalog';
 import { cn } from '@/lib/cn';
 
-export const GRID_IMAGE_SIZES = '(min-width: 768px) 25vw, 50vw';
+export const GRID_IMAGE_SIZES = '(min-width: 768px) 25vw, 100vw';
 
 interface ProductTileProps {
   product: ProductCardModel;
@@ -25,6 +25,8 @@ interface ProductTileProps {
 export const ProductTile = ({ product, active, onOpen, onClose }: ProductTileProps) => {
   const cellRef = useRef<HTMLLIElement>(null);
   const pointerTypeRef = useRef('mouse');
+  // Captured at pointerdown: the tap also focuses the link, which opens the card before `click`.
+  const wasOpenAtPressRef = useRef(false);
 
   const pointFrom = (event: { clientX: number; clientY: number }) => {
     const box = cellRef.current!.getBoundingClientRect();
@@ -54,7 +56,7 @@ export const ProductTile = ({ product, active, onOpen, onClose }: ProductTilePro
   };
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (pointerTypeRef.current !== 'touch' || active) return;
+    if (pointerTypeRef.current !== 'touch' || wasOpenAtPressRef.current) return;
     event.preventDefault();
     onOpen(product.id, cellRef.current!, pointFrom(event));
   };
@@ -73,6 +75,7 @@ export const ProductTile = ({ product, active, onOpen, onClose }: ProductTilePro
         href={`/products/${product.slug}`}
         onPointerDown={(event) => {
           pointerTypeRef.current = event.pointerType;
+          wasOpenAtPressRef.current = Boolean(active);
         }}
         onClick={handleClick}
         className="ProductTile__link focus-visible:outline-ink block h-full focus-visible:outline-2 focus-visible:-outline-offset-2"

@@ -7,33 +7,23 @@ import { GlassLayer } from '@/components/product/glass/GlassLayer';
 import { ProductTile } from '@/components/product/ProductTile';
 import type { ProductCardModel } from '@/lib/catalog';
 
-export type CardAlign = 'start' | 'center' | 'end';
-
 export interface ActiveCard {
   id: string;
   /** Pointer entry point relative to the cell (centre for keyboard focus). */
   origin: { x: number; y: number };
   /** Cell box relative to the grid wrapper. */
   rect: { left: number; top: number; width: number; height: number };
-  /** Edge cells shift the card inward so it never leaves the viewport. */
-  align: CardAlign;
 }
 
 export type OpenCard = (id: string, cell: HTMLElement, point?: { x: number; y: number }) => void;
-
-const EDGE_TOLERANCE = 1;
-
-const alignFor = (cell: DOMRect, grid: DOMRect): CardAlign => {
-  if (cell.left - grid.left <= EDGE_TOLERANCE) return 'start';
-  if (grid.right - cell.right <= EDGE_TOLERANCE) return 'end';
-  return 'center';
-};
 
 interface ProductGridProps {
   products: ProductCardModel[];
 }
 
-// V-09: 2 columns on mobile, 4 from md, no gaps. Holds the single open card and glass layer.
+// V-09: 1 column on mobile, 4 from md, no gaps between cells. The 16px gutters equal the card
+// frame, so an edge card fits on screen without moving its image (P2-8).
+// Holds the single open card and glass layer.
 export const ProductGrid = ({ products }: ProductGridProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<ActiveCard | null>(null);
@@ -54,7 +44,6 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
           width: cellBox.width,
           height: cellBox.height,
         },
-        align: alignFor(cellBox, gridBox),
       };
     });
   }, []);
@@ -74,8 +63,8 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
   }, [active]);
 
   return (
-    <div ref={wrapperRef} className="ProductGrid relative overflow-x-clip">
-      <ul className="ProductGrid__list grid grid-cols-2 md:grid-cols-4">
+    <div ref={wrapperRef} className="ProductGrid relative overflow-x-clip px-4">
+      <ul className="ProductGrid__list grid grid-cols-1 md:grid-cols-4">
         {products.map((product) => (
           <ProductTile
             key={product.id}

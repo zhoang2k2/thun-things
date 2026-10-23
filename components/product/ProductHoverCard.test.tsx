@@ -69,6 +69,7 @@ describe('product hover card', () => {
     const link = within(tile).getAllByRole('link')[0];
 
     fireEvent.pointerDown(link, { pointerType: 'touch' });
+    fireEvent.focus(link); // a real tap focuses the link before the click
     const firstTap = fireEvent.click(link);
     expect(firstTap).toBe(false); // default prevented
     expect(within(tile).getByTestId('product-hover-card')).toBeInTheDocument();
