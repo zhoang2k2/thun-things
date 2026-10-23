@@ -28,4 +28,5 @@ export const buildMetadata = ({ title, description, path }: BuildMetadataOptions
     locale: 'vi_VN',
     type: 'website',
   },
+  twitter: { card: 'summary_large_image' },
 });

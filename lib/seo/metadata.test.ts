@@ -18,6 +18,12 @@ describe('buildMetadata', () => {
     });
   });
 
+  it('requests the large summary card for Twitter', () => {
+    expect(buildMetadata({ description: 'd', path: '/' }).twitter).toMatchObject({
+      card: 'summary_large_image',
+    });
+  });
+
   it('omits the title when none is given so the root default applies', () => {
     expect(buildMetadata({ description: 'd', path: '/' })).not.toHaveProperty('title');
   });
