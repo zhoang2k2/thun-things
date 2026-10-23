@@ -10,21 +10,21 @@ All packages are installed in P0 and pinned to exact versions (`.npmrc` `save-ex
 
 ### Runtime
 
-| Package                                | Version       | Wired in | Purpose                                                          |
-| -------------------------------------- | ------------- | -------- | ---------------------------------------------------------------- |
-| `next`                                 | 16.4.2        | P0       | App Router framework, Turbopack, route handlers                  |
-| `react`, `react-dom`                   | 19.3.0        | P0       | UI runtime                                                       |
-| `zod`                                  | 4.6.7         | P0       | Env (`lib/env.ts`), catalog, API validation                      |
-| `server-only`                          | 0.0.1         | P0       | Build-time guard against importing server modules in client code |
-| `motion`                               | 14.6.0        | P1       | Animations, shared-element transitions                           |
-| `lucide-react`                         | 1.61.0        | P1       | Icons                                                            |
-| `radix-ui`                             | 1.8.1         | P1       | Accessible primitives (Dialog, Popover)                          |
-| `clsx`, `tailwind-merge`               | 2.1.1, 3.7.0  | P1       | Class composition                                                |
-| `resend`                               | 6.34.1        | P3       | Contact form email                                               |
-| `@upstash/ratelimit`, `@upstash/redis` | 2.2.0, 1.39.0 | P3       | Serverless rate limiting                                         |
-| `next-intl`                            | 4.14.9        | P5       | `/vi`, `/en` routing and messages                                |
-| `@next/third-parties`                  | 16.4.2        | P6       | GA4 loader (after consent)                                       |
-| `@anthropic-ai/sdk`                    | 1.1.0         | P8       | Claude rationale for quiz results                                |
+| Package                                          | Version       | Wired in | Purpose                                                                    |
+| ------------------------------------------------ | ------------- | -------- | -------------------------------------------------------------------------- |
+| `next`                                           | 16.4.2        | P0       | App Router framework, Turbopack, route handlers                            |
+| `react`, `react-dom`                             | 19.3.0        | P0       | UI runtime                                                                 |
+| `zod`                                            | 4.6.7         | P0       | Env (`lib/env.ts`), catalog, API validation                                |
+| `server-only`                                    | 0.0.1         | P0       | Build-time guard against importing server modules in client code           |
+| `motion`                                         | 14.6.0        | P1       | Animations, shared-element transitions                                     |
+| `@hugeicons/react`, `@hugeicons/core-free-icons` | 1.1.10, 4.3.5 | P1       | Functional icons only (DR-2); replaces `lucide-react` (removed 2026-10-23) |
+| `radix-ui`                                       | 1.8.1         | P1       | Accessible primitives (Dialog, Popover)                                    |
+| `clsx`, `tailwind-merge`                         | 2.1.1, 3.7.0  | P1       | Class composition                                                          |
+| `resend`                                         | 6.34.1        | P3       | Contact form email                                                         |
+| `@upstash/ratelimit`, `@upstash/redis`           | 2.2.0, 1.39.0 | P3       | Serverless rate limiting                                                   |
+| `next-intl`                                      | 4.14.9        | P5       | `/vi`, `/en` routing and messages                                          |
+| `@next/third-parties`                            | 16.4.2        | P6       | GA4 loader (after consent)                                                 |
+| `@anthropic-ai/sdk`                              | 1.1.0         | P8       | Claude rationale for quiz results                                          |
 
 ### Tooling
 
