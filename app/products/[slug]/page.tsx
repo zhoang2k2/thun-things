@@ -5,8 +5,10 @@ import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { ProductInfo } from '@/components/product/ProductInfo';
 import { ProductOrderBar } from '@/components/product/ProductOrderBar';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { copy } from '@/content/copy/vi';
 import { getAllSlugs, getProductBySlug, getRelatedProducts, toCardModel } from '@/lib/catalog';
+import { productJsonLd } from '@/lib/seo/jsonLd';
 import { buildMetadata } from '@/lib/seo/metadata';
 
 // Every product is prerendered. Unknown slugs never reach this page: proxy.ts rewrites them
@@ -37,6 +39,7 @@ export default async function ProductPage({ params }: PageProps<'/products/[slug
 
   return (
     <article className="ProductPage">
+      <JsonLd data={productJsonLd(product)} />
       <div className="ProductPage__main grid md:grid-cols-12">
         <div className="ProductPage__gallery md:col-span-7">
           <ProductGallery images={images} />
