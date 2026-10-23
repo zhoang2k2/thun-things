@@ -34,17 +34,17 @@
 - [ ] Merge PR #3 (P2 DONE) and connect Vercel (carried from P1).
 - [ ] Create a **Resend** account → API key. Use the **Resend account email** as `LEADS_TO_EMAIL` until the domain is verified (P9).
 - [ ] Create an **Upstash Redis** database → REST URL and token.
-- [ ] Set in `.env.local` **and** Vercel (Preview + Production): `RESEND_API_KEY`, `LEADS_TO_EMAIL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`; leave `LEADS_FROM_EMAIL` empty (defaults to `onboarding@resend.dev`) and `CUSTOMER_CONFIRMATION_ENABLED=false`.
+- [ ] Set in `.env.local` **and** Vercel (Preview + Production) using the names in `.env.example`: `RESEND_API_KEY`, `LEADS_TO_EMAIL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`; leave `LEADS_FROM_EMAIL` empty (defaults to `onboarding@resend.dev`).
 - [ ] Optional (defaults apply): policy text, About text and photo, chat channel link, footer contact email.
 
-### Task 1 (BE): Configuration and form readiness
+### Task 1 (BE): Form readiness
 
-**Files:** Modify `lib/env.ts` (+ test), `.env.example`, `docs/configuration-variables.md`. Create `lib/leads/readiness.ts` (+ test).
+**Files:** Create `lib/leads/readiness.ts` (+ test). No change to `.env.example`.
 
-**Interfaces:** `env.CUSTOMER_CONFIRMATION_ENABLED: boolean` (default `false`); `env.LEADS_SINK: 'email' | 'memory'` (default `email`; `memory` is for e2e only and is rejected when `VERCEL_ENV === 'production'`). `getFormReadiness(source = env): { enabled: true } | { enabled: false; reason: 'email' | 'ratelimit' }` — email needs `RESEND_API_KEY` and `LEADS_TO_EMAIL` (unless sink is `memory`); rate limit needs Upstash when `NODE_ENV === 'production'`.
+**Interfaces:** no new owner-facing variable. `canSendCustomerConfirmation(fromEmail = env.LEADS_FROM_EMAIL): boolean` → true only when the sender is outside `resend.dev`. `leadSinkMode(): 'email' | 'memory'` → `memory` only when the test-only `E2E_LEADS_SINK=memory` is set by Playwright and never when `VERCEL_ENV === 'production'` (read in `lib/leads/readiness.ts`, not in `lib/env.ts`, `.env.example`, or `docs/configuration-variables.md`). `getFormReadiness(): { enabled: true } | { enabled: false; reason: 'email' | 'ratelimit' }` — email needs `RESEND_API_KEY` and `LEADS_TO_EMAIL` (unless memory mode); rate limit needs Upstash when `NODE_ENV === 'production'`.
 
-- [ ] Tests: defaults; `memory` refused in production; readiness reasons for each missing piece.
-- [ ] Implement; commit `[TASK] Add form readiness and confirmation flag`.
+- [ ] Tests: confirmation off for empty / `@resend.dev` senders, on for an own-domain sender; `memory` refused in production; readiness reasons for each missing piece.
+- [ ] Implement; commit `[TASK] Add form readiness`.
 
 ### Task 2 (BE): Lead schemas
 
@@ -68,9 +68,9 @@
 
 **Files:** Create `lib/leads/types.ts`, `lib/leads/sink.ts`, `lib/leads/emailSink.ts`, `lib/leads/memorySink.ts`, `lib/leads/templates.ts` (+ tests).
 
-**Interfaces:** `Lead` per spec; `LeadSink { deliver(lead: Lead): Promise<void> }`; `getLeadSink(): LeadSink` (email or memory by `env.LEADS_SINK`); `ownerEmail(lead, product?)` and `customerEmail(lead, product?)` → `{ subject, text }` in Vietnamese; email sink sends the owner email always and the customer email only when `CUSTOMER_CONFIRMATION_ENABLED` and `lead.email` exist; Resend errors throw a `LeadDeliveryError` without lead data.
+**Interfaces:** `Lead` per spec; `LeadSink { deliver(lead: Lead): Promise<void> }`; `getLeadSink(): LeadSink` (email or memory by `env.LEADS_SINK`); `ownerEmail(lead, product?)` and `customerEmail(lead, product?)` → `{ subject, text }` in Vietnamese; email sink sends the owner email always and the customer email only when `canSendCustomerConfirmation()` and `lead.email` exist; Resend errors throw a `LeadDeliveryError` without lead data.
 
-- [ ] Tests (Resend client mocked): owner email contains purpose, product name, phone; confirmation skipped when the flag is off or no email; sent when on; delivery error message contains no email/phone.
+- [ ] Tests (Resend client mocked): owner email contains purpose, product name, phone; confirmation skipped for a `resend.dev` sender or no email; sent for an own-domain sender; delivery error message contains no email/phone.
 - [ ] Implement; commit `[FEATURE] Add email lead sink`.
 
 ### Task 5 (BE): Server functions
@@ -105,7 +105,7 @@
 
 ### Task 9: E2E, evidence, PR
 
-- [ ] Playwright `webServer` env: `LEADS_SINK=memory`, test-only `RESEND_API_KEY`/`LEADS_TO_EMAIL` dummies (never real), so forms are enabled without sending.
+- [ ] Playwright `webServer` env: `E2E_LEADS_SINK=memory`, test-only `RESEND_API_KEY`/`LEADS_TO_EMAIL` dummies (never real), so forms are enabled without sending.
 - [ ] E2E: contact validation errors and success; prefill from a product link; notify-me error and success; disabled state when config is absent (second server config or unit-level); axe on `/contact`, a sold-out product, both policies, About.
 - [ ] Evidence scenarios: contact errors → success; product → contact prefill; notify-me; disabled form; policy and About pages.
 - [ ] Full suite, PR, evidence, CI.

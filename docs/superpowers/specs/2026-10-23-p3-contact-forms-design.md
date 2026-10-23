@@ -15,7 +15,7 @@
 
 ## Constraint on P3-3
 
-Without a verified domain, Resend only delivers from `onboarding@resend.dev` to the account owner's own address, so customer confirmations cannot arrive before P9. The confirmation email is built and tested now but sent only when `CUSTOMER_CONFIRMATION_ENABLED=true` (default `false`); the owner enables it at P9 after verifying the domain. Owner notifications work from day one when `LEADS_TO_EMAIL` is the Resend account address.
+Without a verified domain, Resend only delivers from `onboarding@resend.dev` to the account owner's own address, so customer confirmations cannot arrive before P9. **No new variable is introduced [USER: use only the names in `.env.example`]:** the confirmation email is sent only when `LEADS_FROM_EMAIL` is set to an address outside `resend.dev` (i.e. the owner's verified domain, P9). Until then only the owner notification is sent. Owner notifications work from day one when `LEADS_TO_EMAIL` is the Resend account address.
 
 ## Forms
 
@@ -47,11 +47,9 @@ Without a verified domain, Resend only delivers from `onboarding@resend.dev` to 
 - **Policy** (`/policy/privacy`, `/policy/returns`): structured placeholder text in `content/policies/` marked `TODO(owner)`. The privacy text lists email/phone collection, Resend as processor, and the consent flag. Real text blocks launch (P9), not P3.
 - **About**: one text block + one photo (V-12); copy placeholder marked `TODO(owner)`, photo via `MediaImage` (V-26 placeholder until supplied).
 
-## New configuration
+## Configuration
 
-| Variable                        | Scope  | Default | Purpose                                                                      |
-| ------------------------------- | ------ | ------- | ---------------------------------------------------------------------------- |
-| `CUSTOMER_CONFIRMATION_ENABLED` | server | `false` | Send confirmation emails to customers (enable at P9 with a verified domain). |
+Only the variables already in `.env.example` are used: `RESEND_API_KEY`, `LEADS_TO_EMAIL`, `LEADS_FROM_EMAIL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`. End-to-end tests switch delivery to an in-memory sink through a test-only flag set by the Playwright config; it is not part of the owner contract, is not in `.env.example`, and is refused in production.
 
 ## Out of scope
 
