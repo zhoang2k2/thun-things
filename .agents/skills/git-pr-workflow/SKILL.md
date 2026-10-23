@@ -47,6 +47,7 @@ Applies roadmap rule R3 ([`docs/superpowers/plans/2026-10-22-roadmap.md`](../../
 - `pnpm evidence:publish <pr-number>` commits `evidence-out/` to the orphan **`evidence`** branch under `pr-<number>/` with git plumbing (working tree untouched; parent = current remote `evidence`), pushes it, and prints the Markdown evidence table. Set `EVIDENCE_COMMIT_TRAILER` to append the session's attribution trailer.
 - Never merge `evidence` into `develop`. The repo is public, so raw URLs render inline: `https://raw.githubusercontent.com/zhoang2k2/thun-things/evidence/pr-<n>/<file>`. Verify one URL returns `200 image/*` before editing the PR.
 - Order: open the PR → `pnpm evidence:publish <n>` → `gh pr edit <n> --body-file`.
+- When republishing over the same file names, append `?v=<short-head-sha>` to every evidence URL; `raw.githubusercontent.com` caches for several minutes.
 
 ## 5. PR description template
 
