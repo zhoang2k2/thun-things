@@ -117,6 +117,10 @@ export const copy = {
       success: 'Đã ghi nhận. Thun Things sẽ báo bạn khi có hàng.',
     },
   },
+  policy: {
+    updated: 'Cập nhật ngày',
+    draft: 'Bản nháp: nội dung chính thức sẽ được cập nhật trước khi mở bán.',
+  },
   pages: {
     home: {
       title: 'Thun Things',
@@ -126,7 +130,6 @@ export const copy = {
     about: {
       title: 'Giới thiệu',
       description: 'Câu chuyện của Thun Things.',
-      body: 'Nội dung đang được cập nhật.',
     },
     contact: {
       title: 'Liên hệ',
@@ -136,12 +139,10 @@ export const copy = {
     privacy: {
       title: 'Chính sách bảo mật',
       description: 'Cách Thun Things xử lý thông tin của bạn.',
-      body: 'Nội dung chính sách đang được cập nhật.',
     },
     returns: {
       title: 'Chính sách đổi trả',
       description: 'Điều kiện đổi trả và đặt trước tại Thun Things.',
-      body: 'Nội dung chính sách đang được cập nhật.',
     },
   },
 } as const;
