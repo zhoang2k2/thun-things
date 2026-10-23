@@ -1,1 +1,44 @@
 @import 'tailwindcss';
+
+/* Design tokens (UI Direction v3). Swap values here; components use the utilities. */
+@theme {
+  --color-canvas: #ffffff;
+  --color-ink: #111111;
+  --color-ink-muted: #5c5c5c;
+  --color-line: #e5e5e5;
+  --color-accent: #ff5a1f;
+  --color-on-accent: #111111;
+  /* V-26 dummy image fallback: light grey fill, dark grey icon and label. */
+  --color-placeholder: #ededed;
+  --color-placeholder-ink: #2b2b2b;
+
+  /* DR-1: no radius. Clears the whole radius scale. */
+  --radius-*: initial;
+}
+
+@theme inline {
+  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --header-height: 64px;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: var(--header-height);
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  /* DR-1: browsers round native controls; force square corners. */
+  input,
+  select,
+  textarea,
+  button {
+    border-radius: 0;
+    appearance: none;
+  }
+}
