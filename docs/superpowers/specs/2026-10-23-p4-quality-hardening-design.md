@@ -17,7 +17,7 @@ Make the single-locale (Vietnamese) site MVP-ready without new features: mobile 
 | P4-3 | The 20 SEO criteria below are **P4 acceptance criteria** (except #19).                                                                                                                           |
 | P4-4 | **No visible breadcrumb** on product pages, so no `BreadcrumbList` structured data either (structured data must match visible content).                                                          |
 | P4-5 | **Google Search Console verification moves to P9** (it needs the real domain); DNS verification is recommended, no code change.                                                                  |
-| P4-6 | `llms.txt` is generated from the catalog and copy. **[PROPOSED]** — awaiting owner confirmation at spec review.                                                                                  |
+| P4-6 | `llms.txt` is generated from the catalog and copy (confirmed at spec review).                                                                                                                    |
 
 ## 1. Icons, manifest, share images
 
