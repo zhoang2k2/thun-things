@@ -15,38 +15,39 @@ Every row was stated or chosen by the owner on 2026-10-23 unless tagged otherwis
 
 ### Identity
 
-| ID   | Decision                                                                                                        |
-| ---- | --------------------------------------------------------------------------------------------------------------- |
-| V-01 | Personality: experimental art, expressed through unexpected interactions.                                       |
-| V-02 | Canvas pure white, ink black, one sunset-toned accent (orange / red / yellow family). Exact hex not chosen yet. |
-| V-03 | Typeface family: sans grotesk. Exact face not chosen yet.                                                       |
-| V-04 | References: Vietnamese local brands and international minimal brands.                                           |
+| ID   | Decision                                                                                                                           |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| V-01 | Personality: experimental art, expressed through unexpected interactions.                                                          |
+| V-02 | Canvas pure white, ink black, one sunset-toned accent (orange / red / yellow family). Exact hex not chosen yet.                    |
+| V-03 | Typeface: **Bricolage Grotesque** (sans grotesk, Vietnamese subset), chosen 2026-10-23. Inter is rejected as an "AI default" face. |
+| V-04 | References: Vietnamese local brands and international minimal brands.                                                              |
 
 ### Layout and pages
 
-| ID   | Decision                                                                                                                                                                          |
-| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| V-05 | Header: classic horizontal bar, sticky at the top, white background. Items: logo, About, Contact, VI/EN.                                                                          |
-| V-06 | Footer: Policy links, contact email, social links, oversized brand wordmark.                                                                                                      |
-| V-07 | Home = hero then product grid directly below. **No separate shop page.**                                                                                                          |
-| V-08 | Hero: slideshow of owner-designed banners, about 70% of the viewport height, image only (not clickable), auto-advance every 5 s, 3–5 banners, dot navigation and a pause control. |
-| V-09 | Grid: 4 columns × 5 rows = 20 products per page on desktop; numbered pagination (`?page=2`); no filters or sorting; 4:5 portrait images; no gap between cells.                    |
-| V-10 | Grid cells show **only the image** by default — no name, no price.                                                                                                                |
-| V-11 | Product detail page: image column on the left (stacked, scrolls), info column on the right (sticky). Contains multiple images, size and material, related products.               |
-| V-12 | About: one text block + one photo.                                                                                                                                                |
-| V-13 | Contact: a separate page with a form. It temporarily handles orders until a chat channel exists.                                                                                  |
+| ID   | Decision                                                                                                                                                                                                                                                                                 |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| V-05 | Header: classic horizontal bar, sticky at the top, white background. Items: logo, About, Contact, VI/EN.                                                                                                                                                                                 |
+| V-06 | Footer: Policy links, contact email, social links, oversized brand wordmark.                                                                                                                                                                                                             |
+| V-07 | Home = hero then product grid directly below. **No separate shop page.**                                                                                                                                                                                                                 |
+| V-08 | Hero: slideshow of owner-designed banners, about 70% of the viewport height, image only (not clickable), auto-advance every 5 s, 3–5 banners, a pause control, and **horizontal progress bars** as navigation (one square-ended bar per banner; the active bar fills over 5 s; no dots). |
+| V-09 | Grid: 4 columns × 5 rows = 20 products per page on desktop; numbered pagination (`?page=2`); no filters or sorting; 4:5 portrait images; no gap between cells.                                                                                                                           |
+| V-10 | Grid cells show **only the image** by default — no name, no price.                                                                                                                                                                                                                       |
+| V-11 | Product detail page: image column on the left (stacked, scrolls), info column on the right (sticky). Contains multiple images, size and material, related products.                                                                                                                      |
+| V-12 | About: one text block + one photo.                                                                                                                                                                                                                                                       |
+| V-13 | Contact: a separate page with a form. It temporarily handles orders until a chat channel exists.                                                                                                                                                                                         |
 
 ### Hover card
 
-| ID   | Decision                                                                                                                                                                        |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| V-14 | On hover, a card appears over the hovered cell. It **expands from the pointer's entry point**, is **larger than the cell, and overlaps neighbouring cells**.                    |
-| V-15 | The cell's image becomes the card's image section: **same image, same size**; the card frame and info grow around and below it.                                                 |
-| V-16 | Card content: name, price, status badge, and a "message" button. Statuses `available`, `limited`, `preorder`, `coming_soon` show the button; `sold_out` shows the badge only.   |
-| V-17 | Clicking the card opens the product detail page.                                                                                                                                |
-| V-18 | Keyboard focus opens the card exactly like hover; Enter opens the product detail page.                                                                                          |
-| V-19 | Touch (mobile, 2 columns): first tap opens the card, second tap opens the product detail page.                                                                                  |
-| V-20 | The "message" button opens a direct chat channel (Zalo / Messenger / Instagram). No channel exists yet, so it temporarily links to the Contact page with the product prefilled. |
+| ID   | Decision                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| V-14 | On hover, a card appears over the hovered cell. It **expands from the pointer's entry point**, is **larger than the cell, and overlaps neighbouring cells**.                                                                                                                                                                                                                                                                    |
+| V-15 | The cell's image becomes the card's image section: **same image, same size**; the card frame and info grow around and below it. The frame is a **photo-print border**: a white margin around the image with a deeper bottom margin that holds name, price, and status (square corners).                                                                                                                                         |
+| V-25 | Behind the open card sits a **glass layer**: transparent with background blur. It is **a separate, larger element, not an HTML wrapper of the card**, and has **no fixed shape**: an **organic curved blob**. It **spreads from the pointer when the card opens, retracts when it closes, and drifts/morphs slowly and continuously while open**. Moving to another product closes it and opens a new one (it does not travel). |
+| V-16 | Card content: name, price, status badge, and a "message" button. Statuses `available`, `limited`, `preorder`, `coming_soon` show the button; `sold_out` shows the badge only.                                                                                                                                                                                                                                                   |
+| V-17 | Clicking the card opens the product detail page.                                                                                                                                                                                                                                                                                                                                                                                |
+| V-18 | Keyboard focus opens the card exactly like hover; Enter opens the product detail page.                                                                                                                                                                                                                                                                                                                                          |
+| V-19 | Touch (mobile, 2 columns): first tap opens the card, second tap opens the product detail page.                                                                                                                                                                                                                                                                                                                                  |
+| V-20 | The "message" button opens a direct chat channel (Zalo / Messenger / Instagram). No channel exists yet, so it temporarily links to the Contact page with the product prefilled.                                                                                                                                                                                                                                                 |
 
 ### Status and waitlist
 
@@ -62,6 +63,33 @@ Every row was stated or chosen by the owner on 2026-10-23 unless tagged otherwis
 | V-23 | Custom cursor: an owner-drawn SVG garment tag attached to the pointer. Low priority; backlog. |
 | V-24 | Quiz bot stays as planned (P7–P8). i18n stays at P5; the VI/EN control is hidden until then.  |
 
+## Design rules (binding) [USER, 2026-10-23]
+
+### DR-1 — No radius
+
+No rounded corners anywhere in UI: buttons, badges, inputs, cards, images, menus, focus rings, progress bars, pagination. Native controls that the browser rounds (inputs, selects, radios, checkboxes on iOS/Safari) are reset to square.
+
+- **Only exception:** the V-25 glass layer, whose organic curve is the point of the effect. It is drawn as its own shape (SVG path / clip-path), never via `border-radius` on a UI box.
+- **Not covered:** icon stroke caps. Hugeicons free set (rounded strokes) is accepted.
+- **Enforcement:** Tailwind radius theme values are removed and a test fails if `rounded-` utilities or `border-radius` appear outside the glass-layer files.
+
+### DR-2 — Art, photography, fashion; no "AI slop"
+
+The site should read as a photographer's or fashion label's work, not a generated template.
+
+**Do:** let photographs carry the page; flat colour; hard edges; typographic hierarchy from size and weight; references to print and photography (print borders, plate numbers like `01 / 05`, captions); deliberate asymmetry where it serves the image.
+
+**Do not** (unless a numbered decision above makes an explicit exception):
+
+- gradients (including "sunset" gradients of the accent colour), mesh or noise-gradient backgrounds;
+- soft or blurred drop shadows, glow, neumorphism; glassmorphism panels (V-25 is the single sanctioned glass element);
+- rounded cards, pill buttons, pill badges;
+- decorative icons, icon-in-circle feature rows, emoji in UI, sparkle/AI symbols;
+- default "AI" typefaces (Inter, Space Grotesk as defaults) and centred hero + headline + two-button templates;
+- three-column feature grids, testimonial carousels, stock illustrations, generic placeholder imagery in shipped UI.
+
+**Icons:** minimal and functional only (arrows, close, play/pause); library **Hugeicons** (`@hugeicons/react` + `@hugeicons/core-free-icons`); `lucide-react` is removed. Prefer a text label where it reads naturally.
+
 ### Removed from v2
 
 Pinned scroll-driven hero (D-16, D-17), horizontally draggable grid (D-18), lifestyle clip reveal on hover (D-19, D-19a), card → PDP shared-element transition (D-20, O-06), transparent-to-fixed header (D-25), separate `/shop` page (D-26, O-02).
@@ -73,7 +101,6 @@ Agents use these until the owner supplies a value; each lives in one token or co
 | Input            | Default                                                                                                                               |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | Accent colour    | `#FF5A1F` (sunset orange). Text on accent is black (white fails WCAG AA on all three candidates). Alternatives: `#F2361D`, `#FFA51F`. |
-| Typeface         | Inter via `next/font/google`, subsets `latin` + `vietnamese`. Alternatives: Space Grotesk, Be Vietnam Pro.                            |
 | Logo             | Text wordmark "Thun Things" in the typeface.                                                                                          |
 | Contact email    | Unset → hidden in footer.                                                                                                             |
 | Social links     | Unset → hidden in footer.                                                                                                             |
@@ -82,6 +109,13 @@ Agents use these until the owner supplies a value; each lives in one token or co
 ## Spacing and sizing
 
 8-point grid (project skill `8-point-grid`): spacing in multiples of 8 px with a 4 px half-step for icon/text gaps; line-heights in multiples of 4 px. Control heights: 32 / 40 / 48 px; touch targets at least 44 px (mobile controls use 48 px).
+
+## Technical notes for the glass layer (P2)
+
+- One shared instance for the whole grid, positioned under the open card; animated with `transform`/`opacity` plus a morphing SVG path or `clip-path: path()`; `backdrop-filter: blur()` on the shape.
+- `prefers-reduced-motion`: no drift or spread; the blob appears static and fades.
+- No `backdrop-filter` support: fall back to a flat translucent white fill.
+- Must keep INP < 200 ms on hover; blur radius and blob size are tuned against that budget.
 
 ## Phase mapping
 

@@ -20,7 +20,8 @@
 - Every authored element gets a BEM hook class before Tailwind classes (`SiteHeader`, `SiteHeader__nav`, `Button--primary`).
 - No hard-coded user-facing strings outside `content/copy/vi.ts`.
 - One `h1` per page; landmarks `header`, `nav`, `main`, `footer`; visible focus (`focus-visible:ring-2`).
-- Token defaults (owner may swap later): canvas `#FFFFFF`, ink `#111111`, ink-muted `#5C5C5C`, accent `#FF5A1F`, on-accent `#111111`, line `#E5E5E5`. Typeface Inter, subsets `latin` + `vietnamese`.
+- Token defaults (owner may swap later): canvas `#FFFFFF`, ink `#111111`, ink-muted `#5C5C5C`, accent `#FF5A1F`, on-accent `#111111`, line `#E5E5E5`. Typeface **Bricolage Grotesque** (V-03), subsets `latin` + `vietnamese`.
+- Design rules DR-1 (no radius) and DR-2 (art/photography/fashion, no "AI slop") in the spec are binding: no `rounded-*`, no gradients, no soft shadows, no decorative icons, no emoji.
 - VI/EN control is **not rendered** in P1 (spec V-24).
 
 ## Review Focus
@@ -29,7 +30,8 @@
 2. **Missing owner config:** footer with no email and no socials renders no empty list or dangling label. Pinned by Task 3 test `hides email and socials when unset`.
 3. **Unknown policy slug:** `/policy/anything` returns 404, not a blank page. Pinned by Task 5 e2e `unknown policy returns 404`.
 4. **Keyboard entry:** first Tab lands on a visible skip link that moves focus to `main`. Pinned by Task 5 e2e `skip link reaches main`.
-5. **Sticky header overlap:** anchored content is not hidden under the sticky header. Pinned by `scroll-padding-top` equal to header height in Task 1 and checked in Task 5 e2e `skip link reaches main` (main top ≥ header bottom).
+5. **Radius creeping back in:** a later edit adds `rounded-*` or `border-radius`. Pinned by Task 1 test `design-rules.test.ts`.
+6. **Sticky header overlap:** anchored content is not hidden under the sticky header. Pinned by `scroll-padding-top` equal to header height in Task 1 and checked in Task 5 e2e `skip link reaches main` (main top ≥ header bottom).
 
 ---
 
@@ -37,12 +39,12 @@
 
 - [ ] Commit spec, roadmap update, this plan, `thun-things.md` superseded note: `[DOCS] Add UI direction v3 spec and P1 plan`.
 
-### Task 1 (FE): Tokens, typeface, class helper, motion tokens
+### Task 1 (FE): Tokens, typeface, icon library swap, class helper, motion tokens
 
 **Files:**
 
-- Modify: `app/globals.css`, `app/layout.tsx`
-- Create: `lib/cn.ts`, `lib/cn.test.ts`, `components/motion/tokens.ts`
+- Modify: `app/globals.css`, `app/layout.tsx`, `package.json`, `pnpm-lock.yaml`, `docs/architecture/tech-stack.md`
+- Create: `lib/cn.ts`, `lib/cn.test.ts`, `components/motion/tokens.ts`, `tests/design-rules.test.ts`
 
 **Interfaces:**
 
@@ -51,11 +53,13 @@
 - [ ] **Step 1:** Test `lib/cn.test.ts`: `cn('px-2', 'px-4') === 'px-4'`; `cn('a', false && 'b', undefined, 'c') === 'a c'`.
 - [ ] **Step 2:** `pnpm test lib/cn.test.ts` → FAIL (module missing).
 - [ ] **Step 3:** `lib/cn.ts` = `twMerge(clsx(inputs))`.
-- [ ] **Step 4:** `globals.css`: `@theme` with the colour tokens above and `--font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif`; `:root { --header-height: 64px }`; `html { scroll-padding-top: var(--header-height) }`; `body` uses `bg-canvas text-ink font-sans antialiased`.
-- [ ] **Step 5:** `layout.tsx`: `Inter({ subsets: ['latin', 'vietnamese'], variable: '--font-grotesk', display: 'swap' })` applied to `<html>`.
+- [ ] **Step 3b:** Icons: `pnpm remove lucide-react && pnpm add -E @hugeicons/react @hugeicons/core-free-icons`; update `tech-stack.md` (Hugeicons replaces lucide, wired in P2).
+- [ ] **Step 3c:** Test `tests/design-rules.test.ts` → `no radius outside the glass layer`: scan `app/`, `components/`, `lib/` for `.ts`, `.tsx`, `.css` files; fail on `/\brounded(-[a-z0-9]+)?\b/` or a non-zero `border-radius` (`/border-radius:\s*(?!0\s*[;}])/`) except files under `components/**/glass/`. Also `no gradients`: fail on `bg-gradient-`, `bg-linear-`, `bg-radial-`, `linear-gradient(`, `radial-gradient(`. Also `no lucide imports`: fail on `lucide-react`.
+- [ ] **Step 4:** `globals.css`: `@theme` with the colour tokens above and `--font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif`; `:root { --header-height: 64px }`; `html { scroll-padding-top: var(--header-height) }`; `body` uses `bg-canvas text-ink font-sans antialiased`; `@theme { --radius-*: initial; }` removes Tailwind radius scale; base layer resets native controls (`input, select, textarea, button { border-radius: 0; -webkit-appearance: none; appearance: none }`; the design-rules test allows `border-radius: 0`).
+- [ ] **Step 5:** `layout.tsx`: `Bricolage_Grotesque({ subsets: ['latin', 'vietnamese'], variable: '--font-grotesk', display: 'swap' })` applied to `<html>`.
 - [ ] **Step 6:** `components/motion/tokens.ts` with the values in Interfaces (no consumer yet; P2 hover card and hero use it).
 - [ ] **Step 7:** `pnpm test && pnpm typecheck && pnpm lint && pnpm build` → PASS.
-- [ ] **Step 8:** Commit `[FEATURE] Add design tokens, typeface, and motion tokens`.
+- [ ] **Step 8:** Commit `[FEATURE] Add design tokens, typeface, design-rule guard, and Hugeicons`.
 
 ### Task 2 (FE): Button and Badge primitives
 
@@ -146,7 +150,7 @@
   - `skip link reaches main` → first `Tab` focuses link `Chuyển đến nội dung`; `Enter` → `main` focused; `main` bounding box top ≥ header bottom.
   - `header stays visible after scroll` → scroll 2000 px on `/`, header bounding box top === 0.
 - [ ] **Step 2:** `pnpm test:e2e` → PASS (both smoke and navigation specs).
-- [ ] **Step 3:** ADR-006 "UI Direction v3 shell defaults": Inter + `#FF5A1F` accent as swappable defaults, Server-Components-only shell, owner config in `config/site.ts`.
+- [ ] **Step 3:** ADR-006 "UI Direction v3 shell": Bricolage Grotesque, `#FF5A1F` accent as a swappable default, design rules DR-1/DR-2 and their test, Hugeicons replacing lucide, Server-Components-only shell, owner config in `config/site.ts`.
 - [ ] **Step 4:** Full suite: `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e` → PASS; set roadmap P1 to `IN REVIEW`.
 - [ ] **Step 5:** Commit `[TASK] Add navigation smoke tests and record shell decisions`; push; open PR `[FEATURE] P1 design system and site shell` into `develop`.
 
@@ -155,6 +159,6 @@
 - [ ] CI green on the PR.
 - [ ] Keyboard-only walkthrough: skip link, header links, footer links all reachable with visible focus.
 - [ ] Lighthouse accessibility ≥ 95 on `/`, `/about`, `/contact`, `/policy/privacy` (run on the Vercel preview or locally with `pnpm build && pnpm start`).
-- [ ] No font CLS (Inter via `next/font`, `display: 'swap'`, variable font).
+- [ ] No font CLS (Bricolage Grotesque via `next/font`, `display: 'swap'`, variable font).
 - [ ] Vercel preview reachable (owner task).
 - [ ] Owner merged the PR; roadmap P1 = `DONE`.
