@@ -1,5 +1,6 @@
 'use client';
 
+import { LazyMotion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ProductTile } from '@/components/product/ProductTile';
@@ -12,6 +13,10 @@ export interface ActiveCard {
   /** Cell box relative to the grid wrapper. */
   rect: { left: number; top: number; width: number; height: number };
 }
+
+// Motion's animation features load after hydration, keeping them off the critical path (P4 perf).
+const loadMotionFeatures = () =>
+  import('@/components/motion/features').then((module) => module.default);
 
 export type OpenCard = (id: string, cell: HTMLElement, point?: { x: number; y: number }) => void;
 
@@ -61,18 +66,20 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
   }, [active]);
 
   return (
-    <div ref={wrapperRef} className="ProductGrid relative overflow-x-clip px-4">
-      <ul className="ProductGrid__list grid grid-cols-1 md:grid-cols-4">
-        {products.map((product) => (
-          <ProductTile
-            key={product.id}
-            product={product}
-            active={active?.id === product.id ? active : null}
-            onOpen={open}
-            onClose={close}
-          />
-        ))}
-      </ul>
-    </div>
+    <LazyMotion features={loadMotionFeatures} strict>
+      <div ref={wrapperRef} className="ProductGrid relative overflow-x-clip px-4">
+        <ul className="ProductGrid__list grid grid-cols-1 md:grid-cols-4">
+          {products.map((product) => (
+            <ProductTile
+              key={product.id}
+              product={product}
+              active={active?.id === product.id ? active : null}
+              onOpen={open}
+              onClose={close}
+            />
+          ))}
+        </ul>
+      </div>
+    </LazyMotion>
   );
 };
