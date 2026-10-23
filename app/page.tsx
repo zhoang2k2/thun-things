@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import { HeroSlideshow } from '@/components/home/HeroSlideshow';
@@ -7,11 +8,16 @@ import { ProductGridSkeleton } from '@/components/product/ProductGridSkeleton';
 import { banners } from '@/content/banners';
 import { copy } from '@/content/copy/vi';
 import { listProducts, toCardModel } from '@/lib/catalog';
-import { buildMetadata } from '@/lib/seo/metadata';
+import { homeMetadata } from '@/lib/seo/pageMetadata';
 
 const page = copy.pages.home;
 
-export const metadata = buildMetadata({ description: page.description, path: '/' });
+// Metadata reads `searchParams` (request data). The grid already streams inside Suspense below,
+// so the shell stays prerendered and metadata streams in with it.
+export async function generateMetadata({ searchParams }: PageProps<'/'>): Promise<Metadata> {
+  const { page: pageParam } = await searchParams;
+  return homeMetadata(pageParam);
+}
 
 // `searchParams` is request data under Cache Components, so the grid streams inside Suspense.
 const ProductListing = async ({ searchParams }: Pick<PageProps<'/'>, 'searchParams'>) => {
