@@ -45,3 +45,16 @@ describe('ProductInfo', () => {
     expect(screen.getByText(product.care!.vi)).toBeInTheDocument();
   });
 });
+
+it('renders existing English product fields and English VND formatting', () => {
+  const product = firstWith('available');
+  renderWithIntl(<ProductInfo product={product} />, { locale: 'en' });
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(product.name.en);
+  expect(screen.getByText(product.description.en)).toBeVisible();
+  expect(screen.getByText(product.material!.en)).toBeVisible();
+  expect(screen.getByText('₫390,000')).toBeVisible();
+  expect(screen.getByRole('link', { name: 'Order' })).toHaveAttribute(
+    'href',
+    `/en/contact?product=${product.slug}&purpose=order`,
+  );
+});

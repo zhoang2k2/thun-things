@@ -56,3 +56,19 @@ describe('buildMetadata', () => {
     );
   });
 });
+
+it.each(['vi', 'en'] as const)('sets bilingual alternates and OG locale for %s', (locale) => {
+  for (const path of ['/', '/?page=2', '/products/hoang-hon-01', '/contact']) {
+    const metadata = buildMetadata({ description: 'd', locale, path });
+    const suffix = path === '/' ? '' : path.startsWith('/?') ? path.slice(1) : path;
+    expect(metadata.alternates?.languages).toEqual({
+      vi: `/vi${suffix}`,
+      en: `/en${suffix}`,
+      'x-default': `/vi${suffix}`,
+    });
+    expect(metadata.openGraph).toMatchObject({
+      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
+      alternateLocale: [locale === 'vi' ? 'en_US' : 'vi_VN'],
+    });
+  }
+});

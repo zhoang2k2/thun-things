@@ -2,7 +2,7 @@ import 'server-only';
 
 import { siteConfig } from '@/config/site';
 import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
-import { localizedPath } from '@/i18n/routing';
+import { type Locale, localizedPath } from '@/i18n/routing';
 import type { Product, ProductStatus } from '@/lib/catalog/schema';
 import { siteUrl } from '@/lib/seo/metadata';
 
@@ -17,32 +17,32 @@ const AVAILABILITY: Record<ProductStatus, string> = {
   coming_soon: 'PreSale',
 };
 
-export const organizationJsonLd = (): object => ({
+export const organizationJsonLd = (locale: Locale = DEFAULT_LOCALE): object => ({
   '@context': CONTEXT,
   '@type': 'Organization',
   name: site.name,
-  url: siteUrl('/'),
+  url: siteUrl(localizedPath(locale, '/')),
   logo: siteUrl('/apple-icon'),
   ...(siteConfig.contactEmail && { email: siteConfig.contactEmail }),
   ...(siteConfig.socials.length > 0 && { sameAs: siteConfig.socials.map((link) => link.href) }),
 });
 
-export const websiteJsonLd = (): object => ({
+export const websiteJsonLd = (locale: Locale = DEFAULT_LOCALE): object => ({
   '@context': CONTEXT,
   '@type': 'WebSite',
   name: site.name,
-  url: siteUrl('/'),
+  url: siteUrl(localizedPath(locale, '/')),
+  inLanguage: locale,
 });
 
-export const productJsonLd = (product: Product): object => {
-  // Vietnamese URLs until JSON-LD becomes locale-aware (P5 Task 4).
-  const path = localizedPath(DEFAULT_LOCALE, `/products/${product.slug}`);
+export const productJsonLd = (product: Product, locale: Locale = DEFAULT_LOCALE): object => {
+  const path = localizedPath(locale, `/products/${product.slug}`);
   const url = siteUrl(path);
   return {
     '@context': CONTEXT,
     '@type': 'Product',
-    name: product.name.vi,
-    description: product.description.vi,
+    name: product.name[locale],
+    description: product.description[locale],
     sku: product.id,
     url,
     image: siteUrl(`${path}/opengraph-image`),

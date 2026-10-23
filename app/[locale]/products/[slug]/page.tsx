@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductGrid } from '@/components/product/ProductGrid';
@@ -24,13 +24,19 @@ export async function generateMetadata({
   if (!product) return {};
   const locale = isLocale(localeParam) ? localeParam : routing.defaultLocale;
   const path = `/products/${slug}`;
+  // Keep catalog copy unchanged; short search snippets can include existing material facts.
+  const catalogDescription = product.description[locale];
+  const description =
+    catalogDescription.length < 50 && product.material
+      ? `${catalogDescription} ${product.material[locale]}.`
+      : catalogDescription;
   return buildMetadata({
-    title: product.name.vi,
-    description: product.description.vi,
+    title: product.name[locale],
+    description,
     locale,
     path,
     // The share image lives next to the page, under the locale.
-    image: { url: localizedPath(locale, `${path}/opengraph-image`), alt: product.name.vi },
+    image: { url: localizedPath(locale, `${path}/opengraph-image`), alt: product.name[locale] },
   });
 }
 
@@ -39,14 +45,14 @@ export default async function ProductPage({ params }: PageProps<'/[locale]/produ
   const product = getProductBySlug(slug);
   if (!product) notFound();
 
-  const t = await getTranslations('product');
-  const related = getRelatedProducts(product).map(toCardModel);
+  const [t, locale] = await Promise.all([getTranslations('product'), getLocale()]);
+  const related = getRelatedProducts(product).map((product) => toCardModel(product, locale));
   const { front, back, lifestyle = [] } = product.media;
   const images = [front, ...(back ? [back] : []), ...lifestyle];
 
   return (
     <article className="ProductPage">
-      <JsonLd data={productJsonLd(product)} />
+      <JsonLd data={productJsonLd(product, locale)} />
       <div className="ProductPage__main grid md:grid-cols-12">
         <div className="ProductPage__gallery md:col-span-7">
           <ProductGallery images={images} />

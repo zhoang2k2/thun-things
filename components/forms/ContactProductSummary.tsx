@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { MediaImage } from '@/components/media/MediaImage';
 import { Link } from '@/i18n/navigation';
@@ -7,6 +7,7 @@ import type { Product } from '@/lib/catalog/schema';
 
 /** The product the visitor came from, shown above the contact form. */
 export const ContactProductSummary = ({ product }: { product: Product }) => {
+  const locale = useLocale();
   const t = useTranslations('forms.contact');
   const { front } = product.media;
 
@@ -18,7 +19,7 @@ export const ContactProductSummary = ({ product }: { product: Product }) => {
       <div className="ContactProductSummary__image w-16 shrink-0">
         <MediaImage
           src={front.src}
-          alt={front.alt.vi}
+          alt={front.alt[locale]}
           width={front.width}
           height={front.height}
           sizes="64px"
@@ -30,9 +31,9 @@ export const ContactProductSummary = ({ product }: { product: Product }) => {
           href={`/products/${product.slug}`}
           className="focus-visible:outline-ink font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2"
         >
-          {product.name.vi}
+          {product.name[locale]}
         </Link>
-        <p className="text-sm">{formatPriceVND(product.priceVND)}</p>
+        <p className="text-sm">{formatPriceVND(product.priceVND, locale)}</p>
       </div>
     </section>
   );

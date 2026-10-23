@@ -13,7 +13,7 @@ it('lists every shell page and product', () => {
     'http://localhost:3000/vi/policy/returns',
   ]);
   const productUrls = urls.filter((url) => url.includes('/products/'));
-  expect(productUrls).toHaveLength(24);
+  expect(productUrls).toHaveLength(48);
   expect(productUrls[0]).toBe('http://localhost:3000/vi/products/hoang-hon-01');
 });
 
@@ -30,4 +30,17 @@ it('never lists the noindex contact result pages', () => {
 
 it('lets every crawler fetch every page', () => {
   expect(robots().rules).toEqual({ userAgent: '*', allow: '/' });
+});
+
+it('lists both locales with reciprocal alternates on every entry', () => {
+  const entries = sitemap();
+  expect(entries).toHaveLength(58);
+  for (const entry of entries) {
+    expect(entry.alternates?.languages).toMatchObject({
+      vi: expect.stringContaining('/vi'),
+      en: expect.stringContaining('/en'),
+      'x-default': expect.stringContaining('/vi'),
+    });
+  }
+  expect(entries.some((entry) => entry.url.includes('/en/contact'))).toBe(true);
 });

@@ -4,10 +4,11 @@ import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 
 import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
+import type { Locale } from '@/i18n/routing';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
 
-const { site, product: productMessages } = getMessagesFor(DEFAULT_LOCALE);
+const { site } = getMessagesFor(DEFAULT_LOCALE);
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -69,7 +70,8 @@ export const renderWordmarkImage = async () =>
     </div>,
   );
 
-export const renderProductImage = async (product: Product) => {
+export const renderProductImage = async (product: Product, locale: Locale = DEFAULT_LOCALE) => {
+  const productMessages = getMessagesFor(locale).product;
   return respond(
     <div style={{ ...frameStyle, flexDirection: 'row', gap: 56 }}>
       <div
@@ -82,8 +84,12 @@ export const renderProductImage = async (product: Product) => {
       >
         <Wordmark size={40} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <div style={{ display: 'flex', fontSize: 72, lineHeight: 1.05 }}>{product.name.vi}</div>
-          <div style={{ display: 'flex', fontSize: 48 }}>{formatPriceVND(product.priceVND)}</div>
+          <div style={{ display: 'flex', fontSize: 72, lineHeight: 1.05 }}>
+            {product.name[locale]}
+          </div>
+          <div style={{ display: 'flex', fontSize: 48 }}>
+            {formatPriceVND(product.priceVND, locale)}
+          </div>
           <div style={{ display: 'flex' }}>
             <div
               style={{

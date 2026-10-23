@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence } from 'motion/react';
+import { useLocale } from 'next-intl';
 import { useRef } from 'react';
 import type { FocusEvent, KeyboardEvent, MouseEvent, PointerEvent } from 'react';
 
@@ -23,6 +24,7 @@ interface ProductTileProps {
 // V-10: the cell shows only the image; its alt text names the product for the link.
 // V-18/V-19: hover, keyboard focus, and a first touch tap open the card.
 export const ProductTile = ({ product, active, onOpen, onClose }: ProductTileProps) => {
+  const locale = useLocale();
   const cellRef = useRef<HTMLLIElement>(null);
   const pointerTypeRef = useRef('mouse');
   // Captured at pointerdown: the tap also focuses the link, which opens the card before `click`.
@@ -82,7 +84,7 @@ export const ProductTile = ({ product, active, onOpen, onClose }: ProductTilePro
       >
         <MediaImage
           src={product.image.src}
-          alt={product.image.alt.vi}
+          alt={product.image.alt[locale]}
           width={product.image.width}
           height={product.image.height}
           sizes={GRID_IMAGE_SIZES}

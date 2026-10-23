@@ -6,7 +6,7 @@ import { ProductGrid } from '@/components/product/ProductGrid';
 import { listProducts, toCardModel } from '@/lib/catalog';
 import { renderWithIntl } from '@/test/renderWithIntl';
 
-const products = listProducts().items.map(toCardModel);
+const products = listProducts().items.map((product) => toCardModel(product));
 
 describe('ProductGrid', () => {
   it('renders one image-only link per product', () => {

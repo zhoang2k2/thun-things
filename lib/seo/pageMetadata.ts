@@ -18,8 +18,9 @@ export const homeMetadata = (
 ): Metadata => {
   const { page } = listProducts(pageParam);
   const messages = getMessagesFor(locale);
-  const { description } = messages.pages.home;
-  if (page === 1) return buildMetadata({ description, locale, path: '/' });
+  const { description, metaTitle } = messages.pages.home;
+  if (page === 1)
+    return buildMetadata({ title: { absolute: metaTitle }, description, locale, path: '/' });
 
   const t = createTranslator({ locale, messages });
   const label = t('pagination.page', { page });

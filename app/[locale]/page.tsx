@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
@@ -24,12 +24,14 @@ export async function generateMetadata({
 
 // `searchParams` is request data under Cache Components, so the grid streams inside Suspense.
 const ProductListing = async ({ searchParams }: Pick<PageProps<'/[locale]'>, 'searchParams'>) => {
-  const { page: pageParam } = await searchParams;
+  const [{ page: pageParam }, locale] = await Promise.all([searchParams, getLocale()]);
   const { items, page: current, pageCount } = listProducts(pageParam);
+
+  const products = items.map((product) => toCardModel(product, locale));
 
   return (
     <>
-      <ProductGrid products={items.map(toCardModel)} />
+      <ProductGrid products={products} />
       <Pagination page={current} pageCount={pageCount} />
     </>
   );
@@ -37,10 +39,11 @@ const ProductListing = async ({ searchParams }: Pick<PageProps<'/[locale]'>, 'se
 
 export default function HomePage({ searchParams }: PageProps<'/[locale]'>) {
   const t = useTranslations();
+  const locale = useLocale();
   return (
     <div className="HomePage">
-      <JsonLd data={organizationJsonLd()} />
-      <JsonLd data={websiteJsonLd()} />
+      <JsonLd data={organizationJsonLd(locale)} />
+      <JsonLd data={websiteJsonLd(locale)} />
       <h1 className="sr-only">{t('pages.home.title')}</h1>
       <HeroSlideshow banners={banners} />
       <section aria-labelledby="products-heading" className="HomePage__products">

@@ -1,3 +1,4 @@
+import type { Locale } from '@/i18n/routing';
 import { rawProducts } from '@/lib/catalog/data';
 import { formatPriceVND } from '@/lib/catalog/format';
 import {
@@ -65,11 +66,11 @@ export const getRelatedProducts = (product: Product, limit = 4): Product[] => {
   ].slice(0, limit);
 };
 
-export const toCardModel = (product: Product): ProductCardModel => ({
+export const toCardModel = (product: Product, locale: Locale = 'vi'): ProductCardModel => ({
   id: product.id,
   slug: product.slug,
-  name: product.name.vi,
-  priceLabel: formatPriceVND(product.priceVND),
+  name: product.name[locale],
+  priceLabel: formatPriceVND(product.priceVND, locale),
   status: product.status,
   image: product.media.front,
 });

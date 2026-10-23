@@ -7,7 +7,7 @@ import { type Locale, localizedPath } from '@/i18n/routing';
 import { env } from '@/lib/env';
 
 interface BuildMetadataOptions {
-  /** Omit on the home page so the root default title applies. */
+  /** Omit to use the root layout's default title (the site name). */
   title?: string | { absolute: string };
   description: string;
   /** Page locale: canonical and share URLs are `/{locale}{path}`. */
@@ -40,13 +40,21 @@ export const buildMetadata = ({
   // An explicit `title: undefined` would override the root layout's default title.
   ...(title && { title }),
   description,
-  alternates: { canonical: localizedPath(locale, path) },
+  alternates: {
+    canonical: localizedPath(locale, path),
+    languages: {
+      vi: localizedPath('vi', path),
+      en: localizedPath('en', path),
+      'x-default': localizedPath('vi', path),
+    },
+  },
   openGraph: {
     title: (typeof title === 'object' ? title.absolute : title) ?? site.name,
     description,
     url: localizedPath(locale, path),
     siteName: site.name,
-    locale: 'vi_VN',
+    locale: locale === 'vi' ? 'vi_VN' : 'en_US',
+    alternateLocale: [locale === 'vi' ? 'en_US' : 'vi_VN'],
     type: 'website',
     images: shareImages(image),
   },
