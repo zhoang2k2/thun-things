@@ -16,6 +16,8 @@ interface SiteConfig {
   contactEmail?: string;
   /** Owner: add Instagram / TikTok / Facebook links. Hidden while empty. */
   socials: SocialLink[];
+  /** Owner: Zalo / Messenger / Instagram DM link for ordering (V-20). Contact page until set. */
+  chatChannel?: { label: string; href: string };
   nav: NavItem[];
   policies: NavItem[];
 }
@@ -24,6 +26,7 @@ export const siteConfig: SiteConfig = {
   name: copy.site.name,
   contactEmail: undefined,
   socials: [],
+  chatChannel: undefined,
   nav: [
     { href: '/about', label: copy.nav.about },
     { href: '/contact', label: copy.nav.contact },
