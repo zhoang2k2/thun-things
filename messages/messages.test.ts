@@ -39,8 +39,9 @@ describe('message key parity', () => {
 });
 
 // Latin letters with diacritics (Vietnamese uses Latin-1 Supplement, Latin Extended and
-// Latin Extended Additional). English copy must not leak Vietnamese.
-const DIACRITICS = /[\u00C0-\u024F\u1E00-\u1EFF]/u;
+// Latin Extended Additional) plus combining marks, so decomposed (NFD) Vietnamese is caught too.
+// English copy must not leak Vietnamese.
+const DIACRITICS = /[\u00C0-\u024F\u1E00-\u1EFF\u0300-\u036F]/u;
 // Language names may stay in their own language.
 const ALLOWED_VIETNAMESE = new Set(['localeSwitcher.vi']);
 

@@ -10,7 +10,7 @@ export const about: { paragraphs: Record<Locale, string[]>; photo: ImageAsset } 
       '[Chủ shop cập nhật: câu chuyện thương hiệu, người đứng sau Thun Things và cách mỗi drop ra đời.]',
     ],
     en: [
-      "Thun Things makes T-shirts the way you'd make a picture. Each design starts from a photograph, a color or a feeling, then goes to print in a small run.",
+      'Thun Things treats every T-shirt like a piece of art: each design starts from a photograph, a color or a feeling, then goes to print in a small run.',
       '[Owner to update: the brand story, the people behind Thun Things and how each drop comes together.]',
     ],
   },

@@ -160,7 +160,9 @@ test.describe('policy and about content', () => {
 
   test('about renders English text and photo alt on /en', async ({ page }) => {
     await page.goto('/en/about');
-    await expect(page.locator('.AboutPage__text p').first()).toContainText('Thun Things makes');
+    await expect(page.locator('.AboutPage__text p').first()).toContainText(
+      'Thun Things treats every T-shirt',
+    );
     await expect(page.getByRole('img', { name: 'The Thun Things print studio' })).toBeVisible();
   });
 });

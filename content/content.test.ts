@@ -6,7 +6,14 @@ import { privacyPolicy } from '@/content/policies/privacy';
 import { returnsPolicy } from '@/content/policies/returns';
 import type { PolicyDocument } from '@/content/policies/types';
 
-const DIACRITICS = /[À-ɏḀ-ỿ]/u;
+// Latin letters with diacritics plus combining marks, so decomposed (NFD) Vietnamese is caught.
+const DIACRITICS = /[\u00C0-\u024F\u1E00-\u1EFF\u0300-\u036F]/u;
+
+// Controller ruling (P5-3): collection names stay Vietnamese proper nouns in English alt text,
+// like the product names. Only these exact names may carry diacritics.
+const COLLECTION_NAMES = ['Hoàng Hôn', 'Phố Cũ', 'Âm Bản', 'Mùa Nắng'];
+const withoutCollectionNames = (text: string) =>
+  COLLECTION_NAMES.reduce((rest, name) => rest.replaceAll(name, ''), text.normalize('NFC'));
 const VI_PLACEHOLDER = '[Chủ shop cập nhật:';
 const EN_PLACEHOLDER = '[Owner to update:';
 
@@ -55,7 +62,7 @@ describe('banners', () => {
   it('has English alt text for every image', () => {
     for (const banner of banners) {
       for (const image of [banner.desktop, banner.mobile]) {
-        expect(image.alt.en, banner.id).not.toMatch(DIACRITICS);
+        expect(withoutCollectionNames(image.alt.en), banner.id).not.toMatch(DIACRITICS);
         expect(image.alt.en, banner.id).not.toBe(image.alt.vi);
       }
     }

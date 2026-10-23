@@ -53,7 +53,9 @@ export const privacyPolicy: PolicyDocument = {
     en: [
       {
         heading: 'What we collect',
-        paragraphs: ['When you send the Contact form or the Notify me form, Thun Things receives:'],
+        paragraphs: [
+          'When you send the Contact form or the "Notify me when it\'s available" form, Thun Things receives:',
+        ],
         items: [
           'Your email and phone / Zalo number, so we can get back to you.',
           'Your name, size, quantity, delivery address and message, if you fill them in.',
