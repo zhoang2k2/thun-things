@@ -3,6 +3,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import type { ReactElement, ReactNode } from 'react';
 
 import { pickClientMessages, pickFormMessages } from '@/i18n/clientMessages';
+import type { Locale } from '@/i18n/routing';
+import en from '@/messages/en.json';
 import messages from '@/messages/vi.json';
 
 export { messages };
@@ -14,20 +16,24 @@ interface IntlRenderOptions extends Omit<RenderOptions, 'wrapper'> {
    * Components fail when a key they need is not sent. Defaults to every message.
    */
   scope?: 'all' | 'client' | 'form';
+  /** Defaults to `vi`. */
+  locale?: Locale;
 }
 
-const SCOPED_MESSAGES = {
-  all: messages,
-  client: pickClientMessages(messages),
-  form: pickFormMessages(messages),
-};
+const scoped = (bundle: typeof messages) => ({
+  all: bundle,
+  client: pickClientMessages(bundle),
+  form: pickFormMessages(bundle),
+});
 
-const providerFor = (scope: IntlRenderOptions['scope']) => {
+const SCOPED_MESSAGES = { vi: scoped(messages), en: scoped(en) };
+
+const providerFor = (scope: IntlRenderOptions['scope'], locale: Locale) => {
   const IntlProvider = ({ children }: { children: ReactNode }) => (
     <NextIntlClientProvider
-      locale="vi"
+      locale={locale}
       timeZone="Asia/Ho_Chi_Minh"
-      messages={SCOPED_MESSAGES[scope ?? 'all']}
+      messages={SCOPED_MESSAGES[locale][scope ?? 'all']}
     >
       {children}
     </NextIntlClientProvider>
@@ -35,9 +41,11 @@ const providerFor = (scope: IntlRenderOptions['scope']) => {
   return IntlProvider;
 };
 
-/** Renders UI inside the next-intl provider with the Vietnamese messages. */
-export const renderWithIntl = (ui: ReactElement, { scope, ...options }: IntlRenderOptions = {}) =>
-  render(ui, { wrapper: providerFor(scope), ...options });
+/** Renders UI inside the next-intl provider, with the Vietnamese messages unless `locale` says otherwise. */
+export const renderWithIntl = (
+  ui: ReactElement,
+  { scope, locale = 'vi', ...options }: IntlRenderOptions = {},
+) => render(ui, { wrapper: providerFor(scope, locale), ...options });
 
 /** Same, with only the browser's messages: for Client Components and what they render. */
 export const renderWithClientIntl = (

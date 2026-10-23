@@ -1,7 +1,7 @@
 import 'server-only';
 
 import type { Metadata } from 'next';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 import { PageShell } from '@/components/layout/PageShell';
@@ -29,6 +29,7 @@ export const policyMetadata = async (slug: PolicySlug): Promise<Metadata> => {
 export const PolicyPage = ({ slug }: { slug: PolicySlug }) => {
   const t = useTranslations();
   const format = useFormatter();
+  const locale = useLocale();
   const { updatedAt, sections } = DOCUMENTS[slug];
   // `updatedAt` is a calendar date, so format it in UTC to keep the day unchanged.
   const date = format.dateTime(new Date(updatedAt), { dateStyle: 'long', timeZone: 'UTC' });
@@ -47,7 +48,7 @@ export const PolicyPage = ({ slug }: { slug: PolicySlug }) => {
       }
     >
       <article className="PolicyPage flex max-w-prose flex-col gap-12">
-        {sections.map((section) => (
+        {sections[locale].map((section) => (
           <section key={section.heading} className="PolicyPage__section flex flex-col gap-4">
             <h2 className="PolicyPage__heading text-xl leading-7 font-bold">{section.heading}</h2>
             {section.paragraphs?.map((paragraph) => (

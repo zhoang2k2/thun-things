@@ -37,3 +37,37 @@ describe('message key parity', () => {
     expect(keys(en)).toEqual(keys(vi));
   });
 });
+
+// Latin letters with diacritics (Vietnamese uses Latin-1 Supplement, Latin Extended and
+// Latin Extended Additional). English copy must not leak Vietnamese.
+const DIACRITICS = /[\u00C0-\u024F\u1E00-\u1EFF]/u;
+// Language names may stay in their own language.
+const ALLOWED_VIETNAMESE = new Set(['localeSwitcher.vi']);
+
+describe('English copy', () => {
+  it('has no Vietnamese diacritics outside the allow-list', () => {
+    for (const [key, value] of flatten(en)) {
+      if (ALLOWED_VIETNAMESE.has(key)) continue;
+      expect(value, key).not.toMatch(DIACRITICS);
+    }
+  });
+
+  it('rewrites every sentence instead of reusing the Vietnamese', () => {
+    const viValues = new Map(flatten(vi));
+    // Brand, field names and loanwords that read the same in both languages.
+    const shared = new Set([
+      'site.name',
+      'pages.home.title',
+      'localeSwitcher.vi',
+      'localeSwitcher.en',
+      'media.placeholderLabel',
+      'footer.emailLabel',
+      'forms.fields.email',
+      'forms.fields.size',
+    ]);
+    for (const [key, value] of flatten(en)) {
+      if (shared.has(key)) continue;
+      expect(value, key).not.toBe(viValues.get(key));
+    }
+  });
+});

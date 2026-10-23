@@ -73,4 +73,15 @@ describe('HeroSlideshow', () => {
     expect(currentBar()).toHaveAccessibleName('Banner 1 / 4');
     expect(screen.getByRole('button', { name: 'Tiếp tục' })).toBeInTheDocument();
   });
+
+  it('labels the controls and banners in English on /en', () => {
+    renderWithClientIntl(<HeroSlideshow banners={banners} />, { locale: 'en' });
+    expect(screen.getAllByRole('button', { name: /^Show slide \d of 4$/ })).toHaveLength(4);
+    expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Featured designs' })).toBeInTheDocument();
+    const alts = screen
+      .getAllByRole('img', { hidden: true })
+      .map((image) => image.getAttribute('aria-label') ?? image.getAttribute('alt'));
+    expect(alts).toContain(banners[0]!.desktop.alt.en);
+  });
 });

@@ -15,7 +15,11 @@ const banner = (id: string, vi: string, en: string): Banner => ({
 
 export const banners: Banner[] = [
   banner('drop-hoang-hon', 'Bộ sưu tập Hoàng Hôn', 'The Sunset collection'),
-  banner('pho-cu', 'Phố Cũ — những con phố vẽ tay', 'Old Street — hand-drawn streets'),
-  banner('am-ban', 'Âm Bản — dải phim 35mm trên áo', 'Negative — a 35mm strip on a tee'),
+  banner('pho-cu', 'Phố Cũ — những con phố vẽ tay', 'Old Street — streets drawn by hand'),
+  banner(
+    'am-ban',
+    'Âm Bản — dải phim 35mm trên áo',
+    'Negative — a strip of 35mm film printed on a tee',
+  ),
   banner('mua-nang', 'Mùa Nắng — sắp ra mắt', 'Dry Season — coming soon'),
 ];

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
@@ -22,6 +22,7 @@ const CONTROL_FOCUS =
 // V-08: owner banners, ~70vh, 5 s autoplay, square progress bars, pause control.
 export const HeroSlideshow = ({ banners, intervalMs = 5000 }: HeroSlideshowProps) => {
   const t = useTranslations('hero');
+  const locale = useLocale();
   const reducedMotion = usePrefersReducedMotion();
   const [index, setIndex] = useState(0);
   const [playState, setPlayState] = useState<PlayState>('auto');
@@ -72,7 +73,7 @@ export const HeroSlideshow = ({ banners, intervalMs = 5000 }: HeroSlideshowProps
               <div className="HeroSlideshow__desktop hidden h-full md:block">
                 <MediaImage
                   src={banner.desktop.src}
-                  alt={banner.desktop.alt.vi}
+                  alt={banner.desktop.alt[locale]}
                   width={banner.desktop.width}
                   height={banner.desktop.height}
                   preload={position === 0}
@@ -82,7 +83,7 @@ export const HeroSlideshow = ({ banners, intervalMs = 5000 }: HeroSlideshowProps
               <div className="HeroSlideshow__mobile h-full md:hidden">
                 <MediaImage
                   src={banner.mobile.src}
-                  alt={banner.mobile.alt.vi}
+                  alt={banner.mobile.alt[locale]}
                   width={banner.mobile.width}
                   height={banner.mobile.height}
                   preload={position === 0}

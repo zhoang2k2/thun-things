@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { getAllSlugs, getProductBySlug } from '@/lib/catalog';
 import { homeMetadata } from '@/lib/seo/pageMetadata';
-import messages from '@/messages/vi.json';
+import en from '@/messages/en.json';
+import vi from '@/messages/vi.json';
 
 import { generateMetadata as productMetadata } from '@/app/[locale]/products/[slug]/page';
 
@@ -23,6 +24,13 @@ describe('homeMetadata', () => {
   it('clamps an out-of-range page to the last page', () => {
     expect(homeMetadata('99', 'vi').alternates?.canonical).toBe('/vi?page=2');
     expect(homeMetadata('99', 'vi').title).toEqual({ absolute: 'Trang 2 · Thun Things' });
+  });
+
+  it('puts the page number in English word order on /en', () => {
+    const metadata = homeMetadata('2', 'en');
+    expect(metadata.alternates?.canonical).toBe('/en?page=2');
+    expect(metadata.title).toEqual({ absolute: 'Page 2 · Thun Things' });
+    expect(metadata.description).toMatch(/ Page 2\.$/);
   });
 });
 
@@ -51,14 +59,30 @@ describe('description length', () => {
     expect(text.length).toBeLessThanOrEqual(160);
   };
 
-  it('keeps every page description within 50-160 characters and unique', () => {
-    const descriptions = Object.values(messages.pages).map((page) => page.description);
-    descriptions.forEach(inRange);
+  // Every meta description: the pages, the 404 and the site default, in both locales.
+  const descriptionsOf = (messages: typeof vi) => [
+    ...Object.values(messages.pages).map((page) => page.description),
+    messages.errors.notFound.description,
+  ];
+
+  it.each([
+    ['vi', vi],
+    ['en', en],
+  ])('keeps every %s page description within 50-160 characters', (_locale, messages) => {
+    descriptionsOf(messages).forEach(inRange);
+  });
+
+  it('keeps the English site default description in range', () => {
+    inRange(en.site.description);
+  });
+
+  it('keeps page descriptions unique across both locales', () => {
+    const descriptions = [...descriptionsOf(vi), ...descriptionsOf(en)];
     expect(new Set(descriptions).size).toBe(descriptions.length);
   });
 
-  it('keeps the paginated Home description in range', () => {
-    inRange(homeMetadata('2', 'vi').description as string);
+  it.each(['vi', 'en'] as const)('keeps the paginated %s Home description in range', (locale) => {
+    inRange(homeMetadata('2', locale).description as string);
   });
 
   it('keeps every product description within 50-160 characters', () => {

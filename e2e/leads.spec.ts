@@ -145,4 +145,22 @@ test.describe('policy and about content', () => {
     await expect(page.locator('.AboutPage__text p').first()).toBeVisible();
     await expect(page.getByRole('img', { name: 'Xưởng in của Thun Things' })).toBeVisible();
   });
+
+  test('policies render English sections on /en', async ({ page }) => {
+    await page.goto('/en/policy/privacy');
+    await expect(page.getByRole('heading', { level: 1, name: 'Privacy policy' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'Who processes your data' }),
+    ).toBeVisible();
+    await expect(page.getByText('Last updated October 23, 2026')).toBeVisible();
+    await page.goto('/en/policy/returns');
+    await expect(page.getByRole('heading', { level: 2, name: 'Time limit' })).toBeVisible();
+    await expect(page.getByText(/\[Owner to update:/).first()).toBeVisible();
+  });
+
+  test('about renders English text and photo alt on /en', async ({ page }) => {
+    await page.goto('/en/about');
+    await expect(page.locator('.AboutPage__text p').first()).toContainText('Thun Things makes');
+    await expect(page.getByRole('img', { name: 'The Thun Things print studio' })).toBeVisible();
+  });
 });
