@@ -1,6 +1,6 @@
 // Runs Lighthouse (mobile preset, default throttling) against the production build and checks the
 // P4 performance budgets. Usage: `pnpm perf` (builds first).
-// Output: docs/reports/lighthouse-p7-<date>/<page>.report.html (the median run) plus summary.json.
+// Output: docs/reports/lighthouse-p8-<date>/<page>.report.html (the median run) plus summary.json.
 // Exits non-zero when any page misses a budget.
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -18,7 +18,7 @@ const DATE = new Date().toLocaleDateString('sv-SE');
 // observed paint shifts the estimate by whole round trips), so each page runs RUNS times and the
 // run with the median LCP is reported, as Lighthouse's variability guide recommends.
 const RUNS = 3;
-const OUT_DIR = join('docs', 'reports', `lighthouse-p7-${DATE}`);
+const OUT_DIR = join('docs', 'reports', `lighthouse-p8-${DATE}`);
 
 const PAGES = [
   { name: 'home-vi', path: '/vi' },
@@ -35,6 +35,8 @@ const startServer = async () => {
   const server = spawn('pnpm', ['start', '--port', String(PORT)], {
     stdio: 'ignore',
     detached: true,
+    // Lighthouse never opens the quiz, but keep real AI providers out of measurement runs anyway.
+    env: { ...process.env, AI_ENABLED: 'false' },
   });
   for (let attempt = 0; attempt < 60; attempt += 1) {
     try {

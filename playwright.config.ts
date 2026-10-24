@@ -18,8 +18,9 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 180_000,
     // Test-only: leads stay in memory (no email, no Upstash), and a dummy GA id whose Google
-    // requests every spec intercepts — the owner's real id is never contacted. Never put real
+    // requests every spec intercepts — the owner's real id is never contacted. AI is forced off so
+    // no spec reaches Gemini or Anthropic, even with keys in the owner's local file. Never put real
     // credentials here.
-    env: { E2E_LEADS_SINK: 'memory', NEXT_PUBLIC_GA_ID: 'G-TEST000000' },
+    env: { E2E_LEADS_SINK: 'memory', NEXT_PUBLIC_GA_ID: 'G-TEST000000', AI_ENABLED: 'false' },
   },
 });
