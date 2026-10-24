@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
 import { type Locale, localizedPath } from '@/i18n/routing';
 import { env } from '@/lib/env';
+import { robotsMetadataFor } from '@/lib/seo/indexing';
 
 interface BuildMetadataOptions {
   /** Omit to use the root layout's default title (the site name). */
@@ -37,6 +38,7 @@ export const buildMetadata = ({
   image,
 }: BuildMetadataOptions): Metadata => ({
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
+  ...robotsMetadataFor(env.NEXT_PUBLIC_SITE_URL),
   // An explicit `title: undefined` would override the root layout's default title.
   ...(title && { title }),
   description,
