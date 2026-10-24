@@ -1,53 +1,73 @@
-// P5 locale-switch evidence and English pages. `pnpm evidence` writes local artifacts only.
-// `:visible`: after a client-side locale switch, Next keeps the previous route's tree in the DOM
-// (hidden with `display: none`) for back/forward, so a plain selector matches two switchers.
+// P6 consent evidence. `pnpm evidence` writes local artifacts only.
+// No scenario uses `?ga_debug=1`: a non-production build then loads nothing from Google, even
+// after Accept, so evidence runs never send data to the owner's real GA4 property.
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844 };
 
+const pause = (page, ms) => page.waitForTimeout(ms);
+
 /** @type {import('./capture.mjs').Scenario[]} */
 const scenarios = [
-  ...[
-    ['home', ''],
-    ['product', '/products/hoang-hon-01'],
-    ['contact', '/contact?product=am-ban&purpose=notify'],
-  ].map(([name, path]) => ({
-    name: `switch-${name}`,
+  {
+    name: '01-consent-customize-vi',
     kind: 'gif',
     viewport: DESKTOP,
     async run({ page, snap }) {
-      await page.goto(`/vi${path}`);
+      await page.goto('/vi');
       await page.waitForLoadState('networkidle');
       await snap(8);
-      const english = page.locator('.LocaleSwitcher a[lang="en"]:visible');
-      await english.click();
-      await page.waitForURL(`/en${path}`);
-      await page.waitForLoadState('networkidle');
+      await page.getByRole('button', { name: 'Tuỳ chỉnh' }).click();
       await snap(8);
-      await page.locator('.LocaleSwitcher a[lang="vi"]:visible').click();
-      await page.waitForURL(`/vi${path}`);
-      await page.waitForLoadState('networkidle');
+      await page.getByRole('checkbox', { name: 'Phân tích (Google Analytics)' }).check();
+      await snap(6);
+      await page.getByRole('button', { name: 'Lưu lựa chọn' }).click();
+      await pause(page, 200);
+      await snap(6);
+      await page.getByRole('button', { name: 'Cài đặt cookie' }).scrollIntoViewIfNeeded();
+      await snap(4);
+      await page.getByRole('button', { name: 'Cài đặt cookie' }).click();
       await snap(8);
     },
-  })),
-  ...[
-    ['home', '/en'],
-    ['product', '/en/products/hoang-hon-01'],
-    ['contact', '/en/contact?product=hoang-hon-01&purpose=order'],
-    ['privacy', '/en/policy/privacy'],
-    ['about', '/en/about'],
-    ['returns', '/en/policy/returns'],
-    ['not-found', '/en/does-not-exist'],
-    ['notify', '/en/products/am-ban'],
-  ].flatMap(([name, path]) => [
-    { name: `en-${name}-desktop`, kind: 'png', viewport: DESKTOP, path },
-    { name: `en-${name}-mobile`, kind: 'png', viewport: MOBILE, mobile: true, path },
-  ]),
-  {
-    name: 'og-product-en',
-    kind: 'png',
-    viewport: DESKTOP,
-    path: '/en/products/hoang-hon-01/opengraph-image',
   },
+  {
+    name: '02-consent-reject-en',
+    kind: 'gif',
+    viewport: DESKTOP,
+    async run({ page, snap }) {
+      await page.goto('/en');
+      await page.waitForLoadState('networkidle');
+      await snap(8);
+      await page.getByRole('button', { name: 'Reject' }).click();
+      await pause(page, 200);
+      await snap(8);
+      await page.reload();
+      await page.waitForLoadState('networkidle');
+      await snap(6);
+    },
+  },
+  {
+    name: '03-settings-dialog-en',
+    kind: 'gif',
+    viewport: DESKTOP,
+    async run({ page, snap }) {
+      await page.goto('/en');
+      await page.waitForLoadState('networkidle');
+      await page.getByRole('button', { name: 'Customize' }).click();
+      await snap(10);
+    },
+  },
+  { name: 'banner-vi-desktop', kind: 'png', viewport: DESKTOP, path: '/vi' },
+  { name: 'banner-vi-mobile', kind: 'png', viewport: MOBILE, mobile: true, path: '/vi' },
+  { name: 'banner-en-desktop', kind: 'png', viewport: DESKTOP, path: '/en' },
+  {
+    name: 'banner-product-mobile',
+    kind: 'png',
+    viewport: MOBILE,
+    mobile: true,
+    path: '/vi/products/hoang-hon-01',
+  },
+  { name: 'privacy-cookies-vi', kind: 'png', viewport: DESKTOP, path: '/vi/policy/privacy' },
+  { name: 'privacy-cookies-en', kind: 'png', viewport: DESKTOP, path: '/en/policy/privacy' },
 ];
 
 export default scenarios;
