@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 
 // P6: no Google request before consent (Consent Mode Basic). The Playwright build uses the dummy
@@ -246,3 +247,31 @@ test.describe('events after consent', () => {
     }
   });
 });
+
+const seriousViolations = async (page: Page) => {
+  const { violations } = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  return violations
+    .filter((violation) => violation.impact === 'serious' || violation.impact === 'critical')
+    .map((violation) => `${violation.id}: ${violation.help}`);
+};
+
+for (const [locale, region, customize, dialog] of [
+  ['vi', 'Đồng ý cookie', 'Tuỳ chỉnh', 'Cài đặt cookie'],
+  ['en', 'Cookie consent', 'Customize', 'Cookie settings'],
+] as const) {
+  test(`${locale}: no serious axe issue with the bar and the settings dialog open`, async ({
+    page,
+  }) => {
+    await page.goto(`/${locale}`);
+    await expect(page.getByRole('region', { name: region })).toBeVisible();
+    expect(await seriousViolations(page)).toEqual([]);
+    await page
+      .getByRole('region', { name: region })
+      .getByRole('button', { name: customize })
+      .click();
+    await expect(page.getByRole('dialog', { name: dialog })).toBeVisible();
+    expect(await seriousViolations(page)).toEqual([]);
+  });
+}
