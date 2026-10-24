@@ -106,6 +106,13 @@ const runScenario = async (browser, scenario) => {
       await page.goto(scenario.path);
       await page.waitForLoadState('networkidle');
       const file = join(OUT_DIR, `${scenario.name}.png`);
+      // A PNG with `run` captures the viewport after the interaction (fixed overlays stay in view).
+      if (scenario.run) {
+        await scenario.run({ page, snap: async () => {} });
+        await page.screenshot({ path: file });
+        console.log(`  ${file}`);
+        return;
+      }
       // A full-page capture of a bare SVG document never settles in Chromium.
       await page.screenshot({ path: file, fullPage: !scenario.path.endsWith('.svg') });
       console.log(`  ${file}`);
