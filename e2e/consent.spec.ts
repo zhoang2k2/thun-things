@@ -178,3 +178,71 @@ test('no CSP violation with GA loaded', async ({ page }) => {
     await page.evaluate(() => (window as unknown as { __violations: string[] }).__violations),
   ).toEqual([]);
 });
+
+test.describe('events after consent', () => {
+  test.use({
+    viewport: { width: 1440, height: 900 },
+    // Own rate-limit bucket for the contact submission below.
+    extraHTTPHeaders: { 'x-forwarded-for': '192.0.2.71' },
+  });
+
+  const events = async (page: Page, name: string) =>
+    (await dataLayer(page))
+      .filter((entry) => entry[0] === 'event' && entry[1] === name)
+      .map((entry) => entry[2]);
+
+  test('the five events carry the expected params and no personal data', async ({ page }) => {
+    const traffic = await watchGoogle(page);
+    await page.goto('/vi?ga_debug=1');
+    await banner(page).getByRole('button', { name: 'Đồng ý' }).click();
+    await expect.poll(() => page.evaluate(() => Boolean(window.dataLayer?.length))).toBe(true);
+
+    const tile = page.locator('.ProductTile').first();
+    const slug = (await tile.getByRole('link').first().getAttribute('href'))!.split('/').pop()!;
+    await tile.hover();
+    await page.mouse.move(720, 10);
+    await tile.hover();
+    // Once per tile per page view, even after hovering it twice. (Other tiles the pointer
+    // crosses send their own event.)
+    const previews = async () =>
+      (await events(page, 'hover_preview_open')).filter(
+        (params) => (params as { product_id: string }).product_id === slug,
+      );
+    await expect.poll(previews).toEqual([{ product_id: slug, status: expect.any(String) }]);
+
+    await tile.getByRole('link').first().click();
+    await page.waitForURL(`**/vi/products/${slug}`);
+    expect(await events(page, 'select_item')).toEqual([
+      { product_id: slug, status: expect.any(String), locale: 'vi' },
+    ]);
+
+    await page
+      .getByRole('navigation', { name: /ngôn ngữ|language/i })
+      .getByRole('link', { name: /English/ })
+      .click();
+    await page.waitForURL(`**/en/products/${slug}`);
+    expect(await events(page, 'locale_switch')).toEqual([{ from: 'vi', to: 'en' }]);
+
+    await page.goto('/en/contact?product=hoang-hon-01');
+    await expect.poll(() => page.evaluate(() => Boolean(window.dataLayer?.length))).toBe(true);
+    // The product prefill streams in; a visitor sees it before typing.
+    await expect(page.getByRole('region', { name: 'Product' })).toBeVisible();
+    await page.getByLabel('Email').fill('lan.test@example.com');
+    await page.getByLabel(/Phone/).fill('0912 345 678');
+    await page.getByRole('checkbox', { name: /privacy policy/i }).check();
+    await page.locator('form.ContactForm').getByRole('button', { name: 'Send' }).click();
+    await expect(page.getByRole('status')).toBeVisible();
+
+    expect(await events(page, 'contact_start')).toEqual([
+      { purpose: 'order', form: 'contact', product_id: 'hoang-hon-01' },
+    ]);
+    expect(await events(page, 'contact_submit')).toEqual([
+      { purpose: 'order', form: 'contact', product_id: 'hoang-hon-01', locale: 'en' },
+    ]);
+
+    const everything = JSON.stringify(await dataLayer(page)) + traffic.urls.join(' ');
+    for (const secret of ['lan.test@example.com', '0912', '912345678']) {
+      expect(everything).not.toContain(secret);
+    }
+  });
+});

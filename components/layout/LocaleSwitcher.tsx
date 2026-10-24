@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 
 import { Link, usePathname } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { trackEvent } from '@/lib/analytics/events';
 
 interface LocaleSwitcherProps {
   /**
@@ -34,6 +35,9 @@ const LocaleLinks = ({ href }: { href: string }) => {
             lang={locale}
             hrefLang={locale}
             aria-current={locale === current ? 'true' : undefined}
+            onClick={() => {
+              if (locale !== current) trackEvent('locale_switch', { from: current, to: locale });
+            }}
             className={LINK_CLASSES}
           >
             <span aria-hidden="true">{locale.toUpperCase()}</span>

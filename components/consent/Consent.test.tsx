@@ -3,10 +3,11 @@ import userEvent from '@testing-library/user-event';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ConsentBanner } from '@/components/consent/ConsentBanner';
-import { ConsentProvider, resetConsentStoreForTests } from '@/components/consent/ConsentProvider';
+import { ConsentProvider } from '@/components/consent/ConsentProvider';
 import { ConsentSettings } from '@/components/consent/ConsentSettings';
 import { CookieSettingsButton } from '@/components/consent/CookieSettingsButton';
 import { CONSENT_KEY, readConsent } from '@/lib/analytics/consent';
+import { resetConsentStoreForTests } from '@/lib/analytics/consentStore';
 import en from '@/messages/en.json';
 import { messages as vi_ } from '@/test/renderWithIntl';
 import { renderWithClientIntl } from '@/test/renderWithIntl';
