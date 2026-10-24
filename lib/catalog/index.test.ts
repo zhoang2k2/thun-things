@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   getAllSlugs,
   getProductBySlug,
+  getQuizOptions,
   getRelatedProducts,
   listProducts,
   PAGE_SIZE,
@@ -73,4 +74,20 @@ it('builds English card labels from the existing catalog without modifying it', 
     priceLabel: '₫390,000',
   });
   expect(product).toEqual(before);
+});
+
+describe('getQuizOptions', () => {
+  it('lists only colours used by a product, once each, in catalog order', () => {
+    const { colors } = getQuizOptions();
+    const used = new Set(
+      getAllSlugs().flatMap((slug) => getProductBySlug(slug)!.colors.map((color) => color.id)),
+    );
+    expect(colors.map((color) => color.id).sort()).toEqual([...used].sort());
+    expect(new Set(colors.map((color) => color.id)).size).toBe(colors.length);
+  });
+
+  it('lists the distinct vibes sorted', () => {
+    const { vibes } = getQuizOptions();
+    expect(vibes).toEqual(['art', 'graphic', 'minimal', 'retro', 'street']);
+  });
 });

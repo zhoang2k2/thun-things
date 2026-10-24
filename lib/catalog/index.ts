@@ -5,6 +5,7 @@ import {
   catalogSchema,
   type ImageAsset,
   type Product,
+  type ProductColor,
   type ProductStatus,
 } from '@/lib/catalog/schema';
 
@@ -74,3 +75,16 @@ export const toCardModel = (product: Product, locale: Locale = 'vi'): ProductCar
   status: product.status,
   image: product.media.front,
 });
+
+/** Every product, for the quiz scorer (server only; the client gets the ranked result). */
+export const listAllProducts = (): Product[] => products;
+
+/** Quiz choices (P7): colours used by at least one product (catalog order) and distinct vibes. */
+export const getQuizOptions = (): { colors: ProductColor[]; vibes: string[] } => {
+  const colors = new Map<string, ProductColor>();
+  for (const product of products) {
+    for (const color of product.colors) if (!colors.has(color.id)) colors.set(color.id, color);
+  }
+  const vibes = [...new Set(products.flatMap((product) => product.vibes))].sort();
+  return { colors: [...colors.values()], vibes };
+};
