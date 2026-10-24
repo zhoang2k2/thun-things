@@ -6,8 +6,18 @@ import type { Messages } from '@/i18n/messages';
  * templates (`forms.email`) stay on the server; form copy goes only to pages with a form
  * (`pickFormMessages`).
  */
-export const pickClientMessages = ({ localeSwitcher, media, hero, product, errors }: Messages) => ({
+export const pickClientMessages = ({
   localeSwitcher,
+  media,
+  hero,
+  product,
+  errors,
+  consent,
+  footer,
+}: Messages) => ({
+  localeSwitcher,
+  consent,
+  footer: { cookieSettings: footer.cookieSettings },
   media,
   hero,
   product: {

@@ -2,6 +2,9 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
+import { ConsentBanner } from '@/components/consent/ConsentBanner';
+import { ConsentProvider } from '@/components/consent/ConsentProvider';
+import { ConsentSettings } from '@/components/consent/ConsentSettings';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SkipLink } from '@/components/layout/SkipLink';
@@ -21,22 +24,26 @@ export const SiteFrame = async ({ children, switcherPathname }: SiteFrameProps) 
   return (
     // Only the namespaces Client Components translate reach the browser; forms add their own.
     <NextIntlClientProvider messages={pickClientMessages(messages)}>
-      <SkipLink />
-      <SiteHeader
-        nav={siteConfig.nav.map(({ href, labelKey }) => ({ href, label: t(labelKey) }))}
-        switcherPathname={switcherPathname}
-      />
-      <main id="main" tabIndex={-1} className="Main focus:outline-none">
-        {children}
-      </main>
-      <SiteFooter
-        policies={siteConfig.policies.map(({ href, labelKey }) => ({
-          href,
-          label: t(labelKey),
-        }))}
-        contactEmail={siteConfig.contactEmail}
-        socials={siteConfig.socials}
-      />
+      <ConsentProvider>
+        <SkipLink />
+        <SiteHeader
+          nav={siteConfig.nav.map(({ href, labelKey }) => ({ href, label: t(labelKey) }))}
+          switcherPathname={switcherPathname}
+        />
+        <main id="main" tabIndex={-1} className="Main focus:outline-none">
+          {children}
+        </main>
+        <SiteFooter
+          policies={siteConfig.policies.map(({ href, labelKey }) => ({
+            href,
+            label: t(labelKey),
+          }))}
+          contactEmail={siteConfig.contactEmail}
+          socials={siteConfig.socials}
+        />
+        <ConsentBanner />
+        <ConsentSettings />
+      </ConsentProvider>
     </NextIntlClientProvider>
   );
 };

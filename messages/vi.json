@@ -14,7 +14,8 @@
     "privacy": "Bảo mật",
     "returns": "Đổi trả",
     "emailLabel": "Email",
-    "socialLabel": "Mạng xã hội"
+    "socialLabel": "Mạng xã hội",
+    "cookieSettings": "Cài đặt cookie"
   },
   "a11y": {
     "skipToContent": "Chuyển đến nội dung"
@@ -181,5 +182,22 @@
   "llms": {
     "products": "Sản phẩm",
     "pages": "Trang"
+  },
+  "consent": {
+    "label": "Đồng ý cookie",
+    "message": "Thun Things dùng cookie phân tích (Google Analytics) để biết trang và mẫu áo nào được quan tâm. Cookie này chỉ bật khi bạn đồng ý.",
+    "accept": "Đồng ý",
+    "reject": "Từ chối",
+    "customize": "Tuỳ chỉnh",
+    "policyLink": "Chính sách bảo mật",
+    "settingsTitle": "Cài đặt cookie",
+    "settingsIntro": "Chọn loại cookie bạn cho phép. Bạn có thể đổi lại bất cứ lúc nào ở cuối trang.",
+    "necessaryTitle": "Cần thiết",
+    "necessaryBody": "Ghi nhớ lựa chọn cookie của bạn trên trình duyệt này.",
+    "alwaysOn": "Luôn bật",
+    "analyticsTitle": "Phân tích (Google Analytics)",
+    "analyticsBody": "Cho biết trang và mẫu áo nào được xem nhiều. Không dùng cho quảng cáo.",
+    "save": "Lưu lựa chọn",
+    "cancel": "Huỷ"
   }
 }

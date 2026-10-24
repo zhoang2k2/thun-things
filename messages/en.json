@@ -14,7 +14,8 @@
     "privacy": "Privacy",
     "returns": "Returns & exchanges",
     "emailLabel": "Email",
-    "socialLabel": "Social"
+    "socialLabel": "Social",
+    "cookieSettings": "Cookie settings"
   },
   "a11y": {
     "skipToContent": "Skip to content"
@@ -181,5 +182,22 @@
   "llms": {
     "products": "Products",
     "pages": "Pages"
+  },
+  "consent": {
+    "label": "Cookie consent",
+    "message": "Thun Things uses analytics cookies (Google Analytics) to see which pages and designs people look at. They only turn on if you agree.",
+    "accept": "Accept",
+    "reject": "Reject",
+    "customize": "Customize",
+    "policyLink": "Privacy policy",
+    "settingsTitle": "Cookie settings",
+    "settingsIntro": "Choose which cookies to allow. You can change this any time from the bottom of the page.",
+    "necessaryTitle": "Necessary",
+    "necessaryBody": "Remembers your cookie choice in this browser.",
+    "alwaysOn": "Always on",
+    "analyticsTitle": "Analytics (Google Analytics)",
+    "analyticsBody": "Shows which pages and designs people view most. Never used for ads.",
+    "save": "Save choices",
+    "cancel": "Cancel"
   }
 }
