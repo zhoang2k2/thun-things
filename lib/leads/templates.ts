@@ -4,12 +4,13 @@ import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
 import type { Lead } from '@/lib/leads/types';
 
-// Plain-text emails in Vietnamese. The owner email is built to be scanned on a phone:
-// purpose and product first, then the ways to reach the customer.
+// Plain-text emails; the HTML versions live in emailHtml.ts. The owner email is Vietnamese and built
+// to be scanned on a phone: purpose and product first, then the ways to reach the customer.
 
 export interface EmailContent {
   subject: string;
   text: string;
+  html?: string;
 }
 
 const messages = getMessagesFor(DEFAULT_LOCALE);
@@ -55,17 +56,25 @@ export const ownerEmail = (lead: Lead, product: Product | undefined, siteUrl: st
 };
 
 export const customerEmail = (lead: Lead, product: Product | undefined, siteUrl: string) => {
+  // The visitor's confirmation follows the page language (P9-4).
+  const local = getMessagesFor(lead.locale);
   const body =
-    lead.kind === 'notify' ? messages.forms.notify.success : messages.forms.contact.successBody;
+    lead.kind === 'notify' ? local.forms.notify.success : local.forms.contact.successBody;
+  const productText = product
+    ? [
+        `${local.forms.contact.productLabel}: ${product.name[lead.locale]}`,
+        `${new URL(localizedPath(lead.locale, `/products/${product.slug}`), siteUrl)}`,
+      ]
+    : [];
   const text = [
-    email.greeting,
+    local.forms.email.greeting,
     '',
     body,
     '',
-    `${email.request}: ${purposes[lead.purpose]}`,
-    ...productLines(product, siteUrl),
+    `${local.forms.email.request}: ${local.forms.purposes[lead.purpose]}`,
+    ...productText,
     '',
-    SHOP,
+    local.site.name,
   ].join('\n');
-  return { subject: email.customerSubject, text } satisfies EmailContent;
+  return { subject: local.forms.email.customerSubject, text } satisfies EmailContent;
 };
