@@ -85,3 +85,32 @@
 html[data-consent-decided] .ConsentBanner {
   display: none;
 }
+
+/* Quiz launcher and card (P7) sit above the consent bar and, on mobile product pages, above the
+   order bar. The card opens just above the launcher (40px control + 16px gap). */
+:root {
+  --quiz-bottom: calc(1rem + var(--consent-bar-height, 0px));
+}
+
+@media (width < 48rem) {
+  body:has(.ProductOrderBar) {
+    --quiz-bottom: calc(1rem + 5rem + 1px + var(--consent-bar-height, 0px));
+  }
+}
+
+.QuizLauncher {
+  bottom: var(--quiz-bottom);
+}
+
+/* While the consent bar shows but has not been measured yet, the launcher would paint at the wrong
+   height and jump (CLS). Hidden elements do not count as layout shifts, so it waits for the bar. */
+html:not([data-consent-decided]):not([data-consent-bar-measured])
+  body:has(.ConsentBanner)
+  .QuizLauncher {
+  visibility: hidden;
+}
+
+.QuizCard,
+.QuizBubble {
+  bottom: calc(var(--quiz-bottom) + 3.5rem);
+}

@@ -58,6 +58,15 @@ describe('ConsentBanner', () => {
     expect(document.body).toHaveFocus();
   });
 
+  it('marks <html> once its height is measured, and clears the mark when it hides', async () => {
+    const root = document.documentElement;
+    renderWithClientIntl(ui);
+    expect(root).toHaveAttribute('data-consent-bar-measured');
+    await userEvent.click(screen.getByRole('button', { name: consent.reject }));
+    expect(root).not.toHaveAttribute('data-consent-bar-measured');
+    expect(root.style.getPropertyValue('--consent-bar-height')).toBe('');
+  });
+
   it('stays hidden when a decision exists', () => {
     window.localStorage.setItem(
       CONSENT_KEY,

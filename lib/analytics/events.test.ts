@@ -45,7 +45,21 @@ describe('event params', () => {
   it('allow no personal data keys', () => {
     type ParamKeys = { [K in keyof AnalyticsEvent]: keyof AnalyticsEvent[K] }[keyof AnalyticsEvent];
     expectTypeOf<ParamKeys>().toEqualTypeOf<
-      'product_id' | 'status' | 'locale' | 'purpose' | 'form' | 'from' | 'to'
+      | 'product_id'
+      | 'status'
+      | 'locale'
+      | 'purpose'
+      | 'form'
+      | 'from'
+      | 'to'
+      | 'source'
+      | 'step'
+      | 'value'
+      | 'color'
+      | 'vibe'
+      | 'match'
+      | 'position'
+      | 'count'
     >();
   });
 });

@@ -14,9 +14,11 @@ export const pickClientMessages = ({
   errors,
   consent,
   footer,
+  quiz,
 }: Messages) => ({
   localeSwitcher,
   consent,
+  quiz,
   footer: { cookieSettings: footer.cookieSettings },
   media,
   hero,

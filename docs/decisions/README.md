@@ -19,6 +19,7 @@ This directory tracks significant technical and architectural choices made durin
 | **ADR-007** | P4 Quality Hardening Decisions                               | **Accepted** | 2026-10-23 |
 | **ADR-008** | Bilingual routing with next-intl and root parameters         | **Accepted** | 2026-10-24 |
 | **ADR-009** | Cookie consent and GA4 (Consent Mode Basic)                  | **Accepted** | 2026-10-24 |
+| **ADR-010** | Deterministic quiz bot: server scoring and bubble guardrails | **Accepted** | 2026-10-24 |
 
 ---
 
@@ -124,3 +125,17 @@ This directory tracks significant technical and architectural choices made durin
   - **Events** go through the typed `trackEvent` (`lib/analytics/events.ts`): `select_item`, `hover_preview_open`, `contact_start`, `contact_submit`, `locale_switch`. Params are enums and the product slug (`product_id`) only.
   - **CSP** adds `https://www.googletagmanager.com` (script), `https://*.google-analytics.com`, `https://*.analytics.google.com`, `https://*.googletagmanager.com` (connect; img for the first and last).
 - **Consequences:** No Google traffic for visitors who reject or never decide. E2E builds with a dummy id (`G-TEST000000`) and intercepts all Google traffic; most specs start with a stored decision so the bar stays out of their way. Legal review of the consent and privacy text (Decree 13/2023/ND-CP, GDPR) is an owner task before launch (P9).
+
+---
+
+### ADR-010: Deterministic quiz bot: server scoring and bubble guardrails
+
+- **Context:** D-23/D-24 ask for a corner quiz that recommends designs, plus a speech bubble inviting visitors to it (D-24a/O-04 guardrails). P7 owner decisions: two questions (colour, vibe), "see more" expands inside the card (no `/shop` page), five placeholder vibes (art, graphic, minimal, street, retro), scoring on the server.
+- **Decision:**
+  - **Scoring** (`lib/recommend/score.ts`) is pure and deterministic: colour match 3, vibe match 2; status bonus available/limited +2, preorder +1, coming_soon 0, sold_out −3. Ties break by status rank, then `releasedAt` descending (missing last), then slug ascending. The answer is labelled `exact`, `color`, `vibe` or `none`; with `none` the best purchasable designs still show, with a link to Contact.
+  - **Endpoint.** `POST /api/quiz/recommend` takes `{ locale, color, vibe? }` validated by a strict Zod schema built from the catalog (unknown colours, vibes or keys → 400). Bodies over 1 KB → 400. Rate limited at 30 requests per 10 minutes per client through a shared limiter factory (`lib/security/rateLimit.ts`, also used by leads; Upstash in production, in-memory otherwise). Answers are `no-store`. `proxy.ts` excludes `api/` from locale routing.
+  - **Client.** The launcher is a small client component; the card (steps, fetch, results) loads with `next/dynamic` only when opened. The card is a non-modal dialog: focus moves to each step heading, Escape and close return focus to the launcher.
+  - **Bubble guardrails.** First after 20 s, then every 45 s, at most 3 per session (`sessionStorage`), each visible for 10 s. Silent after dismissal, while the quiz is open, on Contact and Policy pages, and under reduced motion. Announced through an `aria-live="polite"` region (no `status` role, so page status messages stay unambiguous) and never takes focus.
+  - **Layout.** Launcher, bubble and card stack above the consent bar and, on mobile product pages, above the order bar (`--quiz-bottom` in `globals.css`). While the consent bar shows, the launcher stays hidden until the bar has been measured (`data-consent-bar-measured`), so it never jumps into place (CLS).
+  - **Events** (`quiz_open`, `quiz_step`, `quiz_complete`, `quiz_result_click`, `quiz_bubble_shown`, `quiz_bubble_dismiss`) carry catalog colour ids, vibe tags, match kind, product slug, positions and counts only.
+- **Consequences:** Recommendations are explainable and testable without an AI dependency; P8 adds AI rationale on top of the same ranking. Vibe labels are placeholders until the owner tags the real catalog.

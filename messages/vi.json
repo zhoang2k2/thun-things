@@ -199,5 +199,33 @@
     "analyticsBody": "Cho biết trang và mẫu áo nào được xem nhiều. Không dùng cho quảng cáo.",
     "save": "Lưu lựa chọn",
     "cancel": "Huỷ"
+  },
+  "quiz": {
+    "launcher": "Tìm áo hợp bạn",
+    "title": "Tìm áo hợp bạn",
+    "close": "Đóng",
+    "stepColor": "Bạn thích màu nào?",
+    "stepVibe": "Phong cách của bạn?",
+    "vibes": {
+      "art": "Nghệ thuật",
+      "graphic": "Đồ hoạ",
+      "minimal": "Tối giản",
+      "street": "Đường phố",
+      "retro": "Hoài cổ"
+    },
+    "continue": "Tiếp tục",
+    "showResult": "Xem gợi ý",
+    "back": "Quay lại",
+    "loading": "Đang tìm mẫu hợp với bạn…",
+    "resultTitle": "Gợi ý cho bạn",
+    "noMatch": "Chưa có mẫu đúng ý, đây là mẫu gần nhất.",
+    "noMatchContact": "Hỏi Thun Things",
+    "seeMore": "Xem thêm",
+    "moreTitle": "Mẫu khác hợp với bạn",
+    "restart": "Làm lại",
+    "error": "Chưa tải được gợi ý. Vui lòng thử lại.",
+    "retry": "Thử lại",
+    "bubble": "Chưa biết chọn mẫu nào? Để mình gợi ý.",
+    "bubbleClose": "Tắt gợi ý"
   }
 }

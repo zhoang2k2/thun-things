@@ -199,5 +199,33 @@
     "analyticsBody": "Shows which pages and designs people view most. Never used for ads.",
     "save": "Save choices",
     "cancel": "Cancel"
+  },
+  "quiz": {
+    "launcher": "Find your shirt",
+    "title": "Find your shirt",
+    "close": "Close",
+    "stepColor": "Which colour do you like?",
+    "stepVibe": "What's your style?",
+    "vibes": {
+      "art": "Art",
+      "graphic": "Graphic",
+      "minimal": "Minimal",
+      "street": "Street",
+      "retro": "Retro"
+    },
+    "continue": "Continue",
+    "showResult": "Show my match",
+    "back": "Back",
+    "loading": "Finding your match…",
+    "resultTitle": "Your match",
+    "noMatch": "No exact match, so here is the closest design.",
+    "noMatchContact": "Ask Thun Things",
+    "seeMore": "See more",
+    "moreTitle": "More designs for you",
+    "restart": "Start over",
+    "error": "Couldn't load suggestions. Please try again.",
+    "retry": "Try again",
+    "bubble": "Not sure which design? Let me help.",
+    "bubbleClose": "Dismiss suggestion"
   }
 }
