@@ -36,8 +36,7 @@ describe('POST /api/quiz/explain', () => {
 
   it('accepts a request without a vibe', async () => {
     ai.explain.mockResolvedValue(null);
-    const { vibe: _vibe, ...withoutVibe } = VALID;
-    expect((await call(withoutVibe)).status).toBe(204);
+    expect((await call({ ...VALID, vibe: undefined })).status).toBe(204);
   });
 
   it('answers 204 with no body when there is no rationale', async () => {
