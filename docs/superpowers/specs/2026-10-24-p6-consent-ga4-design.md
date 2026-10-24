@@ -37,7 +37,7 @@ Visitors choose whether to allow analytics through a bilingual consent bar; GA4 
 
 ## 2. UI
 
-- `ConsentBanner`: fixed bottom bar, ink text on canvas, 1px top border, square buttons (DR-1/DR-2), `role="region"` with an accessible name, keyboard order Accept → Reject → Customize, focus is not stolen on load. Rendered only after hydration when no decision exists, so returning visitors never see a flash and the static shell is unchanged (no CLS: the bar overlays, it does not push content).
+- `ConsentBanner`: fixed bottom bar, ink text on canvas, 1px top border, square buttons (DR-1/DR-2), `role="region"` with an accessible name, keyboard order Accept → Reject → Customize, focus is not stolen on load. Part of the prerendered HTML so it paints with the page; an inline boot script hides it before paint for visitors who already decided, so returning visitors never see a flash (no CLS: the bar overlays, it does not push content). Implementation note: rendering it only after hydration made it the LCP element at ~3 s (ADR-009).
 - `ConsentSettings`: a native `<dialog>` (focus trapped, Escape closes) with the two categories, the Analytics checkbox, Save and Cancel; opened from Customize and from the footer link "Cài đặt cookie" / "Cookie settings" (always available).
 - Mobile product pages: the bar stacks above `ProductOrderBar` (body padding accounts for both while the bar is visible).
 - Copy in `messages/{vi,en}.json` under `consent` (English per P5 rules).
@@ -46,7 +46,7 @@ Visitors choose whether to allow analytics through a bilingual consent bar; GA4 
 ## 3. GA4 loading
 
 - `lib/analytics/env.ts`: `analyticsMode = 'off' | 'production' | 'debug'` from `NEXT_PUBLIC_GA_ID` (via `@/lib/env`), `VERCEL_ENV` (platform marker, read on the server at build) and the `?ga_debug=1` flag (kept in `sessionStorage` for the tab). `off` when there is no ID, or outside production without the debug flag.
-- `Analytics` (client, lazy) renders `@next/third-parties/google`'s `GoogleAnalytics` only when mode ≠ `off` **and** analytics consent is granted. Before it loads, an inline config sets `gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' })`; debug mode adds `debug_mode: true`.
+- `Analytics` (client) renders a minimal Google tag loader (not `@next/third-parties`, so the consent default is guaranteed to run before `config`; ADR-009) only when mode ≠ `off` **and** analytics consent is granted. Before it loads, an inline config sets `gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' })`; debug mode adds `debug_mode: true`.
 - Page views: GA4 enhanced measurement (history changes) counts App Router navigations; no manual `page_view`.
 - Revoking: `gtag('consent', 'update', { analytics_storage: 'denied' })`, analytics cookies cleared, event helper stops sending; the already-loaded script stays until the next full load (documented).
 
