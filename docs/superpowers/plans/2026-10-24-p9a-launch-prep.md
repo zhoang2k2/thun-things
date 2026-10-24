@@ -36,33 +36,41 @@
 
 **Interfaces:** `ownerEmailHtml(lead, product, siteUrl): string`; `customerEmailHtml(lead, product, siteUrl): string`; `EmailMessage.html?: string`; `customerEmail` uses `lead.locale`.
 
-- [ ] Tests: escaping of every field; owner HTML sections, `mailto:`/`tel:`/Zalo links, photo only with `src`; customer HTML and text in vi and en; sink sends `html` with `text` for both emails.
-- [ ] Commit `[FEATURE] Send branded HTML lead emails`.
+- [x] Tests: escaping of every field; owner HTML sections, `mailto:`/`tel:`/Zalo links, photo only with `src`; customer HTML and text in vi and en; sink sends `html` with `text` for both emails.
+- [x] Commit `[FEATURE] Send branded HTML lead emails`.
 
 ### Task 2: No indexing on the temporary host
 
 **Files:** Create `lib/seo/indexing.ts` (+ test); modify `app/robots.ts` (+ test), `lib/seo/metadata.ts` (+ test).
 
-- [ ] Tests: `isIndexable` for `https://thun-things.vercel.app`, `http://localhost:3000`, `https://thunthings.com`; robots disallow-all without sitemap when not indexable; metadata `robots.index === false` when not indexable and absent otherwise.
-- [ ] Commit `[FEATURE] Keep the temporary host out of search results`.
+- [x] Tests: `isIndexable` for `https://thun-things.vercel.app`, `http://localhost:3000`, `https://thunthings.com`; robots disallow-all without sitemap when not indexable; metadata `robots.index === false` when not indexable and absent otherwise.
+- [x] Commit `[FEATURE] Keep the temporary host out of search results`.
 
 ### Task 3: Production configuration check
 
 **Files:** Create `scripts/check-production-config.mjs` (+ `scripts/check-production-config.test.ts`); modify `package.json` `build`; docs `docs/configuration-variables.md`.
 
-- [ ] Tests: passes without `VERCEL_ENV=production`; lists each missing required name; rejects a non-https site URL; AI enabled without keys fails; output never contains a value.
-- [ ] Commit `[FEATURE] Refuse production builds with missing configuration`.
+- [x] Tests: passes without `VERCEL_ENV=production`; lists each missing required name; rejects a non-https site URL; AI enabled without keys fails; output never contains a value.
+- [x] Commit `[FEATURE] Refuse production builds with missing configuration`.
 
 ### Task 4: CSP review, checklist, email evidence, PR
 
-- [ ] CSP review with tests updated for any removal; ADR-012 (P9a decisions) + index row.
-- [ ] `docs/launch-checklist.md`; roadmap: P9 split into P9a/P9b, P9a `IN REVIEW`.
-- [ ] Email preview script → evidence PNGs (owner vi, customer vi, customer en).
-- [ ] Full suite, `pnpm perf`, push, PR, evidence, CI.
+- [x] CSP review with tests updated for any removal; ADR-012 (P9a decisions) + index row.
+- [x] `docs/launch-checklist.md`; roadmap: P9 split into P9a/P9b, P9a `IN REVIEW`.
+- [x] Email preview script → evidence PNGs (owner vi, customer vi, customer en).
+- [x] Full suite, `pnpm perf`, push, PR, evidence, CI.
 
 ## P9a Acceptance
 
-- [ ] HTML emails escaped and localised; text versions kept.
-- [ ] `vercel.app` production answers `noindex`; `.com` will index without code changes.
-- [ ] Production build fails fast on missing configuration; CI and previews unaffected.
+- [x] HTML emails escaped and localised; text versions kept.
+- [x] `vercel.app` production answers `noindex`; `.com` will index without code changes.
+- [x] Production build fails fast on missing configuration; CI and previews unaffected.
 - [ ] CI green; evidence in the PR; owner confirmed the Vercel env list and GA4 retention; owner merged.
+
+## Implementation notes (2026-10-24)
+
+- The customer email shows the product name and link but no price, and never repeats the visitor's contact details or message.
+- Long values (email addresses) wrap inside the owner email on phones (`overflow-wrap:anywhere`), found while reviewing the evidence.
+- `blob:` was removed from the CSP `img-src`; nothing in the app creates blob URLs.
+- Email previews: `EMAIL_PREVIEW=1 pnpm vitest run lib/leads/emailPreview` writes sample HTML to `.superpowers/email-preview/`.
+- Owner steps live in `docs/launch-checklist.md`.

@@ -21,6 +21,7 @@ This directory tracks significant technical and architectural choices made durin
 | **ADR-009** | Cookie consent and GA4 (Consent Mode Basic)                  | **Accepted** | 2026-10-24 |
 | **ADR-010** | Deterministic quiz bot: server scoring and bubble guardrails | **Accepted** | 2026-10-24 |
 | **ADR-011** | Quiz AI rationale: Gemini first, Anthropic fallback          | **Accepted** | 2026-10-24 |
+| **ADR-012** | Launch preparation on a temporary host                       | **Accepted** | 2026-10-24 |
 
 ---
 
@@ -154,3 +155,15 @@ This directory tracks significant technical and architectural choices made durin
   - **Cache** of successful answers for 7 days per locale, colour, vibe, product and models (Upstash when configured, in-memory otherwise).
   - **Tests and tooling never call a provider**: Playwright, evidence and Lighthouse servers force `AI_ENABLED=false`; the UI is tested with a stubbed endpoint; a check keeps key names and SDKs out of browser bundles.
 - **Consequences:** The quiz works unchanged without AI. A rationale costs about US$0.00025 with the default Gemini model. Claude is now the fallback, which is weaker evidence for a Claude for Startups application (`thun-things.md` §12); leaving `GEMINI_API_KEY` unset makes Claude the only provider. Production should use a billing-enabled Gemini key, since free-tier requests may be used to improve Google products.
+
+---
+
+### ADR-012: Launch preparation on a temporary host
+
+- **Context:** The site goes public on `thun-things.vercel.app` before the `.com` domain exists (P9-1). Without a verified domain, Resend only delivers to the account owner. P9 is split into P9a (code) and P9b (content, photos, domain) [USER].
+- **Decision:**
+  - **HTML lead emails** (`lib/leads/emailHtml.ts`) are built as strings with inline styles and tables, no new dependency; every visitor value is escaped and links are only `https:`, `mailto:`, `tel:` and Zalo. The owner notification stays Vietnamese; the customer confirmation (HTML and text) follows the page language and never echoes contact data or the message. Plain-text versions are still sent.
+  - **Indexing by host** (`lib/seo/indexing.ts`): `*.vercel.app` answers `noindex, nofollow` and a disallow-all `robots.txt` without the sitemap; any other host (the `.com`, localhost) is indexable. Switching `NEXT_PUBLIC_SITE_URL` is the only step to open the site to search engines.
+  - **Production configuration check** (`scripts/check-production-config.mjs`) runs before `next build` and only enforces when `VERCEL_ENV=production`; it lists missing variable names and stops the build, so a broken deploy never replaces a working one.
+  - **CSP review:** `blob:` removed from `img-src` (unused); `data:` kept for future blur placeholders; GA entries unchanged; AI providers are server-side and need none.
+- **Consequences:** Customers get no confirmation email until the domain is verified (accepted, the success page promises none). Merging to production requires the Vercel production variables listed in `docs/launch-checklist.md`.
