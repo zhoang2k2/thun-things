@@ -104,23 +104,23 @@ GA4 is required to learn what users care about and whether traffic is healthy [U
 
 ## 3. Confirmed decisions (from the owner interview)
 
-| ID   | Decision                                                                                                                                     | Source                                                         |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| D-01 | Solo developer, < 10 h/week                                                                                                                  | [USER]                                                         |
-| D-02 | Bilingual vi/en with `/vi` and `/en` subpaths                                                                                                | [USER]                                                         |
-| D-03 | Catalog = TypeScript data + Zod schema in the repo; migrate to Supabase later. Access only through a data-access layer                       | [USER]                                                         |
-| D-04 | Product statuses to support: `sold_out` and `coming_soon` / `preorder` (plus normal availability)                                            | [USER]                                                         |
-| D-05 | Sold-out CTA = waitlist email signup **and** contact-to-preorder. _(v2: now handled by the Contact page `purpose` selector — see D-21/D-22)_ | [USER]                                                         |
-| D-06 | Prices are shown clearly                                                                                                                     | [USER]                                                         |
-| D-07 | "Sold out" is currently a **marketing tactic** (real products and photos exist). See §13 R-01                                                | [USER]                                                         |
-| D-08 | Contact: form → email only for now. Later: fanpage / Instagram / Zalo. Later: persist leads to Google Sheet or Supabase                      | [USER]                                                         |
-| D-09 | Quiz bot appears as a **corner popup**; v1 is tap-to-choose quiz; free-text chat is a later phase                                            | [USER]                                                         |
-| D-10 | Quiz attributes: **color** and **vibe/style**. Vibe taxonomy decided later                                                                   | [USER]                                                         |
-| D-11 | Design: white minimal, very creative, synchronized motion, hover reveals tooltip/video-like content. Fashion shop, not SaaS                  | [USER]                                                         |
-| D-12 | Hover/motion content: back-side and lifestyle photos already exist                                                                           | [USER]                                                         |
-| D-13 | Extra page: Policy (returns, privacy). More tabs welcome as suggestions                                                                      | [USER]                                                         |
-| D-14 | GA4 behind a cookie-consent banner; GA4 loads only after consent                                                                             | [USER]                                                         |
-| D-15 | Bot v1 AI level was left to the agent: **quiz logic is deterministic; Claude writes a short "why this fits you" blurb**                      | [PROPOSED] — owner asked for the fastest route, did not object |
+| ID   | Decision                                                                                                                                                                                                              | Source            |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| D-01 | Solo developer, < 10 h/week                                                                                                                                                                                           | [USER]            |
+| D-02 | Bilingual vi/en with `/vi` and `/en` subpaths                                                                                                                                                                         | [USER]            |
+| D-03 | Catalog = TypeScript data + Zod schema in the repo; migrate to Supabase later. Access only through a data-access layer                                                                                                | [USER]            |
+| D-04 | Product statuses to support: `sold_out` and `coming_soon` / `preorder` (plus normal availability)                                                                                                                     | [USER]            |
+| D-05 | Sold-out CTA = waitlist email signup **and** contact-to-preorder. _(v2: now handled by the Contact page `purpose` selector — see D-21/D-22)_                                                                          | [USER]            |
+| D-06 | Prices are shown clearly                                                                                                                                                                                              | [USER]            |
+| D-07 | "Sold out" is currently a **marketing tactic** (real products and photos exist). See §13 R-01                                                                                                                         | [USER]            |
+| D-08 | Contact: form → email only for now. Later: fanpage / Instagram / Zalo. Later: persist leads to Google Sheet or Supabase                                                                                               | [USER]            |
+| D-09 | Quiz bot appears as a **corner popup**; v1 is tap-to-choose quiz; free-text chat is a later phase                                                                                                                     | [USER]            |
+| D-10 | Quiz attributes: **color** and **vibe/style**. Vibe taxonomy decided later                                                                                                                                            | [USER]            |
+| D-11 | Design: white minimal, very creative, synchronized motion, hover reveals tooltip/video-like content. Fashion shop, not SaaS                                                                                           | [USER]            |
+| D-12 | Hover/motion content: back-side and lifestyle photos already exist                                                                                                                                                    | [USER]            |
+| D-13 | Extra page: Policy (returns, privacy). More tabs welcome as suggestions                                                                                                                                               | [USER]            |
+| D-14 | GA4 behind a cookie-consent banner; GA4 loads only after consent                                                                                                                                                      | [USER]            |
+| D-15 | Bot v1 AI level: **quiz logic is deterministic; an LLM writes a short "why this fits you" blurb — Gemini first, Anthropic (Claude) as fallback on a missing key or failure, cheapest models by default (P8-1, P8-2)** | [USER] 2026-10-24 |
 
 ---
 
@@ -210,7 +210,7 @@ A corner popup ("assistant") that asks a few tap-to-choose questions and returns
 1. User taps the launcher → small card opens → Step 1: **color** (options derived from catalog colors).
 2. Step 2: **vibe** (options derived from catalog `vibes` tags). If the catalog has fewer than 2 distinct vibes, skip this step automatically (taxonomy is still undecided).
 3. Deterministic scoring (`lib/recommend`) ranks products; `sold_out`/`coming_soon` items still appear but with their status and waitlist CTA.
-4. Result view (v2, O-03): **one featured product** with a 1–2 sentence **Claude-written rationale** and a "see more" button (opens `/shop` filtered by the chosen color/vibe). If the API call fails or times out (e.g., 4 s), show results without rationale (graceful degradation).
+4. Result view (v2, O-03): **one featured product** with a 1–2 sentence **AI-written rationale** (Gemini, Claude fallback; P8) and a "see more" button (opens `/shop` filtered by the chosen color/vibe). If the API call fails or times out (e.g., 4 s), show results without rationale (graceful degradation).
 5. Events: `quiz_open`, `quiz_step`, `quiz_complete`, `quiz_result_click`, `quiz_bubble_shown`, `quiz_bubble_dismiss`.
 
 ### 7.3 Why not a free-text chatbot in v1
@@ -223,10 +223,10 @@ A corner popup ("assistant") that asks a few tap-to-choose questions and returns
 
 - Server-side only; API key never reaches the client.
 - Validate input with Zod (enum answers only in v1). Cap output length. Prompt contains only catalog facts and the user's enum answers.
-- Rate limit per IP (Vercel Firewall or a small Redis-backed limiter). Hard monthly spend cap in the Anthropic Console.
-- Model name comes from an env var (`ANTHROPIC_MODEL`); do not hard-code it.
+- Rate limit per IP (Vercel Firewall or a small Redis-backed limiter). Spend controls: budget alert in Google Cloud Billing (Gemini; paid tier in production, since free-tier requests may be used to improve Google products) and a hard monthly cap in the Anthropic Console.
+- Model names come from env vars (`GEMINI_MODEL`, `ANTHROPIC_MODEL`); do not hard-code them. Provider order: Gemini, then Anthropic (P8-1).
 - Do not store quiz answers tied to identity in v1. If analytics need them, send only anonymous, aggregated events and only after cookie consent.
-- Disclose in the privacy policy that quiz answers are processed by an AI provider.
+- Disclose in the privacy policy that quiz answers are processed by an AI provider (Google Gemini API, Anthropic).
 
 ---
 
@@ -242,7 +242,7 @@ A corner popup ("assistant") that asks a few tap-to-choose questions and returns
 | Validation    | Zod                                                            | Shared between catalog, forms, API                                   |
 | Motion        | `motion` (+ CSS)                                               | See §6.3                                                             |
 | Email         | Resend                                                         | Needs a verified domain for production sending (domain bought later) |
-| AI            | Anthropic API (first-party), server route                      | Pay-as-you-go until credits are possible                             |
+| AI            | Google Gemini API, Anthropic API fallback, server route        | Pay-as-you-go until credits are possible                             |
 | Analytics     | GA4 with Consent Mode                                          | Loaded only after consent                                            |
 | Rate limiting | Vercel Firewall or Upstash Ratelimit                           | Serverless: in-memory counters do not work                           |
 | Tests         | Vitest + React Testing Library; Playwright smoke; axe for a11y |                                                                      |
@@ -389,7 +389,7 @@ Owner status: **no institutional investor yet [USER]** → not currently eligibl
 Implications:
 
 - The website is **not** the gating factor; funding is. Do not optimize the roadmap for "eligibility" alone.
-- Useful supporting evidence: real traffic/traction (GA4), a genuine Claude integration (quiz rationale), clear usage metrics.
+- Useful supporting evidence: real traffic/traction (GA4), a genuine Claude integration (quiz rationale), clear usage metrics. Since P8, Claude is the fallback behind Gemini (owner decision P8-1), which is weaker evidence; leaving `GEMINI_API_KEY` unset makes Claude the only provider, with no code change.
 - Treat the application as a **post-launch backlog item** (Phase 7) and re-check the official terms at that time.
 - Until then, AI usage is pay-as-you-go: keep calls few, short, cached where possible, and capped.
 
