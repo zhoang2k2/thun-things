@@ -13,7 +13,9 @@ const LINK =
 // P6-1: bottom bar for visitors without a decision. It is part of the prerendered HTML so it paints
 // with the page; ConsentBootScript hides it before paint for visitors who already decided, and it
 // unmounts once the client has read the decision. It overlays the page (no layout shift), never
-// takes focus, and exposes its height as --consent-bar-height so the page can pad its bottom.
+// takes focus, and exposes its height as --consent-bar-height so the page can pad its bottom. Once
+// measured it sets data-consent-bar-measured on <html>, so elements stacked above the bar (the quiz
+// launcher) can wait for the real height instead of jumping into place.
 export const ConsentBanner = () => {
   const t = useTranslations('consent');
   const { ready, decided, accept, reject, openSettings } = useConsent();
@@ -24,14 +26,17 @@ export const ConsentBanner = () => {
     const element = ref.current;
     const root = document.documentElement;
     if (!ready || !visible || !element) return;
-    const update = () =>
+    const update = () => {
       root.style.setProperty('--consent-bar-height', `${element.offsetHeight}px`);
+      root.setAttribute('data-consent-bar-measured', '');
+    };
     update();
     const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(update);
     observer?.observe(element);
     return () => {
       observer?.disconnect();
       root.style.removeProperty('--consent-bar-height');
+      root.removeAttribute('data-consent-bar-measured');
     };
   }, [ready, visible]);
 

@@ -102,6 +102,14 @@ html[data-consent-decided] .ConsentBanner {
   bottom: var(--quiz-bottom);
 }
 
+/* While the consent bar shows but has not been measured yet, the launcher would paint at the wrong
+   height and jump (CLS). Hidden elements do not count as layout shifts, so it waits for the bar. */
+html:not([data-consent-decided]):not([data-consent-bar-measured])
+  body:has(.ConsentBanner)
+  .QuizLauncher {
+  visibility: hidden;
+}
+
 .QuizCard,
 .QuizBubble {
   bottom: calc(var(--quiz-bottom) + 3.5rem);
