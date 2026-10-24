@@ -28,7 +28,7 @@ export const buildCsp = ({ dev, preview }: CspOptions): string => {
       ["'self'", "'unsafe-inline'", ...(dev ? ["'unsafe-eval'"] : []), GOOGLE_TAG, ...live],
     ],
     ['style-src', ["'self'", "'unsafe-inline'"]],
-    ['img-src', ["'self'", 'data:', 'blob:', GA_COLLECT[0], GTM_ANY, ...live]],
+    ['img-src', ["'self'", 'data:', GA_COLLECT[0], GTM_ANY, ...live]],
     ['font-src', ["'self'"]],
     ['connect-src', ["'self'", ...GA_COLLECT, GTM_ANY, ...live]],
     ...(preview ? ([['frame-src', live]] as [string, string[]][]) : []),

@@ -13,7 +13,7 @@ describe('buildCsp', () => {
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com",
+      "img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com",
       "font-src 'self'",
       "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
       "frame-ancestors 'none'",
