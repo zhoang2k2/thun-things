@@ -16,7 +16,7 @@ import scenarios from './scenarios.mjs';
 /**
  * @typedef {{ page: import('@playwright/test').Page, snap: (hold?: number) => Promise<void> }} RunContext
  * @typedef {{ name: string, kind: 'gif' | 'png', viewport: { width: number, height: number },
- *   mobile?: boolean, path?: string, set?: string, run?: (context: RunContext) => Promise<void> }} Scenario
+ *   mobile?: boolean, path?: string, set?: string, fullPage?: boolean, run?: (context: RunContext) => Promise<void> }} Scenario
  */
 
 const { GIFEncoder, quantize, applyPalette } = gifenc;
@@ -111,7 +111,7 @@ const runScenario = async (browser, scenario) => {
       // A PNG with `run` captures the viewport after the interaction (fixed overlays stay in view).
       if (scenario.run) {
         await scenario.run({ page, snap: async () => {} });
-        await page.screenshot({ path: file });
+        await page.screenshot({ path: file, fullPage: Boolean(scenario.fullPage) });
         console.log(`  ${file}`);
         return;
       }
