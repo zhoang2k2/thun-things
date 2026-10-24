@@ -58,12 +58,7 @@
     }
 
     body:has(.ProductOrderBar):has(.ConsentBanner) {
-      padding-bottom: calc(5rem + var(--consent-bar-height, 0px));
-    }
-
-    /* The consent bar sits above the order bar instead of covering it. */
-    body:has(.ProductOrderBar) .ConsentBanner {
-      bottom: 5rem;
+      padding-bottom: calc(5rem + 1px + var(--consent-bar-height, 0px));
     }
   }
 
@@ -74,5 +69,14 @@
   button {
     border-radius: 0;
     appearance: none;
+  }
+}
+
+/* The consent bar sits above the mobile order bar instead of covering it (P6-1). Unlayered so it
+   overrides the bar's `bottom-0` utility. */
+@media (width < 48rem) {
+  body:has(.ProductOrderBar) .ConsentBanner {
+    /* Order bar: 48px control + 2 × 16px padding + 1px top border. */
+    bottom: calc(5rem + 1px);
   }
 }

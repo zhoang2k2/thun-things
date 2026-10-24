@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3100",
+      "localStorage": [
+        {
+          "name": "thun-things.consent",
+          "value": "{\"version\":1,\"analytics\":false,\"decidedAt\":\"2026-10-24T00:00:00.000Z\"}"
+        }
+      ]
+    }
+  ]
+}
