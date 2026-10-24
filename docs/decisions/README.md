@@ -20,6 +20,7 @@ This directory tracks significant technical and architectural choices made durin
 | **ADR-008** | Bilingual routing with next-intl and root parameters         | **Accepted** | 2026-10-24 |
 | **ADR-009** | Cookie consent and GA4 (Consent Mode Basic)                  | **Accepted** | 2026-10-24 |
 | **ADR-010** | Deterministic quiz bot: server scoring and bubble guardrails | **Accepted** | 2026-10-24 |
+| **ADR-011** | Quiz AI rationale: Gemini first, Anthropic fallback          | **Accepted** | 2026-10-24 |
 
 ---
 
@@ -139,3 +140,17 @@ This directory tracks significant technical and architectural choices made durin
   - **Layout.** Launcher, bubble and card stack above the consent bar and, on mobile product pages, above the order bar (`--quiz-bottom` in `globals.css`). While the consent bar shows, the launcher stays hidden until the bar has been measured (`data-consent-bar-measured`), so it never jumps into place (CLS).
   - **Events** (`quiz_open`, `quiz_step`, `quiz_complete`, `quiz_result_click`, `quiz_bubble_shown`, `quiz_bubble_dismiss`) carry catalog colour ids, vibe tags, match kind, product slug, positions and counts only.
 - **Consequences:** Recommendations are explainable and testable without an AI dependency; P8 adds AI rationale on top of the same ranking. Vibe labels are placeholders until the owner tags the real catalog.
+
+---
+
+### ADR-011: Quiz AI rationale: Gemini first, Anthropic fallback
+
+- **Context:** D-15 planned a Claude-written "why this fits you" line under the quiz result. P8 owner decisions: Gemini first with Anthropic as fallback when the Gemini key is missing or Gemini fails (P8-1); cheapest models by default (P8-2).
+- **Decision:**
+  - **Chain.** `lib/ai/explain.ts` tries providers in order Gemini (`@google/genai`) → Anthropic (`@anthropic-ai/sdk`), skipping any without a key, inside one 3,500 ms deadline. A provider with a fallback behind it gets at most 2,000 ms, so a hanging Gemini still leaves Anthropic time. SDK retries are off; the fallback replaces the roadmap's "one retry". The client gives up after 4 s.
+  - **Models from configuration**: `GEMINI_MODEL` (default `gemini-3.1-flash-lite`, the cheapest model a new key can use; earliest shutdown 2027-05-07, replacement `gemini-3.5-flash-lite`) and `ANTHROPIC_MODEL` (default `claude-haiku-5-5`). Gemini thinking is minimised so it does not eat the 120-token output cap.
+  - **Input and output.** The prompt is built on the server from catalog facts and the visitor's enum answers only (no price, no free text). Output must be at most 2 sentences and 280 characters, with no link, `@`, markdown or emoji; anything else counts as a provider failure.
+  - **Endpoint.** `POST /api/quiz/explain` with strict catalog enums (`locale`, `color`, `vibe?`, `slug`), 10 requests per 10 minutes per client, `200 { text, provider }` or `204` for "no rationale" (AI off, no key, every provider failed, or the chain threw).
+  - **Cache** of successful answers for 7 days per locale, colour, vibe, product and models (Upstash when configured, in-memory otherwise).
+  - **Tests and tooling never call a provider**: Playwright, evidence and Lighthouse servers force `AI_ENABLED=false`; the UI is tested with a stubbed endpoint; a check keeps key names and SDKs out of browser bundles.
+- **Consequences:** The quiz works unchanged without AI. A rationale costs about US$0.00025 with the default Gemini model. Claude is now the fallback, which is weaker evidence for a Claude for Startups application (`thun-things.md` §12); leaving `GEMINI_API_KEY` unset makes Claude the only provider. Production should use a billing-enabled Gemini key, since free-tier requests may be used to improve Google products.
