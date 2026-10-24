@@ -88,6 +88,12 @@ describe('ownerEmailHtml', () => {
     expect(odd).not.toContain('mailto:a"b');
   });
 
+  it('lets long values wrap instead of widening the email on phones', () => {
+    const cells = html.match(/<td style="padding:4px 0;[^"]*"/g) ?? [];
+    expect(cells.length).toBeGreaterThan(0);
+    for (const cell of cells) expect(cell).toContain('overflow-wrap:anywhere');
+  });
+
   it('works without a product or optional fields', () => {
     const bare = ownerEmailHtml(
       {

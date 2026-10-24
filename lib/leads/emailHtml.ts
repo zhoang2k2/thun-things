@@ -41,7 +41,7 @@ const heading = (text: string) =>
   `<p style="margin:24px 0 8px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:${MUTED}">${escapeHtml(text)}</p>`;
 
 const row = (label: string, value: string) =>
-  `<tr><td style="padding:4px 16px 4px 0;color:${MUTED};vertical-align:top;white-space:nowrap">${escapeHtml(label)}</td><td style="padding:4px 0;color:${INK}">${value}</td></tr>`;
+  `<tr><td style="padding:4px 16px 4px 0;color:${MUTED};vertical-align:top;white-space:nowrap">${escapeHtml(label)}</td><td style="padding:4px 0;color:${INK};overflow-wrap:anywhere;word-break:break-word">${value}</td></tr>`;
 
 const table = (rows: string[]) =>
   rows.length === 0
