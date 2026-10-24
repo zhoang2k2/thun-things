@@ -2,13 +2,14 @@
 
 import { AnimatePresence } from 'motion/react';
 import { useLocale } from 'next-intl';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import type { FocusEvent, KeyboardEvent, MouseEvent, PointerEvent } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
 import type { ActiveCard, OpenCard } from '@/components/product/ProductGrid';
 import { ProductHoverCard } from '@/components/product/ProductHoverCard';
 import { Link } from '@/i18n/navigation';
+import { trackEvent } from '@/lib/analytics/events';
 import type { ProductCardModel } from '@/lib/catalog';
 import { cn } from '@/lib/cn';
 
@@ -26,6 +27,7 @@ interface ProductTileProps {
 export const ProductTile = ({ product, active, onOpen, onClose }: ProductTileProps) => {
   const locale = useLocale();
   const cellRef = useRef<HTMLLIElement>(null);
+  const previewTrackedRef = useRef(false);
   const pointerTypeRef = useRef('mouse');
   // Captured at pointerdown: the tap also focuses the link, which opens the card before `click`.
   const wasOpenAtPressRef = useRef(false);
@@ -57,8 +59,18 @@ export const ProductTile = ({ product, active, onOpen, onClose }: ProductTilePro
     if (event.key === 'Escape') onClose(product.id);
   };
 
+  // One hover_preview_open per tile per page view (spec section 5).
+  useEffect(() => {
+    if (!active || previewTrackedRef.current) return;
+    previewTrackedRef.current = true;
+    trackEvent('hover_preview_open', { product_id: product.slug, status: product.status });
+  }, [active, product.slug, product.status]);
+
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (pointerTypeRef.current !== 'touch' || wasOpenAtPressRef.current) return;
+    if (pointerTypeRef.current !== 'touch' || wasOpenAtPressRef.current) {
+      trackEvent('select_item', { product_id: product.slug, status: product.status, locale });
+      return;
+    }
     event.preventDefault();
     onOpen(product.id, cellRef.current!, pointFrom(event));
   };

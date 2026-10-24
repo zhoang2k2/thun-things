@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 
+import { CookieSettingsButton } from '@/components/consent/CookieSettingsButton';
 import type { NavItem, SocialLink } from '@/config/site';
 import { Link } from '@/i18n/navigation';
 
@@ -30,6 +31,11 @@ export const SiteFooter = ({ policies, contactEmail, socials }: SiteFooterProps)
                 </Link>
               </li>
             ))}
+            <li>
+              <CookieSettingsButton
+                className={`SiteFooter__link SiteFooter__cookieSettings text-left ${LINK_CLASSES}`}
+              />
+            </li>
           </ul>
         </section>
         {contactEmail && (

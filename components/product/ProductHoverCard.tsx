@@ -2,6 +2,7 @@
 
 import { useReducedMotion } from 'motion/react';
 import * as m from 'motion/react-m';
+import { useLocale } from 'next-intl';
 import type { MouseEvent } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
@@ -10,6 +11,7 @@ import { ProductAction } from '@/components/product/ProductAction';
 import type { ActiveCard } from '@/components/product/ProductGrid';
 import { StatusBadge } from '@/components/product/StatusBadge';
 import { Link, useRouter } from '@/i18n/navigation';
+import { trackEvent } from '@/lib/analytics/events';
 import type { ProductCardModel } from '@/lib/catalog';
 
 // 16px photo-print frame (8-point grid): the card sits 16px outside the cell on every side but the
@@ -25,6 +27,7 @@ interface ProductHoverCardProps {
 // spreading from the pointer entry point, as if the image were lifted into the card.
 export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => {
   const router = useRouter();
+  const locale = useLocale();
   const reducedMotion = useReducedMotion();
   const href = `/products/${product.slug}`;
 
@@ -42,6 +45,7 @@ export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => 
   // The whole card opens the product; links inside keep their own behaviour.
   const handleClick = (event: MouseEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest('a')) return;
+    trackEvent('select_item', { product_id: product.slug, status: product.status, locale });
     router.push(href);
   };
 

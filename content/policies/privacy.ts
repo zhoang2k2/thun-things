@@ -2,9 +2,9 @@ import type { PolicyDocument } from '@/content/policies/types';
 
 // TODO(owner): replace this structured placeholder with the reviewed privacy text before launch
 // (P9). Keep the processors list in sync with the code: Resend (email), Upstash (rate limit),
-// Vercel (hosting); GA4 joins at P6. Change both locales together.
+// Vercel (hosting), Google (GA4, only after consent). Change both locales together.
 export const privacyPolicy: PolicyDocument = {
-  updatedAt: '2026-10-23',
+  updatedAt: '2026-10-24',
   sections: {
     vi: [
       {
@@ -29,6 +29,7 @@ export const privacyPolicy: PolicyDocument = {
           'Resend: gửi email thông báo yêu cầu đến Thun Things và email xác nhận đến bạn.',
           'Upstash: giới hạn số lần gửi form, dùng địa chỉ IP của bạn trong tối đa 10 phút.',
           'Vercel: lưu trữ và vận hành website.',
+          'Google (Google Analytics 4): thống kê lượt xem trang, chỉ khi bạn đồng ý cookie phân tích.',
         ],
       },
       {
@@ -44,9 +45,16 @@ export const privacyPolicy: PolicyDocument = {
         ],
       },
       {
-        heading: 'Cookie',
+        heading: 'Cookie và phân tích',
         paragraphs: [
-          'Hiện tại website không dùng cookie quảng cáo hay phân tích. Chính sách sẽ được cập nhật trước khi bật công cụ phân tích.',
+          'Website chỉ bật Google Analytics 4 sau khi bạn bấm Đồng ý trên thanh cookie hoặc bật mục Phân tích trong Cài đặt cookie. Nếu bạn từ chối, không có dữ liệu nào được gửi tới Google.',
+          'Lựa chọn của bạn được lưu trên trình duyệt này. Bạn có thể đổi lại bất cứ lúc nào bằng nút "Cài đặt cookie" ở cuối trang; khi tắt, cookie phân tích sẽ bị xoá.',
+        ],
+        items: [
+          'Google Analytics ghi nhận các trang bạn xem, những thao tác như mở xem nhanh hay chọn một mẫu áo, cùng vị trí gần đúng và loại thiết bị do Google ước tính. Không có email, số điện thoại hay nội dung bạn nhập vào form được gửi đi.',
+          'Cookie _ga và _ga_<mã> do Google đặt để phân biệt lượt truy cập, có hiệu lực tối đa 2 năm.',
+          'Google lưu dữ liệu phân tích trong [Chủ shop cập nhật: 2 hoặc 14 tháng, theo cài đặt Data retention trong GA4].',
+          'Thun Things không dùng cookie quảng cáo và không chia sẻ dữ liệu này để quảng cáo.',
         ],
       },
     ],
@@ -75,6 +83,7 @@ export const privacyPolicy: PolicyDocument = {
           'Resend: sends your request to Thun Things and a confirmation email to you.',
           'Upstash: limits how often the forms can be sent, using your IP address for up to 10 minutes.',
           'Vercel: hosts and runs the website.',
+          'Google (Google Analytics 4): measures page views, only if you accept analytics cookies.',
         ],
       },
       {
@@ -90,9 +99,16 @@ export const privacyPolicy: PolicyDocument = {
         ],
       },
       {
-        heading: 'Cookies',
+        heading: 'Cookies and analytics',
         paragraphs: [
-          'The website does not currently use advertising or analytics cookies. This policy will be updated before any analytics tool is turned on.',
+          'Google Analytics 4 only turns on after you click Accept on the cookie bar or switch on Analytics in Cookie settings. If you reject, nothing is sent to Google.',
+          'Your choice is stored in this browser. You can change it any time with the "Cookie settings" button at the bottom of the page; switching analytics off deletes its cookies.',
+        ],
+        items: [
+          'Google Analytics records the pages you view, actions such as opening a quick preview or choosing a design, and the approximate location and device type Google estimates. No email, phone number or anything you type into a form is sent.',
+          'The _ga and _ga_<id> cookies are set by Google to tell visits apart and last up to 2 years.',
+          'Google keeps analytics data for [Owner to update: 2 or 14 months, as set under Data retention in GA4].',
+          'Thun Things uses no advertising cookies and does not share this data for advertising.',
         ],
       },
     ],

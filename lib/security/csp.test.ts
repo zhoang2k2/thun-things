@@ -11,11 +11,11 @@ describe('buildCsp', () => {
     const csp = buildCsp(prod);
     expect(csp.split('; ')).toEqual([
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob:",
+      "img-src 'self' data: blob: https://*.google-analytics.com https://*.googletagmanager.com",
       "font-src 'self'",
-      "connect-src 'self'",
+      "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
       "frame-ancestors 'none'",
       "form-action 'self'",
       "base-uri 'self'",
@@ -36,7 +36,7 @@ describe('buildCsp', () => {
 
   it('adds unsafe-eval to script-src in development only', () => {
     expect(directive(buildCsp({ dev: true, preview: false }), 'script-src')).toBe(
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
     );
   });
 

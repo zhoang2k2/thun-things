@@ -47,10 +47,18 @@
     @apply bg-canvas text-ink font-sans antialiased;
   }
 
-  /* Keep the footer clear of the mobile product order bar. */
+  /* Keep the footer clear of the mobile product order bar and the consent bar (P6-1). */
+  body:has(.ConsentBanner) {
+    padding-bottom: var(--consent-bar-height, 0px);
+  }
+
   @media (width < 48rem) {
     body:has(.ProductOrderBar) {
       padding-bottom: 5rem;
+    }
+
+    body:has(.ProductOrderBar):has(.ConsentBanner) {
+      padding-bottom: calc(5rem + 1px + var(--consent-bar-height, 0px));
     }
   }
 
@@ -62,4 +70,18 @@
     border-radius: 0;
     appearance: none;
   }
+}
+
+/* The consent bar sits above the mobile order bar instead of covering it (P6-1). Unlayered so it
+   overrides the bar's `bottom-0` utility. */
+@media (width < 48rem) {
+  body:has(.ProductOrderBar) .ConsentBanner {
+    /* Order bar: 48px control + 2 × 16px padding + 1px top border. */
+    bottom: calc(5rem + 1px);
+  }
+}
+
+/* Prerendered consent bar, hidden before paint for visitors who already decided (ConsentBootScript). */
+html[data-consent-decided] .ConsentBanner {
+  display: none;
 }

@@ -30,8 +30,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function GlobalNotFound() {
+  // ConsentBootScript may add data-consent-decided to <html> before hydration.
   return (
-    <html lang={routing.defaultLocale} className={grotesk.variable}>
+    <html lang={routing.defaultLocale} className={grotesk.variable} suppressHydrationWarning>
       <body>
         {/* The current path exists in no locale, so the language switch offers each Home. */}
         <SiteFrame switcherPathname="/">

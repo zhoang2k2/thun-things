@@ -17,6 +17,8 @@ This directory tracks significant technical and architectural choices made durin
 | **ADR-005** | Lean Bootstrap Dependency Policy                             | Superseded   | 2026-10-15 |
 | **ADR-006** | UI Direction v3 Shell                                        | **Accepted** | 2026-10-23 |
 | **ADR-007** | P4 Quality Hardening Decisions                               | **Accepted** | 2026-10-23 |
+| **ADR-008** | Bilingual routing with next-intl and root parameters         | **Accepted** | 2026-10-24 |
+| **ADR-009** | Cookie consent and GA4 (Consent Mode Basic)                  | **Accepted** | 2026-10-24 |
 
 ---
 
@@ -107,3 +109,18 @@ This directory tracks significant technical and architectural choices made durin
 - **Accepted exception [USER, 2026-10-24]:** Without JavaScript the language switch keeps the path but drops the query. The prerendered links carry the path; with JavaScript the browser fills in the query. Query-aware links in the HTML would force per-request rendering of the layout and lose the prerendered shells.
 - **Consequences:** Render modes are unchanged from P4: Home and Contact are partially prerendered (◐), every other page and the 404 are static (○/●). After a client-side locale switch, Next keeps the previous locale's tree hidden (`display: none`) for back/forward navigation, so DOM queries that should only see the visible page need `:visible` or a role-based locator.
 - **References:** [Next.js metadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata), [multilingual sitemap](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap); version-specific root-parameter restrictions were checked in the installed `node_modules/next/dist/docs/`.
+
+---
+
+### ADR-009: Cookie consent and GA4 (Consent Mode Basic)
+
+- **Context:** D-14 requires GA4 to load only after consent. P6 owner decisions: bottom consent bar, Necessary + Analytics categories only, GA collects in production only (previews with `?ga_debug=1`), one measurement ID.
+- **Decision:**
+  - **Consent Mode Basic.** Nothing from Google is requested before the visitor accepts analytics. After Accept, an inline init sets `consent default` (`analytics_storage` granted; `ad_storage`, `ad_user_data`, `ad_personalization` always denied) before `config`, then `gtag.js` loads. A small own loader (`components/consent/Analytics.tsx`) is used instead of `@next/third-parties` `GoogleAnalytics` so that order is guaranteed.
+  - **Storage.** The decision is `localStorage['thun-things.consent'] = { version: 1, analytics, decidedAt }`; no cookie of our own. A newer `version` re-asks everyone. An in-memory copy (`lib/analytics/consentStore.ts`) keeps a choice made where storage throws.
+  - **Prerendered bar.** The bar is in the static HTML so it paints with the page (rendered only after hydration it became the LCP element at ~3 s while images are placeholders). An inline boot script hides it before paint for visitors who already decided; `<html>` carries `suppressHydrationWarning` for that attribute.
+  - **When GA runs.** `analyticsMode` = production when `VERCEL_ENV === 'production'`, debug (`debug_mode: true`) anywhere with `?ga_debug=1` (kept for the tab in `sessionStorage`), otherwise off; always off without `NEXT_PUBLIC_GA_ID`.
+  - **Revoking** denies `analytics_storage`, deletes `_ga`/`_ga_*` cookies, and stops events; the loaded tag stays until the next full load.
+  - **Events** go through the typed `trackEvent` (`lib/analytics/events.ts`): `select_item`, `hover_preview_open`, `contact_start`, `contact_submit`, `locale_switch`. Params are enums and the product slug (`product_id`) only.
+  - **CSP** adds `https://www.googletagmanager.com` (script), `https://*.google-analytics.com`, `https://*.analytics.google.com`, `https://*.googletagmanager.com` (connect; img for the first and last).
+- **Consequences:** No Google traffic for visitors who reject or never decide. E2E builds with a dummy id (`G-TEST000000`) and intercepts all Google traffic; most specs start with a stored decision so the bar stays out of their way. Legal review of the consent and privacy text (Decree 13/2023/ND-CP, GDPR) is an owner task before launch (P9).

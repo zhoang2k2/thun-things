@@ -68,3 +68,22 @@ describe('banners', () => {
     }
   });
 });
+
+describe('privacy policy and analytics (P6)', () => {
+  it.each(['vi', 'en'] as const)(
+    'lists Google Analytics, its cookies and how to opt out (%s)',
+    (locale) => {
+      const text = policyText(privacyPolicy, locale).join('\n');
+      expect(text).toContain('Google Analytics');
+      expect(text).toContain('_ga');
+      expect(text).not.toMatch(
+        /không dùng cookie quảng cáo hay phân tích|does not currently use advertising or analytics cookies/,
+      );
+    },
+  );
+
+  it('names Google as a processor in both locales', () => {
+    expect(policyText(privacyPolicy, 'vi').some((text) => text.startsWith('Google'))).toBe(true);
+    expect(policyText(privacyPolicy, 'en').some((text) => text.startsWith('Google'))).toBe(true);
+  });
+});

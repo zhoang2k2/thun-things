@@ -11,6 +11,7 @@ import {
   FormSuccess,
   Honeypot,
 } from '@/components/forms/FormStatus';
+import { useFormAnalytics } from '@/components/forms/useFormAnalytics';
 import { useFormFocus } from '@/components/forms/useFormFocus';
 import { useFormMessages } from '@/components/forms/useFormMessages';
 import { Button } from '@/components/ui/Button';
@@ -31,6 +32,7 @@ interface NotifyFormProps {
 export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormProps) => {
   const [state, formAction, pending] = useActionState(submitNotify, initialFormState);
   const { errorRef, successRef } = useFormFocus(state);
+  const formAnalytics = useFormAnalytics('notify', state);
   const t = useTranslations('forms');
   const locale = useLocale();
   const { errors, message } = useFormMessages(state);
@@ -56,6 +58,8 @@ export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormPro
       ) : (
         <form
           action={formAction}
+          onFocusCapture={formAnalytics.onFocusCapture}
+          onSubmit={formAnalytics.onSubmit}
           noValidate
           className="NotifyForm__form relative flex flex-col gap-6"
         >

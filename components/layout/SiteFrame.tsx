@@ -2,11 +2,17 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
+import { Analytics } from '@/components/consent/Analytics';
+import { ConsentBanner } from '@/components/consent/ConsentBanner';
+import { ConsentBootScript } from '@/components/consent/ConsentBootScript';
+import { ConsentProvider } from '@/components/consent/ConsentProvider';
+import { ConsentSettings } from '@/components/consent/ConsentSettings';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SkipLink } from '@/components/layout/SkipLink';
 import { siteConfig } from '@/config/site';
 import { pickClientMessages } from '@/i18n/clientMessages';
+import { env } from '@/lib/env';
 
 interface SiteFrameProps {
   children: ReactNode;
@@ -21,22 +27,29 @@ export const SiteFrame = async ({ children, switcherPathname }: SiteFrameProps) 
   return (
     // Only the namespaces Client Components translate reach the browser; forms add their own.
     <NextIntlClientProvider messages={pickClientMessages(messages)}>
-      <SkipLink />
-      <SiteHeader
-        nav={siteConfig.nav.map(({ href, labelKey }) => ({ href, label: t(labelKey) }))}
-        switcherPathname={switcherPathname}
-      />
-      <main id="main" tabIndex={-1} className="Main focus:outline-none">
-        {children}
-      </main>
-      <SiteFooter
-        policies={siteConfig.policies.map(({ href, labelKey }) => ({
-          href,
-          label: t(labelKey),
-        }))}
-        contactEmail={siteConfig.contactEmail}
-        socials={siteConfig.socials}
-      />
+      <ConsentProvider>
+        <ConsentBootScript />
+        <SkipLink />
+        <SiteHeader
+          nav={siteConfig.nav.map(({ href, labelKey }) => ({ href, label: t(labelKey) }))}
+          switcherPathname={switcherPathname}
+        />
+        <main id="main" tabIndex={-1} className="Main focus:outline-none">
+          {children}
+        </main>
+        <SiteFooter
+          policies={siteConfig.policies.map(({ href, labelKey }) => ({
+            href,
+            label: t(labelKey),
+          }))}
+          contactEmail={siteConfig.contactEmail}
+          socials={siteConfig.socials}
+        />
+        <ConsentBanner />
+        <ConsentSettings />
+        {/* VERCEL_ENV is a platform marker read at build (P6-3), not an owner variable. */}
+        <Analytics gaId={env.NEXT_PUBLIC_GA_ID} vercelEnv={process.env.VERCEL_ENV} />
+      </ConsentProvider>
     </NextIntlClientProvider>
   );
 };

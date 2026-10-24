@@ -19,6 +19,7 @@ import {
   FormSuccess,
   Honeypot,
 } from '@/components/forms/FormStatus';
+import { useFormAnalytics } from '@/components/forms/useFormAnalytics';
 import { useFormFocus } from '@/components/forms/useFormFocus';
 import { useFormMessages } from '@/components/forms/useFormMessages';
 import { Button } from '@/components/ui/Button';
@@ -42,6 +43,7 @@ interface ContactFormProps {
 export const ContactForm = ({ enabled, prefill, contactEmail }: ContactFormProps) => {
   const [state, formAction, pending] = useActionState(submitContact, initialFormState);
   const { errorRef, successRef } = useFormFocus(state);
+  const formAnalytics = useFormAnalytics('contact', state);
   const t = useTranslations('forms');
   const locale = useLocale();
   const { errors, message } = useFormMessages(state);
@@ -61,6 +63,8 @@ export const ContactForm = ({ enabled, prefill, contactEmail }: ContactFormProps
   return (
     <form
       action={formAction}
+      onFocusCapture={formAnalytics.onFocusCapture}
+      onSubmit={formAnalytics.onSubmit}
       noValidate
       className="ContactForm relative flex max-w-3xl flex-col gap-8"
     >
