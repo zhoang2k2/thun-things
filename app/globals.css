@@ -80,3 +80,8 @@
     bottom: calc(5rem + 1px);
   }
 }
+
+/* Prerendered consent bar, hidden before paint for visitors who already decided (ConsentBootScript). */
+html[data-consent-decided] .ConsentBanner {
+  display: none;
+}

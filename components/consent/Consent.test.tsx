@@ -138,3 +138,37 @@ describe('ConsentSettings', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
+
+describe('server render', () => {
+  it('includes the bar in the prerendered HTML so it paints with the page', async () => {
+    const { renderToString } = await import('react-dom/server');
+    const { NextIntlClientProvider } = await import('next-intl');
+    const html = renderToString(
+      <NextIntlClientProvider locale="vi" messages={vi_}>
+        <ConsentProvider>
+          <ConsentBanner />
+        </ConsentProvider>
+      </NextIntlClientProvider>,
+    );
+    expect(html).toContain('ConsentBanner');
+    expect(html).toContain(consent.message);
+  });
+});
+
+describe('ConsentBootScript', () => {
+  it('marks <html> as decided before paint when a valid decision is stored', async () => {
+    const { consentBootScript } = await import('@/components/consent/ConsentBootScript');
+    document.documentElement.removeAttribute('data-consent-decided');
+    window.localStorage.setItem(
+      CONSENT_KEY,
+      JSON.stringify({ version: 1, analytics: false, decidedAt: '2026-10-24T00:00:00.000Z' }),
+    );
+    new Function(consentBootScript)();
+    expect(document.documentElement).toHaveAttribute('data-consent-decided');
+
+    document.documentElement.removeAttribute('data-consent-decided');
+    window.localStorage.setItem(CONSENT_KEY, '{broken');
+    new Function(consentBootScript)();
+    expect(document.documentElement).not.toHaveAttribute('data-consent-decided');
+  });
+});

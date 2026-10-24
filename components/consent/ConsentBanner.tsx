@@ -10,19 +10,20 @@ import { Link } from '@/i18n/navigation';
 const LINK =
   'focus-visible:outline-ink underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2';
 
-// P6-1: bottom bar shown after hydration only when no decision exists. It overlays the page
-// (no layout shift) and never takes focus; its height is exposed as --consent-bar-height so the
-// page can pad its bottom and the mobile order bar can sit below it.
+// P6-1: bottom bar for visitors without a decision. It is part of the prerendered HTML so it paints
+// with the page; ConsentBootScript hides it before paint for visitors who already decided, and it
+// unmounts once the client has read the decision. It overlays the page (no layout shift), never
+// takes focus, and exposes its height as --consent-bar-height so the page can pad its bottom.
 export const ConsentBanner = () => {
   const t = useTranslations('consent');
   const { ready, decided, accept, reject, openSettings } = useConsent();
   const ref = useRef<HTMLElement>(null);
-  const visible = ready && !decided;
+  const visible = !ready || !decided;
 
   useEffect(() => {
     const element = ref.current;
     const root = document.documentElement;
-    if (!visible || !element) return;
+    if (!ready || !visible || !element) return;
     const update = () =>
       root.style.setProperty('--consent-bar-height', `${element.offsetHeight}px`);
     update();
@@ -32,7 +33,7 @@ export const ConsentBanner = () => {
       observer?.disconnect();
       root.style.removeProperty('--consent-bar-height');
     };
-  }, [visible]);
+  }, [ready, visible]);
 
   if (!visible) return null;
 

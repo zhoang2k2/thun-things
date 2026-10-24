@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 
 import { Analytics } from '@/components/consent/Analytics';
 import { ConsentBanner } from '@/components/consent/ConsentBanner';
+import { ConsentBootScript } from '@/components/consent/ConsentBootScript';
 import { ConsentProvider } from '@/components/consent/ConsentProvider';
 import { ConsentSettings } from '@/components/consent/ConsentSettings';
 import { SiteFooter } from '@/components/layout/SiteFooter';
@@ -27,6 +28,7 @@ export const SiteFrame = async ({ children, switcherPathname }: SiteFrameProps) 
     // Only the namespaces Client Components translate reach the browser; forms add their own.
     <NextIntlClientProvider messages={pickClientMessages(messages)}>
       <ConsentProvider>
+        <ConsentBootScript />
         <SkipLink />
         <SiteHeader
           nav={siteConfig.nav.map(({ href, labelKey }) => ({ href, label: t(labelKey) }))}

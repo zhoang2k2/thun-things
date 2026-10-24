@@ -26,8 +26,9 @@ export default async function LocaleLayout({ children }: LayoutProps<'/[locale]'
   const locale = await rootLocale();
   if (!isLocale(locale)) notFound();
 
+  // ConsentBootScript may add data-consent-decided to <html> before hydration.
   return (
-    <html lang={locale} className={grotesk.variable}>
+    <html lang={locale} className={grotesk.variable} suppressHydrationWarning>
       <body>
         <SiteFrame>{children}</SiteFrame>
       </body>
