@@ -69,10 +69,10 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Everything but Next internals and the unprefixed metadata routes. Dotted paths are not
+  // Everything but Next internals, API routes and the unprefixed metadata routes. Dotted paths are not
   // excluded: `/vi/products/a.b` must still reach the unknown-product 404 and `/fr.x` the site 404
   // (there is no public/ folder to serve files from).
   matcher: [
-    '/((?!_next/|__nextjs|_vercel/|robots\\.txt$|sitemap\\.xml$|llms\\.txt$|manifest\\.webmanifest$|icon\\.svg$|apple-icon$|opengraph-image$).*)',
+    '/((?!_next/|__nextjs|_vercel/|api/|robots\\.txt$|sitemap\\.xml$|llms\\.txt$|manifest\\.webmanifest$|icon\\.svg$|apple-icon$|opengraph-image$).*)',
   ],
 };
