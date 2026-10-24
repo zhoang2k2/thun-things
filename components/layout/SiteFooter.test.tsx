@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 
 import { SiteFooter } from '@/components/layout/SiteFooter';
+import { renderWithIntl } from '@/test/renderWithIntl';
 
 const policies = [
   { href: '/policy/privacy', label: 'Bảo mật' },
@@ -9,21 +10,27 @@ const policies = [
 ];
 
 it('renders policy links', () => {
-  render(<SiteFooter policies={policies} socials={[]} />);
+  renderWithIntl(<SiteFooter policies={policies} socials={[]} />);
   expect(screen.getByRole('contentinfo')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Bảo mật' })).toHaveAttribute('href', '/policy/privacy');
-  expect(screen.getByRole('link', { name: 'Đổi trả' })).toHaveAttribute('href', '/policy/returns');
+  expect(screen.getByRole('link', { name: 'Bảo mật' })).toHaveAttribute(
+    'href',
+    '/vi/policy/privacy',
+  );
+  expect(screen.getByRole('link', { name: 'Đổi trả' })).toHaveAttribute(
+    'href',
+    '/vi/policy/returns',
+  );
 });
 
 it('hides email and socials when unset', () => {
-  const { container } = render(<SiteFooter policies={policies} socials={[]} />);
+  const { container } = renderWithIntl(<SiteFooter policies={policies} socials={[]} />);
   expect(container.querySelector('a[href^="mailto:"]')).toBeNull();
   expect(screen.queryByText('Mạng xã hội')).not.toBeInTheDocument();
   expect(screen.queryByText('Email')).not.toBeInTheDocument();
 });
 
 it('shows email and socials when set', () => {
-  render(
+  renderWithIntl(
     <SiteFooter
       policies={policies}
       contactEmail="hi@example.com"
@@ -40,6 +47,6 @@ it('shows email and socials when set', () => {
 });
 
 it('hides the oversized wordmark from assistive technology', () => {
-  const { container } = render(<SiteFooter policies={policies} socials={[]} />);
+  const { container } = renderWithIntl(<SiteFooter policies={policies} socials={[]} />);
   expect(container.querySelector('.SiteFooter__wordmark')).toHaveAttribute('aria-hidden', 'true');
 });

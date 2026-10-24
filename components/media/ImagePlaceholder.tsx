@@ -1,7 +1,7 @@
 import { Image01Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
+import { useTranslations } from 'next-intl';
 
-import { copy } from '@/content/copy/vi';
 import { cn } from '@/lib/cn';
 
 interface ImagePlaceholderProps {
@@ -20,21 +20,24 @@ export const ImagePlaceholder = ({
   height,
   fill,
   className,
-}: ImagePlaceholderProps) => (
-  <div
-    role="img"
-    aria-label={alt}
-    // Runtime aspect ratio from the image's real dimensions.
-    style={fill ? undefined : { aspectRatio: `${width} / ${height}` }}
-    className={cn(
-      'ImagePlaceholder bg-placeholder text-placeholder-ink flex flex-col items-center justify-center gap-2',
-      fill ? 'h-full w-full' : 'w-full',
-      className,
-    )}
-  >
-    <HugeiconsIcon icon={Image01Icon} size={24} aria-hidden="true" />
-    <span className="ImagePlaceholder__label text-sm font-bold tracking-wide uppercase">
-      {copy.media.placeholderLabel}
-    </span>
-  </div>
-);
+}: ImagePlaceholderProps) => {
+  const t = useTranslations('media');
+  return (
+    <div
+      role="img"
+      aria-label={alt}
+      // Runtime aspect ratio from the image's real dimensions.
+      style={fill ? undefined : { aspectRatio: `${width} / ${height}` }}
+      className={cn(
+        'ImagePlaceholder bg-placeholder text-placeholder-ink flex flex-col items-center justify-center gap-2',
+        fill ? 'h-full w-full' : 'w-full',
+        className,
+      )}
+    >
+      <HugeiconsIcon icon={Image01Icon} size={24} aria-hidden="true" />
+      <span className="ImagePlaceholder__label text-sm font-bold tracking-wide uppercase">
+        {t('placeholderLabel')}
+      </span>
+    </div>
+  );
+};

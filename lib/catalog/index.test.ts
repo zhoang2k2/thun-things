@@ -64,3 +64,13 @@ describe('toCardModel', () => {
     expect(model.image).toEqual(product.media.front);
   });
 });
+
+it('builds English card labels from the existing catalog without modifying it', () => {
+  const product = getProductBySlug('hoang-hon-01')!;
+  const before = structuredClone(product);
+  expect(toCardModel(product, 'en')).toMatchObject({
+    name: product.name.en,
+    priceLabel: '₫390,000',
+  });
+  expect(product).toEqual(before);
+});

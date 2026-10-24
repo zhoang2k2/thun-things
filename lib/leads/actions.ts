@@ -4,10 +4,10 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { z } from 'zod';
 
-import { copy } from '@/content/copy/vi';
+import { type Locale, isLocale, routing, localizedPath } from '@/i18n/routing';
 import { getProductBySlug } from '@/lib/catalog';
 import type { Product } from '@/lib/catalog/schema';
-import { type FormState, HONEYPOT_FIELD } from '@/lib/leads/formState';
+import { type FormMessageKey, type FormState, HONEYPOT_FIELD } from '@/lib/leads/formState';
 import { checkRateLimit, clientKey } from '@/lib/leads/rateLimit';
 import { getFormReadiness } from '@/lib/leads/readiness';
 import { contactFormSchema, notifyFormSchema, toFieldErrors } from '@/lib/leads/schema';
@@ -18,7 +18,10 @@ import { LeadDeliveryError, type Lead } from '@/lib/leads/types';
 // rate limit so fixing typos never uses up a visitor's five submissions; invalid input costs
 // nothing because nothing is sent.
 
-const { forms } = copy;
+const submissionLocale = (formData: FormData): Locale => {
+  const locale = formData.get('locale');
+  return isLocale(locale) ? locale : routing.defaultLocale;
+};
 
 const readValues = (formData: FormData): Record<string, string> => {
   const values: Record<string, string> = {};
@@ -36,7 +39,7 @@ interface SubmissionSpec<Schema extends z.ZodType> {
   toLead: (
     form: z.output<Schema>,
     base: Pick<Lead, 'locale' | 'consent' | 'createdAt'>,
-  ) => Lead | string;
+  ) => Lead | FormMessageKey;
 }
 
 const handleSubmission = async <Schema extends z.ZodType>({
@@ -44,7 +47,7 @@ const handleSubmission = async <Schema extends z.ZodType>({
   schema,
   toLead,
 }: SubmissionSpec<Schema>): Promise<FormState> => {
-  if (!getFormReadiness().enabled) return { status: 'disabled', message: forms.disabled };
+  if (!getFormReadiness().enabled) return { status: 'disabled', message: 'forms.disabled' };
 
   const values = readValues(formData);
   // Bots get the same success as people, so they learn nothing.
@@ -56,10 +59,10 @@ const handleSubmission = async <Schema extends z.ZodType>({
   }
 
   const { ok } = await checkRateLimit(clientKey(await headers()));
-  if (!ok) return { status: 'error', message: forms.rateLimited, values };
+  if (!ok) return { status: 'error', message: 'forms.rateLimited', values };
 
   const lead = toLead(parsed.data, {
-    locale: 'vi',
+    locale: submissionLocale(formData),
     consent: true,
     createdAt: new Date().toISOString(),
   });
@@ -70,7 +73,7 @@ const handleSubmission = async <Schema extends z.ZodType>({
   } catch (error) {
     const reason = error instanceof LeadDeliveryError ? error.reason : 'unexpected';
     console.error('[leads] delivery failed:', reason);
-    return { status: 'error', message: forms.deliveryFailed, values };
+    return { status: 'error', message: 'forms.deliveryFailed', values };
   }
   return { status: 'success' };
 };
@@ -78,9 +81,10 @@ const handleSubmission = async <Schema extends z.ZodType>({
 // Without JavaScript the browser posts the form natively and, under Cache Components, the page
 // cannot be re-rendered in place, so those submissions get a 303 to a static result page.
 // Router-driven submissions carry the `next-action` header and keep the in-place state.
-const respond = async (state: FormState): Promise<FormState> => {
+const respond = async (state: FormState, locale: Locale): Promise<FormState> => {
   if ((await headers()).has('next-action')) return state;
-  redirect(state.status === 'success' ? '/contact/sent' : '/contact/retry');
+  const result = state.status === 'success' ? '/contact/sent' : '/contact/retry';
+  redirect(localizedPath(locale, result));
 };
 
 const productFields = (product: Product | undefined) =>
@@ -98,7 +102,7 @@ export async function submitContact(_previous: FormState, formData: FormData): P
       ...productFields(productSlug ? getProductBySlug(productSlug) : undefined),
     }),
   });
-  return respond(state);
+  return respond(state, submissionLocale(formData));
 }
 
 export async function submitNotify(_previous: FormState, formData: FormData): Promise<FormState> {
@@ -107,7 +111,7 @@ export async function submitNotify(_previous: FormState, formData: FormData): Pr
     schema: notifyFormSchema,
     toLead: ({ productSlug, email, phone }, base) => {
       const product = getProductBySlug(productSlug);
-      if (!product) return forms.unknownProduct;
+      if (!product) return 'forms.unknownProduct';
       return {
         ...base,
         kind: 'notify',
@@ -118,5 +122,5 @@ export async function submitNotify(_previous: FormState, formData: FormData): Pr
       };
     },
   });
-  return respond(state);
+  return respond(state, submissionLocale(formData));
 }

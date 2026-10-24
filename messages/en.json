@@ -1,0 +1,185 @@
+{
+  "site": {
+    "name": "Thun Things",
+    "description": "Thun Things — art T-shirts printed in small runs, one design at a time."
+  },
+  "nav": {
+    "label": "Main navigation",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "footer": {
+    "policyLabel": "Policies",
+    "privacy": "Privacy",
+    "returns": "Returns & exchanges",
+    "emailLabel": "Email",
+    "socialLabel": "Social"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
+  },
+  "localeSwitcher": {
+    "label": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "media": {
+    "placeholderLabel": "Image"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page}"
+  },
+  "hero": {
+    "label": "Featured designs",
+    "pause": "Pause",
+    "play": "Play",
+    "slide": "Show slide {index} of {count}"
+  },
+  "product": {
+    "gridHeading": "T-shirts",
+    "galleryLabel": "Product photos",
+    "relatedHeading": "You might also like",
+    "details": {
+      "sizes": "Sizes",
+      "material": "Material",
+      "care": "Care"
+    },
+    "status": {
+      "available": "In stock",
+      "limited": "Limited run",
+      "sold_out": "Sold out",
+      "coming_soon": "Coming soon",
+      "preorder": "Pre-order"
+    },
+    "actions": {
+      "order": "Order",
+      "preorder": "Pre-order",
+      "askFirst": "Ask a question",
+      "notify": "Notify me"
+    }
+  },
+  "forms": {
+    "required": "Required",
+    "optional": "Optional",
+    "submit": "Send",
+    "sending": "Sending…",
+    "errorSummary": "Please check the following:",
+    "honeypotLabel": "Leave this field empty",
+    "disabled": "The form isn't taking requests right now.",
+    "disabledEmail": "You can reach us by email:",
+    "rateLimited": "Too many attempts. Please try again in 10 minutes.",
+    "deliveryFailed": "Your request didn't go through. Please try again in a few minutes.",
+    "unknownProduct": "We couldn't find this product.",
+    "errors": {
+      "emailRequired": "Enter your email.",
+      "emailInvalid": "Enter a valid email address.",
+      "phoneRequired": "Enter your phone or Zalo number.",
+      "phoneInvalid": "Enter a Vietnamese mobile number, for example 0912 345 678.",
+      "contactRequired": "Enter an email or a phone number.",
+      "consentRequired": "Please agree to the privacy policy.",
+      "quantity": "Choose a quantity from 1 to 20.",
+      "tooLong": "This is too long.",
+      "purpose": "Choose an option."
+    },
+    "fields": {
+      "purpose": "What can we help with?",
+      "email": "Email",
+      "phone": "Phone / Zalo",
+      "name": "Name",
+      "size": "Size",
+      "sizePlaceholder": "Choose a size",
+      "quantity": "Quantity",
+      "address": "Delivery address",
+      "message": "Message",
+      "consentBefore": "I agree to the ",
+      "consentLink": "privacy policy"
+    },
+    "purposes": {
+      "order": "Place an order",
+      "notify": "Notify me when it's available",
+      "other": "Something else"
+    },
+    "contact": {
+      "productLabel": "Product",
+      "successTitle": "Request received",
+      "successBody": "Thank you. Thun Things will get back to you by email or Zalo within 1–2 days."
+    },
+    "email": {
+      "greeting": "Hello,",
+      "request": "Request",
+      "customerSubject": "Thun Things has received your request",
+      "consentGiven": "Agreed to the privacy policy",
+      "locale": "Customer language"
+    },
+    "notify": {
+      "title": "Notify me when it's available",
+      "intro": "Leave your email or phone number and Thun Things will let you know when this design is available.",
+      "hint": "Either one is enough.",
+      "submit": "Notify me",
+      "success": "Got it. Thun Things will let you know when it's available."
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has moved. Head back to the Thun Things home page or get in touch.",
+      "body": "This page doesn't exist or has moved. Go back to the home page, or send us a message.",
+      "home": "Back to home",
+      "contact": "Contact us"
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "body": "The page didn't load. Try again in a few seconds, or go back to the home page.",
+      "retry": "Try again"
+    }
+  },
+  "policy": {
+    "updated": "Last updated {date}",
+    "draft": "Draft: the final text will be published before sales open."
+  },
+  "pages": {
+    "home": {
+      "title": "Thun Things",
+      "metaTitle": "Thun Things · Art T-shirts in small runs",
+      "description": "Thun Things makes art T-shirts in small runs. Browse the designs and order through the Contact page; we reply by email or Zalo.",
+      "heroAlt": "Thun Things featured designs"
+    },
+    "about": {
+      "title": "About",
+      "description": "The story behind Thun Things: art T-shirts made in small runs, one design at a time."
+    },
+    "contactSent": {
+      "title": "Request received",
+      "description": "Thun Things has your request and will get back to you by email or Zalo as soon as we can.",
+      "body": "Thank you. Thun Things will get back to you by email or Zalo within 1–2 days.",
+      "back": "Back to home"
+    },
+    "contactRetry": {
+      "title": "Request not sent",
+      "description": "Your request didn't go through. Check your contact details, then try sending it again.",
+      "body": "Check your email, your phone / Zalo number and the privacy policy box, then send again. If it still fails, try again in a few minutes.",
+      "back": "Back to the contact form"
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Contact Thun Things to order a T-shirt, ask about sizing or get help. We reply by email or Zalo.",
+      "body": "Order a tee, ask about sizing or ask us anything. Thun Things replies by email or Zalo within 1–2 days."
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "description": "Thun Things privacy policy: what information we collect through our forms, how we use it and how we keep it safe."
+    },
+    "returns": {
+      "title": "Returns & exchanges",
+      "description": "Thun Things returns and exchanges: when a T-shirt can be exchanged or returned, and the terms for pre-ordering small-run designs."
+    }
+  },
+  "llms": {
+    "products": "Products",
+    "pages": "Pages"
+  }
+}

@@ -54,7 +54,7 @@ describe('emailSink', () => {
     expect(owner.subject).toBe(`[Thun Things] Đặt mua — ${product.name.vi}`);
     expect(owner.text).toContain('Đặt mua');
     expect(owner.text).toContain(product.name.vi);
-    expect(owner.text).toContain('https://thun.example/products/hoang-hon-01');
+    expect(owner.text).toContain('https://thun.example/vi/products/hoang-hon-01');
     expect(owner.text).toContain('+84912345678');
     expect(owner.text).toContain('Số lượng: 2');
   });
@@ -105,4 +105,11 @@ describe('emailSink', () => {
     expect(errorLog).toHaveBeenCalledWith('[leads] confirmation failed:', 'rate_limit_exceeded');
     errorLog.mockRestore();
   });
+});
+
+it('keeps the owner notification Vietnamese and identifies the customer locale', async () => {
+  const { sink, sent } = setup('onboarding@resend.dev');
+  await sink.deliver({ ...LEAD, locale: 'en' });
+  expect(sent[0].text).toContain('Ngôn ngữ khách: EN');
+  expect(sent[0].subject).toContain('Đặt mua');
 });

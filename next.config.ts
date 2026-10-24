@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
 import { securityHeaders } from './lib/security/csp';
 
@@ -19,6 +20,8 @@ const nextConfig: NextConfig = {
   },
   /* config options here */
   cacheComponents: true,
+  // The root layout is `app/[locale]/layout.tsx`, so unmatched URLs need their own document.
+  experimental: { globalNotFound: true },
   partialPrefetching: true,
   images: { formats: ['image/avif', 'image/webp'] },
   turbopack: {
@@ -31,4 +34,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
+
+export default withNextIntl(nextConfig);

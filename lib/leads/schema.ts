@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
-import { copy } from '@/content/copy/vi';
+import type { FormMessageKey } from '@/lib/leads/formState';
 import { normalizeVietnamesePhone } from '@/lib/leads/phone';
 import { LEAD_PURPOSES } from '@/lib/leads/purposes';
 
 // Form schemas for the lead server functions. Inputs come from FormData, so every field
-// arrives as a string or is missing; blank optional fields become undefined.
+// arrives as a string or is missing; blank optional fields become undefined. Error messages are
+// message keys (`forms.errors.*`), translated by the form components.
 
 // Zod's JIT probe calls `Function("")`, which a CSP without 'unsafe-eval' reports as a violation
 // even though the throw is caught. No client component imports this module any more (client code
@@ -13,7 +14,19 @@ import { LEAD_PURPOSES } from '@/lib/leads/purposes';
 // a future client import brings the schema back into the browser.
 z.config({ jitless: true });
 
-const { errors } = copy.forms;
+const errors = {
+  emailRequired: 'forms.errors.emailRequired',
+  emailInvalid: 'forms.errors.emailInvalid',
+  phoneRequired: 'forms.errors.phoneRequired',
+  phoneInvalid: 'forms.errors.phoneInvalid',
+  contactRequired: 'forms.errors.contactRequired',
+  consentRequired: 'forms.errors.consentRequired',
+  quantity: 'forms.errors.quantity',
+  tooLong: 'forms.errors.tooLong',
+  purpose: 'forms.errors.purpose',
+} as const satisfies Record<string, FormMessageKey>;
+
+const UNKNOWN_PRODUCT: FormMessageKey = 'forms.unknownProduct';
 
 const toText = (value: unknown): string => (typeof value === 'string' ? value.trim() : '');
 const toOptionalText = (value: unknown): string | undefined => toText(value) || undefined;
@@ -75,7 +88,7 @@ export const contactFormSchema = z.object({
 
 export const notifyFormSchema = z
   .object({
-    productSlug: z.preprocess(toText, z.string().min(1, copy.forms.unknownProduct).max(80)),
+    productSlug: z.preprocess(toText, z.string().min(1, UNKNOWN_PRODUCT).max(80, UNKNOWN_PRODUCT)),
     email: optionalEmail,
     phone: optionalPhone,
     consent,
@@ -88,12 +101,13 @@ export const notifyFormSchema = z
 export type ContactForm = z.output<typeof contactFormSchema>;
 export type NotifyForm = z.output<typeof notifyFormSchema>;
 
-/** First message per top-level field, keyed by the form field name. */
-export const toFieldErrors = (error: z.ZodError): Record<string, string> => {
-  const fieldErrors: Record<string, string> = {};
+/** First message key per top-level field, keyed by the form field name. */
+export const toFieldErrors = (error: z.ZodError): Record<string, FormMessageKey> => {
+  const fieldErrors: Record<string, FormMessageKey> = {};
   for (const issue of error.issues) {
     const field = String(issue.path[0] ?? 'form');
-    fieldErrors[field] ??= issue.message;
+    // Every rule above sets a message key, so issue messages are always keys.
+    fieldErrors[field] ??= issue.message as FormMessageKey;
   }
   return fieldErrors;
 };

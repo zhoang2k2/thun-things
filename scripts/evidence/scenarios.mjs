@@ -1,38 +1,52 @@
-// Evidence scenarios for the current phase PR (see the git-pr-workflow skill).
-// `gif` scenarios call `snap(hold)` after each meaningful step; `png` scenarios get a full-page shot.
-// Keep each GIF under 15 s: frames × 140 ms.
-//
-// P4: PNG only. Generated images (icon, Open Graph) are opened directly by URL; the error page has
-// no screenshot because no test-only route triggers it.
-//   pnpm evidence
-
+// P5 locale-switch evidence and English pages. `pnpm evidence` writes local artifacts only.
+// `:visible`: after a client-side locale switch, Next keeps the previous route's tree in the DOM
+// (hidden with `display: none`) for back/forward, so a plain selector matches two switchers.
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844 };
 
 /** @type {import('./capture.mjs').Scenario[]} */
 const scenarios = [
-  { name: 'icon-svg', kind: 'png', viewport: DESKTOP, path: '/icon.svg' },
-  { name: 'apple-icon', kind: 'png', viewport: DESKTOP, path: '/apple-icon' },
-  { name: 'og-default', kind: 'png', viewport: DESKTOP, path: '/opengraph-image' },
+  ...[
+    ['home', ''],
+    ['product', '/products/hoang-hon-01'],
+    ['contact', '/contact?product=am-ban&purpose=notify'],
+  ].map(([name, path]) => ({
+    name: `switch-${name}`,
+    kind: 'gif',
+    viewport: DESKTOP,
+    async run({ page, snap }) {
+      await page.goto(`/vi${path}`);
+      await page.waitForLoadState('networkidle');
+      await snap(8);
+      const english = page.locator('.LocaleSwitcher a[lang="en"]:visible');
+      await english.click();
+      await page.waitForURL(`/en${path}`);
+      await page.waitForLoadState('networkidle');
+      await snap(8);
+      await page.locator('.LocaleSwitcher a[lang="vi"]:visible').click();
+      await page.waitForURL(`/vi${path}`);
+      await page.waitForLoadState('networkidle');
+      await snap(8);
+    },
+  })),
+  ...[
+    ['home', '/en'],
+    ['product', '/en/products/hoang-hon-01'],
+    ['contact', '/en/contact?product=hoang-hon-01&purpose=order'],
+    ['privacy', '/en/policy/privacy'],
+    ['about', '/en/about'],
+    ['returns', '/en/policy/returns'],
+    ['not-found', '/en/does-not-exist'],
+    ['notify', '/en/products/am-ban'],
+  ].flatMap(([name, path]) => [
+    { name: `en-${name}-desktop`, kind: 'png', viewport: DESKTOP, path },
+    { name: `en-${name}-mobile`, kind: 'png', viewport: MOBILE, mobile: true, path },
+  ]),
   {
-    name: 'og-product-available',
+    name: 'og-product-en',
     kind: 'png',
     viewport: DESKTOP,
-    path: '/products/hoang-hon-01/opengraph-image',
-  },
-  {
-    name: 'og-product-sold-out',
-    kind: 'png',
-    viewport: DESKTOP,
-    path: '/products/am-ban/opengraph-image',
-  },
-  { name: 'not-found-desktop', kind: 'png', viewport: DESKTOP, path: '/does-not-exist' },
-  {
-    name: 'not-found-mobile',
-    kind: 'png',
-    viewport: MOBILE,
-    path: '/does-not-exist',
-    mobile: true,
+    path: '/en/products/hoang-hon-01/opengraph-image',
   },
 ];
 

@@ -1,3 +1,4 @@
+import type { Locale } from '@/i18n/routing';
 import type { LeadPurpose } from '@/lib/leads/purposes';
 
 export interface Lead {
@@ -13,7 +14,7 @@ export interface Lead {
   message?: string;
   productId?: string;
   productSlug?: string;
-  locale: 'vi';
+  locale: Locale;
   consent: true;
   createdAt: string;
 }

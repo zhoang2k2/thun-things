@@ -1,9 +1,10 @@
 import 'server-only';
 
 import type { Metadata } from 'next';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { PageShell } from '@/components/layout/PageShell';
-import { copy } from '@/content/copy/vi';
 import { privacyPolicy } from '@/content/policies/privacy';
 import { returnsPolicy } from '@/content/policies/returns';
 import type { PolicyDocument } from '@/content/policies/types';
@@ -15,36 +16,39 @@ const DOCUMENTS: Record<PolicySlug, PolicyDocument> = {
   returns: returnsPolicy,
 };
 
-const dateFormatter = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'long', timeZone: 'UTC' });
-
-export const policyMetadata = (slug: PolicySlug): Metadata => {
-  const page = copy.pages[slug];
+export const policyMetadata = async (slug: PolicySlug): Promise<Metadata> => {
+  const [t, locale] = await Promise.all([getTranslations(`pages.${slug}`), getLocale()]);
   return buildMetadata({
-    title: page.title,
-    description: page.description,
+    title: t('title'),
+    description: t('description'),
+    locale,
     path: `/policy/${slug}`,
   });
 };
 
 export const PolicyPage = ({ slug }: { slug: PolicySlug }) => {
-  const page = copy.pages[slug];
+  const t = useTranslations();
+  const format = useFormatter();
+  const locale = useLocale();
   const { updatedAt, sections } = DOCUMENTS[slug];
-  const updated = `${copy.policy.updated} ${dateFormatter.format(new Date(updatedAt))}`;
+  // `updatedAt` is a calendar date, so format it in UTC to keep the day unchanged.
+  const date = format.dateTime(new Date(updatedAt), { dateStyle: 'long', timeZone: 'UTC' });
+  const updated = t('policy.updated', { date });
 
   return (
     <PageShell
-      title={page.title}
+      title={t(`pages.${slug}.title`)}
       intro={
         <>
-          <p>{page.description}</p>
+          <p>{t(`pages.${slug}.description`)}</p>
           <p className="mt-2 text-sm">
-            <time dateTime={updatedAt}>{updated}</time> · {copy.policy.draft}
+            <time dateTime={updatedAt}>{updated}</time> · {t('policy.draft')}
           </p>
         </>
       }
     >
       <article className="PolicyPage flex max-w-prose flex-col gap-12">
-        {sections.map((section) => (
+        {sections[locale].map((section) => (
           <section key={section.heading} className="PolicyPage__section flex flex-col gap-4">
             <h2 className="PolicyPage__heading text-xl leading-7 font-bold">{section.heading}</h2>
             {section.paragraphs?.map((paragraph) => (

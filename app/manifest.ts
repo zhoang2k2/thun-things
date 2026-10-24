@@ -1,12 +1,13 @@
 import type { MetadataRoute } from 'next';
 
-import { copy } from '@/content/copy/vi';
+import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
 
 export default function manifest(): MetadataRoute.Manifest {
+  const { site } = getMessagesFor(DEFAULT_LOCALE);
   return {
-    name: copy.site.name,
-    short_name: copy.site.name,
-    description: copy.site.description,
+    name: site.name,
+    short_name: site.name,
+    description: site.description,
     start_url: '/',
     display: 'browser',
     background_color: '#ffffff',

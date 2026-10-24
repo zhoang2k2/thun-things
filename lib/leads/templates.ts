@@ -1,4 +1,5 @@
-import { copy } from '@/content/copy/vi';
+import { DEFAULT_LOCALE, getMessagesFor } from '@/i18n/messages';
+import { localizedPath } from '@/i18n/routing';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
 import type { Lead } from '@/lib/leads/types';
@@ -11,8 +12,9 @@ export interface EmailContent {
   text: string;
 }
 
-const { fields, purposes, email } = copy.forms;
-const SHOP = copy.site.name;
+const messages = getMessagesFor(DEFAULT_LOCALE);
+const { fields, purposes, email } = messages.forms;
+const SHOP = messages.site.name;
 
 const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
   dateStyle: 'short',
@@ -26,8 +28,8 @@ const line = (label: string, value: string | number | undefined): string[] =>
 const productLines = (product: Product | undefined, siteUrl: string): string[] => {
   if (!product) return [];
   return [
-    `${copy.forms.contact.productLabel}: ${product.name.vi} (${formatPriceVND(product.priceVND)})`,
-    `${new URL(`/products/${product.slug}`, siteUrl)}`,
+    `${messages.forms.contact.productLabel}: ${product.name.vi} (${formatPriceVND(product.priceVND)})`,
+    `${new URL(localizedPath(DEFAULT_LOCALE, `/products/${product.slug}`), siteUrl)}`,
   ];
 };
 
@@ -36,6 +38,7 @@ export const ownerEmail = (lead: Lead, product: Product | undefined, siteUrl: st
   const subject = product ? `[${SHOP}] ${purpose} — ${product.name.vi}` : `[${SHOP}] ${purpose}`;
   const text = [
     `${purpose}`,
+    `${email.locale}: ${lead.locale.toUpperCase()}`,
     ...productLines(product, siteUrl),
     ...line(fields.size, lead.size),
     ...line(fields.quantity, lead.quantity),
@@ -52,7 +55,8 @@ export const ownerEmail = (lead: Lead, product: Product | undefined, siteUrl: st
 };
 
 export const customerEmail = (lead: Lead, product: Product | undefined, siteUrl: string) => {
-  const body = lead.kind === 'notify' ? copy.forms.notify.success : copy.forms.contact.successBody;
+  const body =
+    lead.kind === 'notify' ? messages.forms.notify.success : messages.forms.contact.successBody;
   const text = [
     email.greeting,
     '',

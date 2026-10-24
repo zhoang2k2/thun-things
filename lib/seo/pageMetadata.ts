@@ -1,8 +1,10 @@
 import 'server-only';
 
 import type { Metadata } from 'next';
+import { createTranslator } from 'next-intl';
 
-import { copy } from '@/content/copy/vi';
+import { getMessagesFor } from '@/i18n/messages';
+import type { Locale } from '@/i18n/routing';
 import { listProducts } from '@/lib/catalog';
 import { buildMetadata } from '@/lib/seo/metadata';
 
@@ -10,15 +12,23 @@ import { buildMetadata } from '@/lib/seo/metadata';
  * Home metadata for the `page` search param. The page is clamped by the catalog, so
  * `?page=99` canonicalises to the last real page and invalid values to `/`.
  */
-export const homeMetadata = (pageParam: string | string[] | undefined): Metadata => {
+export const homeMetadata = (
+  pageParam: string | string[] | undefined,
+  locale: Locale,
+): Metadata => {
   const { page } = listProducts(pageParam);
-  const { description } = copy.pages.home;
-  if (page === 1) return buildMetadata({ description, path: '/' });
+  const messages = getMessagesFor(locale);
+  const { description, metaTitle } = messages.pages.home;
+  if (page === 1)
+    return buildMetadata({ title: { absolute: metaTitle }, description, locale, path: '/' });
 
-  const label = `${copy.pagination.page} ${page}`;
+  const t = createTranslator({ locale, messages });
+  const label = t('pagination.page', { page });
+  const { site } = messages;
   return buildMetadata({
-    title: { absolute: `${label} · ${copy.site.name}` },
+    title: { absolute: `${label} · ${site.name}` },
     description: `${description} ${label}.`,
+    locale,
     path: `/?page=${page}`,
   });
 };

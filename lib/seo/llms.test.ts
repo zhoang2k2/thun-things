@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { getAllSlugs, getProductBySlug } from '@/lib/catalog';
 import { formatPriceVND } from '@/lib/catalog/format';
-import { presentStatus } from '@/lib/catalog/status';
 import { buildLlmsTxt } from '@/lib/seo/llms';
+import en from '@/messages/en.json';
 
 describe('buildLlmsTxt', () => {
   const text = buildLlmsTxt();
@@ -18,14 +18,31 @@ describe('buildLlmsTxt', () => {
     for (const slug of getAllSlugs()) {
       const product = getProductBySlug(slug)!;
       expect(text).toContain(
-        `- [${product.name.vi}](http://localhost:3000/products/${slug}): ${formatPriceVND(product.priceVND)}, ${presentStatus(product.status).label}`,
+        `- [${product.name.vi} (vi)](http://localhost:3000/vi/products/${slug}): ${formatPriceVND(product.priceVND, 'en')}, ${en.product.status[product.status]}`,
       );
     }
   });
 
   it('links About, Contact and both policies', () => {
     for (const path of ['/about', '/contact', '/policy/privacy', '/policy/returns']) {
-      expect(text).toContain(`](http://localhost:3000${path})`);
+      expect(text).toContain(`](http://localhost:3000/vi${path})`);
     }
   });
+});
+
+it('indexes both locales with English summary and labels', () => {
+  const text = buildLlmsTxt();
+  expect(text).toContain('> ' + en.pages.home.description);
+  for (const locale of ['vi', 'en']) {
+    for (const path of [
+      '',
+      '/about',
+      '/contact',
+      '/policy/privacy',
+      '/policy/returns',
+      ...getAllSlugs().map((slug) => `/products/${slug}`),
+    ]) {
+      expect(text).toContain(`](http://localhost:3000/${locale}${path})`);
+    }
+  }
 });

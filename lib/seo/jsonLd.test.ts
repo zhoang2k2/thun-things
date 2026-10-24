@@ -31,8 +31,8 @@ describe('productJsonLd', () => {
     expect(data['@type']).toBe('Product');
     expect(data.sku).toBe(base.id);
     expect(data.name).toBe(base.name.vi);
-    expect(data.url).toBe(`http://localhost:3000/products/${base.slug}`);
-    expect(data.image).toBe(`http://localhost:3000/products/${base.slug}/opengraph-image`);
+    expect(data.url).toBe(`http://localhost:3000/vi/products/${base.slug}`);
+    expect(data.image).toBe(`http://localhost:3000/vi/products/${base.slug}/opengraph-image`);
     expect(data.offers).toMatchObject({
       '@type': 'Offer',
       price: base.priceVND,
@@ -50,7 +50,7 @@ describe('site JSON-LD', () => {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'Thun Things',
-      url: 'http://localhost:3000/',
+      url: 'http://localhost:3000/vi',
       logo: 'http://localhost:3000/apple-icon',
     });
     expect(data).not.toHaveProperty('email');
@@ -61,7 +61,7 @@ describe('site JSON-LD', () => {
     expect(websiteJsonLd()).toMatchObject({
       '@type': 'WebSite',
       name: 'Thun Things',
-      url: 'http://localhost:3000/',
+      url: 'http://localhost:3000/vi',
     });
   });
 });
@@ -73,4 +73,20 @@ describe('serializeJsonLd', () => {
     expect(out).not.toContain('<');
     expect(JSON.parse(out)).toEqual({ name: '</script><script>x' });
   });
+});
+
+it('uses English catalog fields and localized structured data URLs', () => {
+  expect(
+    productJsonLd({ ...base, name: { ...base.name, en: 'English product' } }, 'en'),
+  ).toMatchObject({
+    name: 'English product',
+    url: `http://localhost:3000/en/products/${base.slug}`,
+  });
+  expect(websiteJsonLd('en')).toMatchObject({ inLanguage: 'en', url: 'http://localhost:3000/en' });
+});
+
+it('only uses inLanguage on schema types that support it', () => {
+  expect(organizationJsonLd('en')).not.toHaveProperty('inLanguage');
+  expect(productJsonLd(base, 'en')).not.toHaveProperty('inLanguage');
+  expect(websiteJsonLd('en')).toHaveProperty('inLanguage', 'en');
 });

@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import { ConsentField } from '@/components/forms/ConsentField';
@@ -11,13 +12,12 @@ import {
   Honeypot,
 } from '@/components/forms/FormStatus';
 import { useFormFocus } from '@/components/forms/useFormFocus';
+import { useFormMessages } from '@/components/forms/useFormMessages';
 import { Button } from '@/components/ui/Button';
-import { copy } from '@/content/copy/vi';
 import { cn } from '@/lib/cn';
 import { submitNotify } from '@/lib/leads/actions';
 import { HONEYPOT_FIELD, initialFormState } from '@/lib/leads/formState';
 
-const { forms } = copy;
 const ID = 'notify';
 const INPUT = cn(controlClasses, 'h-12');
 
@@ -31,9 +31,11 @@ interface NotifyFormProps {
 export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormProps) => {
   const [state, formAction, pending] = useActionState(submitNotify, initialFormState);
   const { errorRef, successRef } = useFormFocus(state);
+  const t = useTranslations('forms');
+  const locale = useLocale();
+  const { errors, message } = useFormMessages(state);
 
   const values = state.values ?? {};
-  const errors = state.fieldErrors ?? {};
   const hasSummary = state.status === 'error' || state.status === 'disabled';
   const isEnabled = enabled && state.status !== 'disabled';
 
@@ -47,10 +49,10 @@ export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormPro
         id="notify-heading"
         className="NotifyForm__title text-sm font-medium tracking-wide uppercase"
       >
-        {forms.notify.title}
+        {t('notify.title')}
       </h2>
       {state.status === 'success' ? (
-        <FormSuccess ref={successRef}>{forms.notify.success}</FormSuccess>
+        <FormSuccess ref={successRef}>{t('notify.success')}</FormSuccess>
       ) : (
         <form
           action={formAction}
@@ -58,19 +60,15 @@ export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormPro
           className="NotifyForm__form relative flex flex-col gap-6"
         >
           <p className="NotifyForm__intro text-ink-muted text-sm leading-6">
-            {forms.notify.intro} {forms.notify.hint}
+            {t('notify.intro')} {t('notify.hint')}
           </p>
           {hasSummary && (
-            <FormErrorSummary
-              ref={errorRef}
-              idPrefix={ID}
-              fieldErrors={state.fieldErrors}
-              message={state.message}
-            />
+            <FormErrorSummary ref={errorRef} idPrefix={ID} fieldErrors={errors} message={message} />
           )}
           {!isEnabled && <FormDisabledNote contactEmail={contactEmail} />}
+          <input type="hidden" name="locale" value={locale} className="NotifyForm__locale" />
           <fieldset disabled={!isEnabled} className="NotifyForm__fields flex flex-col gap-6">
-            <Field idPrefix={ID} name="email" label={forms.fields.email} error={errors.email}>
+            <Field idPrefix={ID} name="email" label={t('fields.email')} error={errors.email}>
               {(control) => (
                 <input
                   {...control}
@@ -82,7 +80,7 @@ export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormPro
                 />
               )}
             </Field>
-            <Field idPrefix={ID} name="phone" label={forms.fields.phone} error={errors.phone}>
+            <Field idPrefix={ID} name="phone" label={t('fields.phone')} error={errors.phone}>
               {(control) => (
                 <input
                   {...control}
@@ -110,7 +108,7 @@ export const NotifyForm = ({ productSlug, enabled, contactEmail }: NotifyFormPro
               disabled={pending}
               className="self-start"
             >
-              {pending ? forms.sending : forms.notify.submit}
+              {pending ? t('sending') : t('notify.submit')}
             </Button>
           )}
         </form>

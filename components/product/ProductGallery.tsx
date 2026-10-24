@@ -1,9 +1,9 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
-import { copy } from '@/content/copy/vi';
 import type { ImageAsset } from '@/lib/catalog/schema';
 
 const plate = (value: number) => String(value).padStart(2, '0');
@@ -11,6 +11,8 @@ const plate = (value: number) => String(value).padStart(2, '0');
 // V-11 (P2-10): stacked images on desktop; on mobile a swipeable, snap-scrolling carousel with a
 // plate-number counter so the product info and order bar are reached quickly.
 export const ProductGallery = ({ images }: { images: ImageAsset[] }) => {
+  const locale = useLocale();
+  const t = useTranslations('product');
   const trackRef = useRef<HTMLUListElement>(null);
   const [current, setCurrent] = useState(0);
 
@@ -23,7 +25,7 @@ export const ProductGallery = ({ images }: { images: ImageAsset[] }) => {
   return (
     <section
       aria-roledescription="carousel"
-      aria-label={copy.product.galleryLabel}
+      aria-label={t('galleryLabel')}
       className="ProductGallery relative"
     >
       <ul
@@ -35,12 +37,12 @@ export const ProductGallery = ({ images }: { images: ImageAsset[] }) => {
       >
         {images.map((image, position) => (
           <li
-            key={`${image.alt.vi}-${position}`}
+            key={`${image.alt[locale]}-${position}`}
             className="ProductGallery__item w-full shrink-0 snap-start md:w-auto"
           >
             <MediaImage
               src={image.src}
-              alt={image.alt.vi}
+              alt={image.alt[locale]}
               width={image.width}
               height={image.height}
               sizes="(min-width: 768px) 58vw, 100vw"
