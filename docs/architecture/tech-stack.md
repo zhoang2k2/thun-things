@@ -4,47 +4,53 @@
 
 ---
 
-## 1. Installed Baseline Dependencies (Bootstrap)
+## 1. Installed Dependencies (P0)
 
-Every installed dependency serves an immediate infrastructure requirement for the technical baseline:
+All packages are installed in P0 and pinned to exact versions (`.npmrc` `save-exact=true`). "Wired in" is the roadmap phase that first imports the package; until then it is installed but unused.
 
-| Package                           | Version  | Layer            | Rationale                                                                                         |
-| --------------------------------- | -------- | ---------------- | ------------------------------------------------------------------------------------------------- |
-| **`next`**                        | `16.4.0` | Framework        | Latest stable App Router release with Turbopack, React 19 support, and integrated route handlers. |
-| **`react`**                       | `19.3.0` | UI Library       | Officially supported React release for Next.js 16.4.                                              |
-| **`react-dom`**                   | `19.3.0` | DOM Renderer     | React 19 DOM bindings.                                                                            |
-| **`typescript`**                  | `5.9.3`  | Language         | Strict static typing and type safety across components and business logic.                        |
-| **`tailwindcss`**                 | `4.3.3`  | Styling          | High-performance CSS engine with CSS variable token integration and zero-runtime overhead.        |
-| **`@tailwindcss/turbopack`**      | `4.3.3`  | Tooling          | Turbopack optimization loader for Tailwind CSS v4.                                                |
-| **`zod`**                         | `4.6.7`  | Validation       | Runtime type validation for environment variables (`lib/env.ts`), catalog data, and API payloads. |
-| **`next-intl`**                   | `4.14.9` | Localization     | Official App Router internationalization library supporting `/vi` and `/en` routing.              |
-| **`vitest`**                      | `5.0.4`  | Testing          | Fast, Vite-native test runner with instant feedback and native TypeScript/ESM support.            |
-| **`@testing-library/react`**      | `16.3.3` | Testing          | DOM testing utilities encouraging accessible, user-centric testing patterns.                      |
-| **`@testing-library/jest-dom`**   | `7.0.1`  | Testing          | Custom Jest/Vitest matchers for asserting DOM element states.                                     |
-| **`@vitejs/plugin-react`**        | `6.1.2`  | Tooling          | React transform plugin for Vitest.                                                                |
-| **`jsdom`**                       | `30.1.2` | Test Environment | Headless DOM implementation for Vitest component tests.                                           |
-| **`eslint`**                      | `9.39.5` | Code Quality     | Pluggable linting utility enforcing code quality.                                                 |
-| **`eslint-config-next`**          | `16.4.0` | Code Quality     | Next.js and React Core Web Vitals ESLint ruleset.                                                 |
-| **`prettier`**                    | `3.9.10` | Code Formatting  | Opinionated code formatter ensuring uniform styling.                                              |
-| **`prettier-plugin-tailwindcss`** | `0.8.1`  | Formatting       | Automatic sorting of Tailwind CSS classes in JSX/TSX.                                             |
+### Runtime
+
+| Package                                          | Version       | Wired in | Purpose                                                                    |
+| ------------------------------------------------ | ------------- | -------- | -------------------------------------------------------------------------- |
+| `next`                                           | 16.4.2        | P0       | App Router framework, Turbopack, route handlers                            |
+| `react`, `react-dom`                             | 19.3.0        | P0       | UI runtime                                                                 |
+| `zod`                                            | 4.6.7         | P0       | Env (`lib/env.ts`), catalog, API validation                                |
+| `server-only`                                    | 0.0.1         | P0       | Build-time guard against importing server modules in client code           |
+| `motion`                                         | 14.6.0        | P1       | Animations, shared-element transitions                                     |
+| `@hugeicons/react`, `@hugeicons/core-free-icons` | 1.1.10, 4.3.5 | P1       | Functional icons only (DR-2); replaces `lucide-react` (removed 2026-10-23) |
+| `radix-ui`                                       | 1.8.1         | P1       | Accessible primitives (Dialog, Popover)                                    |
+| `clsx`, `tailwind-merge`                         | 2.1.1, 3.7.0  | P1       | Class composition                                                          |
+| `resend`                                         | 6.34.1        | P3       | Contact form email                                                         |
+| `@upstash/ratelimit`, `@upstash/redis`           | 2.2.0, 1.39.0 | P3       | Serverless rate limiting                                                   |
+| `next-intl`                                      | 4.14.9        | P5       | `/vi`, `/en` routing, typed messages and localized metadata (P5; ADR-008)  |
+| `@next/third-parties`                            | 16.4.2        | P6       | GA4 loader (after consent)                                                 |
+| `@anthropic-ai/sdk`                              | 1.1.0         | P8       | Claude rationale for quiz results                                          |
+
+### Tooling
+
+| Package                                                      | Version                       | Purpose                                               |
+| ------------------------------------------------------------ | ----------------------------- | ----------------------------------------------------- |
+| `typescript`                                                 | 5.9.3                         | Strict type checking                                  |
+| `@types/node`, `@types/react`, `@types/react-dom`            | 22.20.5, 19.3.0, 19.3.0       | Types                                                 |
+| `tailwindcss`, `@tailwindcss/turbopack`                      | 4.3.3                         | Styling via the Turbopack CSS loader                  |
+| `eslint`, `eslint-config-next`                               | 9.39.5, 16.4.2                | Lint (flat config)                                    |
+| `prettier`, `prettier-plugin-tailwindcss`                    | 3.9.10, 0.8.1                 | Formatting, Tailwind class sorting                    |
+| `vitest`, `@vitejs/plugin-react`, `jsdom`                    | 5.0.5, 6.1.2, 30.1.3          | Unit and component tests                              |
+| `@testing-library/react`, `/dom`, `/jest-dom`, `/user-event` | 16.3.3, 10.4.2, 7.0.1, 14.6.8 | Component testing                                     |
+| `@playwright/test`                                           | 1.64.1                        | Browser smoke tests (`pnpm test:e2e`)                 |
+| `@axe-core/playwright`                                       | 4.14.0                        | Accessibility audits (wired in P4)                    |
+| `lighthouse`                                                 | 13.5.0                        | Mobile performance budgets (`pnpm perf`, wired in P4) |
+| `gifenc`, `pngjs`                                            | 1.0.3, 7.0.0                  | PR evidence GIF encoding (`pnpm evidence`), dev only  |
+
+Note: `eslint@9` is flagged deprecated upstream; it is the version `eslint-config-next@16.4.2` scaffolds with. Revisit when `eslint-config-next` supports ESLint 10.
 
 ---
 
-## 2. Deferred Libraries (Future Phases)
+## 2. Conditional Libraries
 
-To prevent premature dependency bloat, these libraries are thoroughly researched but **deferred** until their specific implementation phase:
-
-| Library                         | Intended Purpose                                                      | Target Phase       | Deferral Rationale                                                                                                          |
-| ------------------------------- | --------------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| **`motion`** (Motion for React) | Interactive layout animations, card-to-PDP shared-element transitions | Phase 1 / 2        | Bootstrap requires only CSS variable tokens and minimal smoke testing; interactive animation is introduced in Phase 1.      |
-| **`gsap`**                      | Scroll-driven choreographies                                          | Phase 2 (Optional) | Only needed if CSS scroll-driven animations or Motion fail to satisfy complex pinned hero requirements.                     |
-| **`radix-ui`**                  | Accessible primitives (Dialog, Popover)                               | Phase 1 / 4        | Installed selectively per component rather than bulk-installing the entire suite.                                           |
-| **`lucide-react`**              | Iconography                                                           | Phase 1            | UI icons are not required during bootstrap smoke testing.                                                                   |
-| **`playwright`**                | Browser smoke testing                                                 | Phase 2 / 6        | Unit and component testing with Vitest/RTL is sufficient for bootstrap; Playwright is added when user-facing flows go live. |
-| **`axe-core`**                  | Automated accessibility auditing                                      | Phase 6            | Audits will be introduced during the pre-launch hardening phase.                                                            |
-| **`resend`**                    | Email delivery for contact form                                       | Phase 3            | Form submission endpoints are implemented in Phase 3; requires domain verification.                                         |
-| **`@anthropic-ai/sdk`**         | AI rationale for quiz recommendations                                 | Phase 5            | Quiz bot v1 in Phase 4 is deterministic; LLM blurb generation is added in Phase 5.                                          |
-| **`@upstash/ratelimit`**        | Serverless rate limiting                                              | Phase 4 / 5        | In-memory development limits suffice until public API endpoints are exposed.                                                |
+| Library | Purpose                    | Decision point                                                                     |
+| ------- | -------------------------- | ---------------------------------------------------------------------------------- |
+| `gsap`  | Scroll-driven choreography | P2, only if `motion` + CSS scroll-driven animations cannot deliver the pinned hero |
 
 ---
 

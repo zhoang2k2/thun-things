@@ -1,0 +1,7 @@
+import { expect, test } from '@playwright/test';
+
+test('home page serves the brand heading', async ({ page }) => {
+  const response = await page.goto('/vi');
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole('heading', { level: 1, name: 'Thun Things' })).toBeVisible();
+});

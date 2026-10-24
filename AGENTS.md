@@ -18,7 +18,7 @@ These instructions apply repository-wide. Read any more-specific nested `AGENTS.
 
 ## 1. Product Decisions and Scope
 
-- Treat `thun-things.md` as the source of truth for product strategy, UX, data models, and phases.
+- Treat `thun-things.md` as the source of truth for product strategy, UX, and data models. Phase order, FE/BE/Owner roles, and the binding rules R1–R4 (phase gate, fast-track, one PR per phase, environment ownership) live in [`docs/superpowers/plans/2026-10-22-roadmap.md`](docs/superpowers/plans/2026-10-22-roadmap.md).
 - Preserve decision tags: `[USER]` is confirmed and binding; `[PROPOSED]` awaits approval; `[ASSUMPTION]` is unverified; `[OPEN]` is unresolved. Never present a proposal or assumption as a confirmed decision.
 - Implement only the explicitly authorized task. Do not start future phases or silently change product guardrails, architecture, schemas, or existing behavior.
 - Prefer a small, understandable change. Do not refactor unrelated code, duplicate existing utilities, create speculative abstractions, or introduce dependencies without clear justification and owner approval.
@@ -31,6 +31,7 @@ These instructions apply repository-wide. Read any more-specific nested `AGENTS.
 - Read environment values through `@/lib/env`. Values prefixed with `NEXT_PUBLIC_` are exposed to the browser; keep secrets server-side.
 - Keep TypeScript strict mode enabled and avoid unjustified `any` or loose casts.
 - Prefer Server Components. Use Client Components only where interaction, client hooks, event listeners, or browser APIs require them.
+- Follow the binding design rules in [`docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md`](docs/superpowers/specs/2026-10-23-ui-direction-v3-design.md#design-rules-binding-user-2026-10-23): **DR-1 no radius** (no exceptions) and **DR-2 art/photography/fashion, no "AI slop"** (no gradients, soft shadows, glass panels, pill shapes, decorative icons, emoji, template heroes). Icons: Hugeicons only, minimal and functional.
 - Preserve semantic HTML, keyboard access, visible focus, WCAG 2.2 AA, and reduced-motion behavior. Follow project skills for detailed accessibility, SEO, and performance rules.
 - Read the relevant local Next.js guide in `node_modules/next/dist/docs/` before writing Next.js code; this installed Next.js version may differ from prior knowledge.
 
@@ -53,6 +54,7 @@ Skill discovery alone does not mean its full instructions have been read. If a r
 | [motion-guidelines](.agents/skills/motion-guidelines/SKILL.md)             | Animation, transitions, gestures, or reduced-motion behavior.                                                                                                                |
 | [security-guidelines](.agents/skills/security-guidelines/SKILL.md)         | Secrets, environment values, APIs, data mutations, analytics, or privacy.                                                                                                    |
 | [testing-quality](.agents/skills/testing-quality/SKILL.md)                 | Test changes and repository quality checks.                                                                                                                                  |
+| [git-pr-workflow](.agents/skills/git-pr-workflow/SKILL.md)                 | Branches, commits, pushing, and PR descriptions (evidence GIFs/screenshots first).                                                                                           |
 | [implementation-workflow](.agents/skills/implementation-workflow/SKILL.md) | Intake, scope, planning, implementation, validation, and reporting.                                                                                                          |
 
 ## 4. Clarification and Implementation
