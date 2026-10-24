@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 
 import { useQuizContext } from '@/components/quiz/QuizProvider';
 import { usePathname } from '@/i18n/navigation';
+import { trackEvent } from '@/lib/analytics/events';
 import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
 import {
   BUBBLE,
@@ -38,8 +39,9 @@ export const QuizBubble = () => {
     const delay = nextBubbleDelay(readBubbleState());
     if (delay === null) return;
     const timer = window.setTimeout(() => {
-      recordBubbleShown();
+      const { shown } = recordBubbleShown();
       setVisible(true);
+      trackEvent('quiz_bubble_shown', { count: shown });
     }, delay);
     return () => window.clearTimeout(timer);
   }, [allowed, visible]);
@@ -75,6 +77,7 @@ export const QuizBubble = () => {
             onClick={() => {
               recordBubbleDismissed();
               setVisible(false);
+              trackEvent('quiz_bubble_dismiss', {});
             }}
             className={`QuizBubble__close -m-1 inline-flex size-8 shrink-0 items-center justify-center ${FOCUS}`}
           >

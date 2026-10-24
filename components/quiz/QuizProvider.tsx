@@ -11,6 +11,8 @@ import {
   useState,
 } from 'react';
 
+import { trackEvent } from '@/lib/analytics/events';
+
 export interface QuizColorOption {
   id: string;
   /** Already in the page locale. */
@@ -51,6 +53,7 @@ export const QuizProvider = ({
   const openQuiz = useCallback((from: QuizSource) => {
     setSource(from);
     setOpen(true);
+    trackEvent('quiz_open', { source: from });
   }, []);
 
   const closeQuiz = useCallback(() => {

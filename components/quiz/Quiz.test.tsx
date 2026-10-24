@@ -175,3 +175,44 @@ describe('quiz card', () => {
     expect(within(card).getByRole('heading', { name: en.quiz.stepColor })).toBeInTheDocument();
   });
 });
+
+describe('quiz events', () => {
+  beforeEach(() => {
+    window.localStorage.setItem(
+      'thun-things.consent',
+      JSON.stringify({ version: 1, analytics: true, decidedAt: '2026-10-24T00:00:00.000Z' }),
+    );
+    window.gtag = vi.fn();
+  });
+
+  afterEach(() => {
+    window.localStorage.clear();
+    delete window.gtag;
+  });
+
+  const events = () =>
+    vi
+      .mocked(window.gtag!)
+      .mock.calls.filter(([kind]) => kind === 'event')
+      .map(([, name, params]) => [name, params]);
+
+  it('tracks open, steps, completion and the result click with enum params only', async () => {
+    respond(RESULT);
+    renderQuiz();
+    const card = await openCard();
+    await userEvent.click(within(card).getByRole('radio', { name: 'Đen' }));
+    await userEvent.click(within(card).getByRole('button', { name: quiz.continue }));
+    await userEvent.click(within(card).getByRole('radio', { name: quiz.vibes.art }));
+    await userEvent.click(within(card).getByRole('button', { name: quiz.showResult }));
+    await within(card).findByRole('heading', { name: quiz.resultTitle });
+    await userEvent.click(within(card).getByRole('button', { name: quiz.seeMore }));
+    await userEvent.click(within(card).getByRole('link', { name: 'Phố Cũ' }));
+    expect(events()).toEqual([
+      ['quiz_open', { source: 'launcher' }],
+      ['quiz_step', { step: 'color', value: 'black' }],
+      ['quiz_step', { step: 'vibe', value: 'art' }],
+      ['quiz_complete', { color: 'black', vibe: 'art', match: 'exact' }],
+      ['quiz_result_click', { product_id: 'pho-cu', position: 2 }],
+    ]);
+  });
+});

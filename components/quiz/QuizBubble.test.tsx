@@ -131,3 +131,27 @@ describe('QuizBubble', () => {
     expect(document.activeElement).toBe(before);
   });
 });
+
+describe('bubble events', () => {
+  it('tracks appearances with their count and the dismissal', () => {
+    window.localStorage.setItem(
+      'thun-things.consent',
+      JSON.stringify({ version: 1, analytics: true, decidedAt: '2026-10-24T00:00:00.000Z' }),
+    );
+    window.gtag = vi.fn();
+    renderBubble();
+    advance(20_000);
+    fireEvent.click(screen.getByRole('button', { name: quiz.bubbleClose }));
+    expect(
+      vi
+        .mocked(window.gtag)
+        .mock.calls.filter(([kind]) => kind === 'event')
+        .map(([, name, params]) => [name, params]),
+    ).toEqual([
+      ['quiz_bubble_shown', { count: 1 }],
+      ['quiz_bubble_dismiss', {}],
+    ]);
+    delete window.gtag;
+    window.localStorage.clear();
+  });
+});

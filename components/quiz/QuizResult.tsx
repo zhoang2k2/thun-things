@@ -7,6 +7,7 @@ import { MediaImage } from '@/components/media/MediaImage';
 import { StatusBadge } from '@/components/product/StatusBadge';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
+import { trackEvent } from '@/lib/analytics/events';
 import type { QuizRecommendation } from '@/lib/recommend/recommend';
 
 const LINK =
@@ -24,6 +25,10 @@ export const QuizResult = ({ result, onNavigate }: QuizResultProps) => {
   const locale = useLocale();
   const [showMore, setShowMore] = useState(false);
   const { featured, more, match } = result;
+  const follow = (slug: string, position: number) => () => {
+    trackEvent('quiz_result_click', { product_id: slug, position });
+    onNavigate();
+  };
 
   return (
     <div className="QuizResult flex flex-col gap-4">
@@ -46,7 +51,11 @@ export const QuizResult = ({ result, onNavigate }: QuizResultProps) => {
           />
         </div>
         <div className="flex flex-col items-start gap-2">
-          <Link href={`/products/${featured.slug}`} onClick={onNavigate} className={LINK}>
+          <Link
+            href={`/products/${featured.slug}`}
+            onClick={follow(featured.slug, 0)}
+            className={LINK}
+          >
             {featured.name}
           </Link>
           <p className="text-sm">{featured.priceLabel}</p>
@@ -59,9 +68,13 @@ export const QuizResult = ({ result, onNavigate }: QuizResultProps) => {
             aria-label={t('moreTitle')}
             className="QuizResult__more border-line flex flex-col gap-2 border-t pt-4"
           >
-            {more.map((item) => (
+            {more.map((item, index) => (
               <li key={item.slug} className="flex items-baseline justify-between gap-4 text-sm">
-                <Link href={`/products/${item.slug}`} onClick={onNavigate} className={LINK}>
+                <Link
+                  href={`/products/${item.slug}`}
+                  onClick={follow(item.slug, index + 1)}
+                  className={LINK}
+                >
                   {item.name}
                 </Link>
                 <span className="text-ink-muted shrink-0">{item.priceLabel}</span>

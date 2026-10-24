@@ -3,6 +3,7 @@
 import { useLocale } from 'next-intl';
 import { useCallback, useState } from 'react';
 
+import { trackEvent } from '@/lib/analytics/events';
 import type { QuizRecommendation } from '@/lib/recommend/recommend';
 
 export type QuizStep =
@@ -37,7 +38,15 @@ export const useQuiz = ({ vibeStep }: { vibeStep: boolean }) => {
           }),
         });
         if (!response.ok) throw new Error(`quiz ${response.status}`);
-        setStep({ name: 'result', result: (await response.json()) as QuizRecommendation });
+        const result = (await response.json()) as QuizRecommendation;
+        setStep({ name: 'result', result });
+        if (final.color) {
+          trackEvent('quiz_complete', {
+            color: final.color,
+            ...(vibeStep && final.vibe ? { vibe: final.vibe } : {}),
+            match: result.match,
+          });
+        }
       } catch {
         setStep({ name: 'error' });
       }
@@ -50,8 +59,16 @@ export const useQuiz = ({ vibeStep }: { vibeStep: boolean }) => {
     answer,
     chooseColor: (color: string) => setAnswer((current) => ({ ...current, color })),
     chooseVibe: (vibe: string) => setAnswer((current) => ({ ...current, vibe })),
-    confirmColor: () => (vibeStep ? setStep({ name: 'vibe' }) : fetchResult(answer)),
-    confirmVibe: () => fetchResult(answer),
+    confirmColor: () => {
+      if (!answer.color) return;
+      trackEvent('quiz_step', { step: 'color', value: answer.color });
+      if (vibeStep) setStep({ name: 'vibe' });
+      else void fetchResult(answer);
+    },
+    confirmVibe: () => {
+      if (answer.vibe) trackEvent('quiz_step', { step: 'vibe', value: answer.vibe });
+      void fetchResult(answer);
+    },
     back: () => setStep({ name: 'color' }),
     retry: () => fetchResult(answer),
     restart: () => {
