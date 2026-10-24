@@ -1,5 +1,7 @@
 # Thun Things Project Bootstrap Implementation Plan
 
+> **Superseded (2026-10-22)** by [`2026-10-22-p0-foundations.md`](./2026-10-22-p0-foundations.md). Kept for history.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Initialize a clean, maintainable, production-ready development environment and AI agent foundation for Thun Things without implementing product features.

@@ -2,44 +2,23 @@ name: CI
 
 on:
   push:
-    branches: [main, bootstrap/**]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
-  validate:
-    name: Typecheck, Lint, Test & Build
+  quality:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.28.0
-
-      - name: Setup Node.js (v22)
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Check code formatting
-        run: pnpm format:check
-
-      - name: Typecheck TypeScript (strict mode)
-        run: pnpm typecheck
-
-      - name: Lint code
-        run: pnpm lint
-
-      - name: Run unit & component tests
-        run: pnpm test
-
-      - name: Production build
-        run: pnpm build
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build

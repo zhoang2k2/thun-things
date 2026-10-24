@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
+/blob-report/
 
 # next.js
 /.next/
@@ -30,16 +33,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env
-.env*.local
-.env.development.local
-.env.test.local
-.env.production.local
+# env files (only the example is committed)
+.env*
+*.env
+.envrc
 !.env.example
 
 # scratch / agent local state
 .superpowers/
+.pnpm-store/
 
 # vercel
 .vercel
@@ -47,3 +49,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# PR evidence output (published to the evidence branch, never committed here)
+/evidence-out/

@@ -1,26 +1,116 @@
 @import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  --muted: #737373;
-  --muted-background: #f5f5f5;
-  --border: #e5e5e5;
-  --accent: #171717;
-  --accent-foreground: #fafafa;
+/* Design tokens (UI Direction v3). Swap values here; components use the utilities. */
+@theme {
+  --color-canvas: #ffffff;
+  --color-ink: #111111;
+  --color-ink-muted: #5c5c5c;
+  --color-line: #e5e5e5;
+  --color-accent: #ff5a1f;
+  --color-on-accent: #111111;
+  /* Form errors: 6.6:1 on canvas, so it works for text as well as borders. */
+  --color-error: #b42318;
+  /* V-26 dummy image fallback: light grey fill, dark grey icon and label. */
+  --color-placeholder: #ededed;
+  --color-placeholder-ink: #2b2b2b;
+
+  /* DR-1: no radius. Clears the whole radius scale. */
+  --radius-*: initial;
+
+  /* Hero progress bar; duration is set per slideshow interval. */
+  --animate-hero-progress: hero-progress linear forwards;
+
+  @keyframes hero-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-muted-background: var(--muted-background);
-  --color-border: var(--border);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+:root {
+  --header-height: 64px;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: var(--header-height);
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  /* Keep the footer clear of the mobile product order bar and the consent bar (P6-1). */
+  body:has(.ConsentBanner) {
+    padding-bottom: var(--consent-bar-height, 0px);
+  }
+
+  @media (width < 48rem) {
+    body:has(.ProductOrderBar) {
+      padding-bottom: 5rem;
+    }
+
+    body:has(.ProductOrderBar):has(.ConsentBanner) {
+      padding-bottom: calc(5rem + 1px + var(--consent-bar-height, 0px));
+    }
+  }
+
+  /* DR-1: browsers round native controls; force square corners. */
+  input,
+  select,
+  textarea,
+  button {
+    border-radius: 0;
+    appearance: none;
+  }
+}
+
+/* The consent bar sits above the mobile order bar instead of covering it (P6-1). Unlayered so it
+   overrides the bar's `bottom-0` utility. */
+@media (width < 48rem) {
+  body:has(.ProductOrderBar) .ConsentBanner {
+    /* Order bar: 48px control + 2 × 16px padding + 1px top border. */
+    bottom: calc(5rem + 1px);
+  }
+}
+
+/* Prerendered consent bar, hidden before paint for visitors who already decided (ConsentBootScript). */
+html[data-consent-decided] .ConsentBanner {
+  display: none;
+}
+
+/* Quiz launcher and card (P7) sit above the consent bar and, on mobile product pages, above the
+   order bar. The card opens just above the launcher (40px control + 16px gap). */
+:root {
+  --quiz-bottom: calc(1rem + var(--consent-bar-height, 0px));
+}
+
+@media (width < 48rem) {
+  body:has(.ProductOrderBar) {
+    --quiz-bottom: calc(1rem + 5rem + 1px + var(--consent-bar-height, 0px));
+  }
+}
+
+.QuizLauncher {
+  bottom: var(--quiz-bottom);
+}
+
+/* While the consent bar shows but has not been measured yet, the launcher would paint at the wrong
+   height and jump (CLS). Hidden elements do not count as layout shifts, so it waits for the bar. */
+html:not([data-consent-decided]):not([data-consent-bar-measured])
+  body:has(.ConsentBanner)
+  .QuizLauncher {
+  visibility: hidden;
+}
+
+.QuizCard,
+.QuizBubble {
+  bottom: calc(var(--quiz-bottom) + 3.5rem);
 }

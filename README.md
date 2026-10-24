@@ -2,7 +2,7 @@
 
 > Technical foundation for **Thun Things** — a creative, bilingual fashion-brand website featuring minimal aesthetics, synchronized motion, and an AI-assisted product recommendation experience.
 >
-> **Source of Truth:** For full business strategy, UX concepts, and phased delivery plan, read [`thun-things.md`](./thun-things.md).
+> **Source of Truth:** For business strategy and UX concepts, read [`thun-things.md`](./thun-things.md). Phase order, roles, and gating rules live in [`docs/superpowers/plans/2026-10-22-roadmap.md`](./docs/superpowers/plans/2026-10-22-roadmap.md).
 
 ---
 
@@ -15,7 +15,7 @@
 - **Package Manager:** [pnpm](https://pnpm.io)
 - **Environment Validation:** [Zod](https://zod.dev)
 - **Localization:** [next-intl](https://next-intl-docs.vercel.app) (supporting Vietnamese `/vi` and English `/en`)
-- **Testing:** [Vitest](https://vitest.dev) & [React Testing Library](https://testing-library.com)
+- **Testing:** [Vitest](https://vitest.dev), [React Testing Library](https://testing-library.com), [Playwright](https://playwright.dev)
 - **Code Quality:** ESLint 9 & Prettier (with Tailwind CSS class sorting)
 - **CI:** GitHub Actions
 
@@ -27,8 +27,8 @@ For detailed dependency rationales and deferred libraries, see [`docs/architectu
 
 ### Prerequisites
 
-- Node.js >= 20.x (Recommended: Node.js 22 LTS)
-- pnpm >= 9.x (Installed: pnpm 10.x)
+- Node.js >= 22 (LTS)
+- pnpm 10.28.0 (pinned via `packageManager`)
 
 ### Local Setup
 
@@ -40,10 +40,14 @@ cd thun-things
 # 2. Install dependencies
 pnpm install
 
-# 3. Setup environment variables
+# 3. Setup environment variables (all optional until their phase;
+#    see docs/configuration-variables.md)
 cp .env.example .env.local
 
-# 4. Start local development server
+# 4. One-time: install the Playwright browser for smoke tests
+pnpm exec playwright install chromium
+
+# 5. Start local development server
 pnpm dev
 ```
 
@@ -61,6 +65,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 | `pnpm typecheck`    | Validates TypeScript types in strict mode (`tsc --noEmit`) |
 | `pnpm lint`         | Runs ESLint checks with Next.js and TypeScript rules       |
 | `pnpm test`         | Runs the Vitest test suite                                 |
+| `pnpm test:watch`   | Runs Vitest in watch mode                                  |
+| `pnpm test:e2e`     | Builds and runs Playwright smoke tests                     |
 | `pnpm format`       | Formats all code files using Prettier                      |
 | `pnpm format:check` | Checks code formatting without modifying files             |
 

@@ -32,6 +32,11 @@ description: Frontend standards for React 19, strict TypeScript, component compo
 - Use BEM hooks for discoverability and semantic structure, not to duplicate Tailwind declarations or create nesting-dependent selectors.
 - Use an existing `cn()` helper for conditional or merged classes when the project provides one. A single immutable class string does not need `cn()`; do not add a dependency solely to format static classes.
 - Avoid inline `style` attributes unless a runtime value cannot be represented safely with existing CSS or tokens and the project permits it.
+- **Design rules (binding, see UI Direction v3 spec):**
+  - **DR-1 No radius.** Never use `rounded-*` or non-zero `border-radius`; reset native controls to square. No exceptions (the former glass layer was removed). Icon stroke caps are not covered.
+  - **DR-2 Art / photography / fashion, no "AI slop".** Photographs carry the page; flat colour, hard edges, print/photo references (print borders, plate numbers, captions). Do not use gradients, soft/blurred shadows, glow, glass panels or blur layers, pill buttons or badges, decorative icons, emoji, sparkle/AI symbols, Inter/Space Grotesk as defaults, centred headline + two-button hero templates, or three-column feature grids.
+  - **Icons:** Hugeicons (`@hugeicons/react` + `@hugeicons/core-free-icons`) only, functional icons only; prefer a text label when it reads naturally.
+  - `tests/design-rules.test.ts` enforces radius, gradient, and icon-library rules.
 - Use established design tokens and responsive patterns. Design mobile-first for 360–390px, then scale to tablet and desktop. Avoid fixed widths that cause horizontal scrolling; target 44×44px touch controls.
 
 ## 4. Semantic HTML and Accessibility (WCAG 2.2 AA)
