@@ -7,6 +7,12 @@ export const consentBootScript = `try{var r=localStorage.getItem(${JSON.stringif
   CONSENT_KEY,
 )});var c=r&&JSON.parse(r);if(c&&c.version===${CONSENT_VERSION}&&typeof c.analytics==='boolean')document.documentElement.setAttribute('data-consent-decided','')}catch(e){}`;
 
+// Without JavaScript GA can never load and the bar's buttons cannot work, so the bar is hidden.
 export const ConsentBootScript = () => (
-  <script id="consent-boot" dangerouslySetInnerHTML={{ __html: consentBootScript }} />
+  <>
+    <script id="consent-boot" dangerouslySetInnerHTML={{ __html: consentBootScript }} />
+    <noscript>
+      <style>{'.ConsentBanner { display: none; }'}</style>
+    </noscript>
+  </>
 );

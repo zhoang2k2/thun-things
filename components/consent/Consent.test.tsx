@@ -172,3 +172,13 @@ describe('ConsentBootScript', () => {
     expect(document.documentElement).not.toHaveAttribute('data-consent-decided');
   });
 });
+
+describe('without JavaScript', () => {
+  it('hides the bar, since GA cannot run and the buttons need JavaScript', async () => {
+    const { renderToString } = await import('react-dom/server');
+    const { ConsentBootScript } = await import('@/components/consent/ConsentBootScript');
+    const html = renderToString(<ConsentBootScript />);
+    expect(html).toContain('<noscript>');
+    expect(html).toMatch(/\.ConsentBanner\s*\{\s*display:\s*none/);
+  });
+});
