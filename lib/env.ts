@@ -20,6 +20,8 @@ const envSchema = z.object({
   UPSTASH_REDIS_REST_URL: optional(z.url()),
   UPSTASH_REDIS_REST_TOKEN: optional(z.string()),
   NEXT_PUBLIC_GA_ID: optional(z.string().regex(/^G-[A-Z0-9]+$/, 'must look like G-XXXXXXX')),
+  GEMINI_API_KEY: optional(z.string()),
+  GEMINI_MODEL: withDefault(z.string(), 'gemini-3.1-flash-lite'),
   ANTHROPIC_API_KEY: optional(z.string()),
   ANTHROPIC_MODEL: withDefault(z.string(), 'claude-haiku-5-5'),
   AI_ENABLED: withDefault(
