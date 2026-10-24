@@ -63,6 +63,8 @@ for (const locale of ['vi', 'en'] as const) {
         expectHeaders(response!.headers());
 
         const tiles = page.locator('.ProductTile');
+        // The grid streams in after the hero; wait for the full page of tiles first.
+        await expect(tiles).toHaveCount(20);
         await tiles.last().scrollIntoViewIfNeeded();
         await tiles.nth(5).hover();
         await expect(tiles.nth(5).getByTestId('product-hover-card')).toBeVisible();
