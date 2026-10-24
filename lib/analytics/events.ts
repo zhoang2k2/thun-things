@@ -24,6 +24,8 @@ export interface AnalyticsEvent {
   quiz_result_click: { product_id: string; position: number };
   quiz_bubble_shown: { count: number };
   quiz_bubble_dismiss: Record<never, never>;
+  // P8: which provider wrote the rationale; the text itself is never sent.
+  quiz_rationale_shown: { provider: 'gemini' | 'anthropic'; product_id: string };
 }
 
 /** Sends a GA4 event; a no-op unless analytics consent is granted and the Google tag is loaded. */

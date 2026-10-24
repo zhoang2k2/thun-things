@@ -5,6 +5,8 @@ import { useState } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
 import { StatusBadge } from '@/components/product/StatusBadge';
+import { QuizRationaleText } from '@/components/quiz/QuizRationaleText';
+import type { QuizRationale } from '@/components/quiz/useQuiz';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
 import { trackEvent } from '@/lib/analytics/events';
@@ -15,12 +17,13 @@ const LINK =
 
 interface QuizResultProps {
   result: QuizRecommendation;
+  rationale: QuizRationale;
   /** Called before following a product or contact link (closes the card). */
   onNavigate: () => void;
 }
 
 /** One featured design and, on request, up to three more (O-03, P7-1). */
-export const QuizResult = ({ result, onNavigate }: QuizResultProps) => {
+export const QuizResult = ({ result, rationale, onNavigate }: QuizResultProps) => {
   const t = useTranslations('quiz');
   const locale = useLocale();
   const [showMore, setShowMore] = useState(false);
@@ -62,6 +65,7 @@ export const QuizResult = ({ result, onNavigate }: QuizResultProps) => {
           <StatusBadge status={featured.status} />
         </div>
       </div>
+      <QuizRationaleText rationale={rationale} />
       {more.length > 0 &&
         (showMore ? (
           <ul
