@@ -33,6 +33,8 @@ const startServer = async () => {
   const server = spawn('pnpm', ['start', '--port', String(PORT)], {
     stdio: 'ignore',
     detached: true,
+    // Never call a real AI provider from evidence runs; scenarios stub the explain API.
+    env: { ...process.env, AI_ENABLED: 'false' },
   });
   for (let attempt = 0; attempt < 60; attempt += 1) {
     try {

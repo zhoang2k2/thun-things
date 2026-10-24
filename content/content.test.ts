@@ -87,3 +87,12 @@ describe('privacy policy and analytics (P6)', () => {
     expect(policyText(privacyPolicy, 'en').some((text) => text.startsWith('Google'))).toBe(true);
   });
 });
+
+describe('privacy policy and the quiz AI (P8)', () => {
+  it.each(['vi', 'en'] as const)('names both AI providers and what they receive (%s)', (locale) => {
+    const text = policyText(privacyPolicy, locale).join('\n');
+    expect(text).toContain('Gemini');
+    expect(text).toContain('Anthropic');
+    expect(text).toMatch(locale === 'vi' ? /màu.*phong cách/ : /colour.*style/);
+  });
+});

@@ -2,7 +2,7 @@ import type { PolicyDocument } from '@/content/policies/types';
 
 // TODO(owner): replace this structured placeholder with the reviewed privacy text before launch
 // (P9). Keep the processors list in sync with the code: Resend (email), Upstash (rate limit),
-// Vercel (hosting), Google (GA4, only after consent). Change both locales together.
+// Vercel (hosting), Google (GA4, only after consent), Google Gemini / Anthropic (quiz rationale). Change both locales together.
 export const privacyPolicy: PolicyDocument = {
   updatedAt: '2026-10-24',
   sections: {
@@ -30,6 +30,14 @@ export const privacyPolicy: PolicyDocument = {
           'Upstash: giới hạn số lần gửi form, dùng địa chỉ IP của bạn trong tối đa 10 phút.',
           'Vercel: lưu trữ và vận hành website.',
           'Google (Google Analytics 4): thống kê lượt xem trang, chỉ khi bạn đồng ý cookie phân tích.',
+          'Google (Gemini API) và Anthropic (Claude): viết vài câu gợi ý cho kết quả trắc nghiệm chọn áo.',
+        ],
+      },
+      {
+        heading: 'Gợi ý bằng AI trong trắc nghiệm chọn áo',
+        paragraphs: [
+          'Khi bạn làm trắc nghiệm "Tìm áo hợp bạn", màu và phong cách bạn chọn cùng thông tin của mẫu áo được gợi ý sẽ được gửi tới Google (Gemini API) hoặc, nếu dịch vụ này không phản hồi, tới Anthropic (Claude) để viết một hai câu giải thích. Không có tên, email, địa chỉ IP hay thông tin nào giúp nhận ra bạn được gửi đi.',
+          'Câu gợi ý có nhãn "Viết bởi AI" và có thể được lưu tạm tối đa 7 ngày để dùng lại cho cùng lựa chọn.',
         ],
       },
       {
@@ -84,6 +92,14 @@ export const privacyPolicy: PolicyDocument = {
           'Upstash: limits how often the forms can be sent, using your IP address for up to 10 minutes.',
           'Vercel: hosts and runs the website.',
           'Google (Google Analytics 4): measures page views, only if you accept analytics cookies.',
+          'Google (Gemini API) and Anthropic (Claude): write a short explanation for your style-quiz result.',
+        ],
+      },
+      {
+        heading: 'AI suggestions in the style quiz',
+        paragraphs: [
+          'When you take the "Find your shirt" quiz, the colour and style you pick and the details of the suggested design are sent to Google (Gemini API) or, if it does not respond, to Anthropic (Claude) to write a one- or two-sentence explanation. Nothing that identifies you, such as your name, email or IP address, is sent.',
+          'The explanation is labelled "Written by AI" and may be kept for up to 7 days so the same choice gets the same answer.',
         ],
       },
       {

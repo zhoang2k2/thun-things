@@ -58,6 +58,7 @@ describe('event params', () => {
       | 'color'
       | 'vibe'
       | 'match'
+      | 'provider'
       | 'position'
       | 'count'
     >();

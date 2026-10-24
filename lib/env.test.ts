@@ -10,6 +10,8 @@ describe('parseEnv', () => {
     expect(env.NEXT_PUBLIC_SITE_URL).toBe('http://localhost:3000');
     expect(env.LEADS_FROM_EMAIL).toBe('onboarding@resend.dev');
     expect(env.ANTHROPIC_MODEL).toBe('claude-haiku-5-5');
+    expect(env.GEMINI_MODEL).toBe('gemini-3.1-flash-lite');
+    expect(env.GEMINI_API_KEY).toBeUndefined();
     expect(env.AI_ENABLED).toBe(false);
     expect(env.RESEND_API_KEY).toBeUndefined();
   });
@@ -23,6 +25,8 @@ describe('parseEnv', () => {
 
   it('treats empty strings as missing', () => {
     expect(parseEnv({ RESEND_API_KEY: '' }).RESEND_API_KEY).toBeUndefined();
+    expect(parseEnv({ GEMINI_API_KEY: '' }).GEMINI_API_KEY).toBeUndefined();
+    expect(parseEnv({ GEMINI_MODEL: '' }).GEMINI_MODEL).toBe('gemini-3.1-flash-lite');
     expect(parseEnv({ NEXT_PUBLIC_SITE_URL: '' }).NEXT_PUBLIC_SITE_URL).toBe(
       'http://localhost:3000',
     );

@@ -172,7 +172,11 @@ export default function QuizCard() {
         return (
           <>
             {heading(t('resultTitle'))}
-            <QuizResult result={quiz.step.result} onNavigate={closeQuiz} />
+            <QuizResult
+              result={quiz.step.result}
+              rationale={quiz.rationale}
+              onNavigate={closeQuiz}
+            />
             <Button size="md" variant="ghost" className="self-start" onClick={quiz.restart}>
               {t('restart')}
             </Button>
