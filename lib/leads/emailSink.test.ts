@@ -113,3 +113,24 @@ it('keeps the owner notification Vietnamese and identifies the customer locale',
   expect(sent[0].text).toContain('Ngôn ngữ khách: EN');
   expect(sent[0].subject).toContain('Đặt mua');
 });
+
+describe('HTML and locale', () => {
+  it('sends HTML with the text version for both emails', async () => {
+    const { sink, sent } = setup('hello@thun.example');
+    await sink.deliver(LEAD);
+    expect(sent).toHaveLength(2);
+    for (const message of sent) {
+      expect(message.html).toMatch(/^<!doctype html>/i);
+      expect(message.text.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('writes the confirmation in the visitor language', async () => {
+    const { sink, sent } = setup('hello@thun.example');
+    await sink.deliver({ ...LEAD, locale: 'en' });
+    expect(sent[1].subject).toBe('Thun Things has received your request');
+    expect(sent[1].text).toContain('Hello,');
+    expect(sent[1].text).toContain(product.name.en);
+    expect(sent[0].subject).toContain('Đặt mua');
+  });
+});

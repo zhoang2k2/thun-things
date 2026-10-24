@@ -114,7 +114,12 @@
       "request": "Request",
       "customerSubject": "Thun Things has received your request",
       "consentGiven": "Agreed to the privacy policy",
-      "locale": "Customer language"
+      "locale": "Customer language",
+      "contactHeading": "Customer contact",
+      "detailsHeading": "Request details",
+      "call": "Call",
+      "zalo": "Message on Zalo",
+      "viewProduct": "View product"
     },
     "notify": {
       "title": "Notify me when it's available",

@@ -114,7 +114,12 @@
       "request": "Yêu cầu",
       "customerSubject": "Thun Things đã nhận yêu cầu của bạn",
       "consentGiven": "Đã đồng ý chính sách bảo mật",
-      "locale": "Ngôn ngữ khách"
+      "locale": "Ngôn ngữ khách",
+      "contactHeading": "Liên hệ khách",
+      "detailsHeading": "Chi tiết yêu cầu",
+      "call": "Gọi",
+      "zalo": "Nhắn Zalo",
+      "viewProduct": "Xem sản phẩm"
     },
     "notify": {
       "title": "Báo khi có hàng",
