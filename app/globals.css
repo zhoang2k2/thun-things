@@ -102,6 +102,7 @@ html[data-consent-decided] .ConsentBanner {
   bottom: var(--quiz-bottom);
 }
 
-.QuizCard {
+.QuizCard,
+.QuizBubble {
   bottom: calc(var(--quiz-bottom) + 3.5rem);
 }

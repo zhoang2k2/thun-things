@@ -8,6 +8,7 @@ import { ConsentBootScript } from '@/components/consent/ConsentBootScript';
 import { ConsentProvider } from '@/components/consent/ConsentProvider';
 import { ConsentSettings } from '@/components/consent/ConsentSettings';
 import { SiteFooter } from '@/components/layout/SiteFooter';
+import { QuizBubble } from '@/components/quiz/QuizBubble';
 import { QuizLauncher } from '@/components/quiz/QuizLauncher';
 import { QuizProvider } from '@/components/quiz/QuizProvider';
 import { SiteHeader } from '@/components/layout/SiteHeader';
@@ -55,6 +56,7 @@ export const SiteFrame = async ({ children, switcherPathname }: SiteFrameProps) 
             socials={siteConfig.socials}
           />
           <ConsentBanner />
+          <QuizBubble />
           <QuizLauncher />
         </QuizProvider>
         <ConsentSettings />
