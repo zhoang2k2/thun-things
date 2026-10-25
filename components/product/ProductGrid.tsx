@@ -3,6 +3,7 @@
 import { LazyMotion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { LiquidLens } from '@/components/product/LiquidLens';
 import { ProductTile } from '@/components/product/ProductTile';
 import type { ProductCardModel } from '@/lib/catalog';
 
@@ -79,6 +80,7 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
             />
           ))}
         </ul>
+        <LiquidLens products={products} wrapperRef={wrapperRef} />
       </div>
     </LazyMotion>
   );

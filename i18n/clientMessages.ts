@@ -27,6 +27,7 @@ export const pickClientMessages = ({
     status: product.status,
     actions: product.actions,
     preorderOffer: product.preorderOffer,
+    lensBackPlaceholder: product.lensBackPlaceholder,
   },
   errors: { generic: errors.generic, notFound: { home: errors.notFound.home } },
 });

@@ -57,7 +57,8 @@
       "order": "Contact to order",
       "preorder": "Contact to pre-order"
     },
-    "preorderOffer": "Up to 10% off when you pre-order"
+    "preorderOffer": "Up to 10% off when you pre-order",
+    "lensBackPlaceholder": "BACK"
   },
   "forms": {
     "required": "Required",

@@ -57,7 +57,8 @@
       "order": "Liên hệ đặt hàng",
       "preorder": "Liên hệ đặt trước"
     },
-    "preorderOffer": "Giảm đến 10% khi đặt trước"
+    "preorderOffer": "Giảm đến 10% khi đặt trước",
+    "lensBackPlaceholder": "MẶT SAU / BACK"
   },
   "forms": {
     "required": "Bắt buộc",

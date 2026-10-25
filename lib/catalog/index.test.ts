@@ -64,6 +64,13 @@ describe('getRelatedProducts', () => {
 });
 
 describe('toCardModel', () => {
+  it('offers the back photo for the x-ray lens, falling back to the front (P11)', () => {
+    const product = getProductBySlug(getAllSlugs()[0])!;
+    expect(toCardModel(product).backImage).toEqual(product.media.back ?? product.media.front);
+    const noBack = { ...product, media: { front: product.media.front } };
+    expect(toCardModel(noBack).backImage).toEqual(product.media.front);
+  });
+
   it('flattens a product for the grid', () => {
     const product = getProductBySlug(getAllSlugs()[0])!;
     const model = toCardModel(product);
