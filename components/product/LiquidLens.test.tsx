@@ -79,10 +79,27 @@ describe('LiquidLens', () => {
     act(() => {
       fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
     });
-    const xray = container.querySelector<HTMLElement>('.LiquidLens__xray')!;
-    expect(xray).toHaveAttribute('aria-hidden', 'true');
-    expect(xray.className).toMatch(/pointer-events-none/);
-    expect(xray.querySelectorAll('a, button')).toHaveLength(0);
+    const layer = container.querySelector<HTMLElement>('.LiquidLens__xray')!;
+    expect(layer).toHaveAttribute('aria-hidden', 'true');
+    expect(layer.className).toMatch(/pointer-events-none/);
+  });
+
+  it('makes every x-ray copy inert: no clicks, no focus, no links in the tab order', () => {
+    const { container, wrapper } = renderLens();
+    act(() => {
+      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+    });
+    const cells = container.querySelectorAll('.XrayCell');
+    expect(cells.length).toBeGreaterThan(0);
+    for (const cell of cells) expect(cell).toHaveAttribute('inert');
+  });
+
+  it('adds the film grain layer inside the lens', () => {
+    const { container, wrapper } = renderLens();
+    act(() => {
+      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+    });
+    expect(container.querySelector('.LiquidLens .LiquidLens__grain')).not.toBeNull();
   });
 
   it('shows each product back with its name and price in the x-ray cells', () => {
@@ -94,6 +111,10 @@ describe('LiquidLens', () => {
     expect(xray.querySelectorAll('.XrayCell')).toHaveLength(products.length);
     expect(xray.textContent).toContain(products[0].name);
     expect(xray.textContent).toContain(products[0].priceLabel);
+    // The back photo's card is the same markup as the hover card: name, price, badge and action.
+    expect(xray.querySelector('.XrayCell__card .ProductHoverCard__name')).toHaveTextContent(
+      products[0].name,
+    );
   });
 
   it('follows a product list change (pagination)', () => {

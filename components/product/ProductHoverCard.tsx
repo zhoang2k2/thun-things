@@ -5,12 +5,10 @@ import * as m from 'motion/react-m';
 import { useLocale } from 'next-intl';
 import type { MouseEvent } from 'react';
 
-import { MediaImage } from '@/components/media/MediaImage';
 import { motionTokens } from '@/components/motion/tokens';
-import { ProductAction } from '@/components/product/ProductAction';
+import { ProductCardFace } from '@/components/product/ProductCardFace';
 import type { ActiveCard } from '@/components/product/ProductGrid';
-import { StatusBadge } from '@/components/product/StatusBadge';
-import { Link, useRouter } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { trackEvent } from '@/lib/analytics/events';
 import type { ProductCardModel } from '@/lib/catalog';
 
@@ -59,30 +57,7 @@ export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => 
       exit={closed}
       transition={{ duration: motionTokens.duration.normal, ease: motionTokens.ease.out }}
     >
-      <Link href={href} tabIndex={-1} aria-hidden="true" className="ProductHoverCard__image block">
-        <div className="relative aspect-[4/5]">
-          <MediaImage
-            src={product.image.src}
-            alt=""
-            width={product.image.width}
-            height={product.image.height}
-            fill
-          />
-        </div>
-      </Link>
-      <div className="ProductHoverCard__info flex flex-col pt-4">
-        <p className="ProductHoverCard__name text-base leading-6 font-bold">{product.name}</p>
-        <div className="ProductHoverCard__meta mt-2 flex items-center justify-between gap-2">
-          <p className="ProductHoverCard__price text-sm leading-6">{product.priceLabel}</p>
-          <StatusBadge status={product.status} />
-        </div>
-        <ProductAction
-          slug={product.slug}
-          status={product.status}
-          size="lg"
-          className="mt-4 w-full"
-        />
-      </div>
+      <ProductCardFace product={product} image={product.image} href={href} />
     </m.div>
   );
 };
