@@ -33,6 +33,8 @@ const useFinePointer = () =>
 interface LiquidLensProps {
   products: ProductCardModel[];
   wrapperRef: RefObject<HTMLDivElement | null>;
+  /** The design whose card is open, if any. */
+  activeId?: string;
 }
 
 interface LensState {
@@ -48,7 +50,7 @@ interface LensState {
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
-export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
+export const LiquidLens = ({ products, wrapperRef, activeId }: LiquidLensProps) => {
   const reducedMotion = usePrefersReducedMotion();
   const finePointer = useFinePointer();
   const enabled = finePointer && !reducedMotion;
@@ -178,7 +180,12 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
         >
           <ul className="grid grid-cols-1 md:grid-cols-4">
             {products.map((product) => (
-              <XrayCell key={product.id} product={product} placeholderLabel={placeholderLabel} />
+              <XrayCell
+                key={product.id}
+                product={product}
+                placeholderLabel={placeholderLabel}
+                hovered={product.id === activeId}
+              />
             ))}
           </ul>
           {/* Orange and purple mixed in streaks, multiplied over the back photos so they keep their

@@ -122,7 +122,7 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
             }}
           />
         )}
-        <LiquidLens products={products} wrapperRef={wrapperRef} />
+        <LiquidLens products={products} wrapperRef={wrapperRef} activeId={active?.id} />
       </div>
     </LazyMotion>
   );

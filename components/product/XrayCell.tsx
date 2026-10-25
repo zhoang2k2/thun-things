@@ -8,13 +8,16 @@ import type { ProductCardModel } from '@/lib/catalog';
 export const XrayCell = ({
   product,
   placeholderLabel,
+  hovered,
 }: {
   product: ProductCardModel;
   placeholderLabel: string;
+  /** The design under the pointer: its copy sits on top, as the real hover card does. */
+  hovered: boolean;
 }) => (
   <li className="XrayCell relative aspect-[4/5]" inert>
     <div
-      className={cn(CARD_CLASSES, 'XrayCell__card absolute')}
+      className={cn(CARD_CLASSES, 'XrayCell__card absolute', hovered && 'z-30')}
       style={{ left: -FRAME_PX, top: -FRAME_PX, width: `calc(100% + ${FRAME_PX * 2}px)` }}
     >
       <ProductCardFace

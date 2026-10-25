@@ -50,6 +50,29 @@ test.describe('desktop fine pointer', () => {
     expect(Math.hypot(after.x - before.x, after.y - before.y)).toBeLessThan(30);
   });
 
+  test('inside the lens the hovered design copy sits above its neighbours (no clipped border)', async ({
+    page,
+  }) => {
+    await page.goto('/vi');
+    const at = await center(page, 'hoang-hon-01');
+    await page.mouse.move(at.x + 120, at.y);
+    await glide(page, at);
+    await expect(page.locator('.LiquidLens__xray')).toHaveCount(1);
+    const zIndexes = await page
+      .locator('.LiquidLens__xray .XrayCell__card')
+      .evaluateAll((cards) => cards.map((card) => getComputedStyle(card).zIndex));
+    const hoveredIndex = await page
+      .locator('.ProductGrid__list > .ProductTile')
+      .evaluateAll(
+        (tiles, slug) => tiles.findIndex((tile) => tile.querySelector(`a[href$="/${slug}"]`)),
+        'hoang-hon-01',
+      );
+    expect(zIndexes[hoveredIndex]).toBe('30');
+    expect(zIndexes.filter((_, index) => index !== hoveredIndex).every((z) => z !== '30')).toBe(
+      true,
+    );
+  });
+
   test('every x-ray copy is inert and mirrors a card, with the film grain on top', async ({
     page,
   }) => {
