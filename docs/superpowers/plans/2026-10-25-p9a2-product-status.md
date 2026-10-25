@@ -14,7 +14,7 @@
 
 ## Global Constraints
 
-- Status ids `available`, `sold_out` only; migration map exactly P9a2-2 (15 / 9).
+- Status ids `available`, `sold_out` only; migration map exactly P9a2-2 (14 / 10).
 - Copy exactly per spec §2 (vi), natural English per P5 rules.
 - Purposes `order`, `preorder`, `other`; `?purpose=notify` prefills `preorder`.
 - Mobile order bar height unchanged (81px); discount line not in the bar.
@@ -33,7 +33,7 @@
 
 **Files:** Modify `lib/catalog/schema.ts`, `lib/catalog/data.ts`, `lib/catalog/status.ts`, `lib/recommend/score.ts`, `lib/ai/prompt.ts`, `lib/seo/jsonLd.ts`, `lib/seo/ogImage.tsx` (+ their tests).
 
-- [ ] Tests: schema rejects `limited`/`preorder`/`coming_soon`; catalog has 15 `available`, 9 `sold_out`, no dropped notes; presentation `available` → order/neutral, `sold_out` → preorder/muted with offer; quiz bonus +2/0 and rank; AI availability strings; JSON-LD `InStock` / `BackOrder`.
+- [ ] Tests: schema rejects `limited`/`preorder`/`coming_soon`; catalog has 14 `available`, 10 `sold_out`, no dropped notes; presentation `available` → order/neutral, `sold_out` → preorder/muted with offer; quiz bonus +1/0 and rank; AI availability strings; JSON-LD `InStock` / `BackOrder`.
 - [ ] Commit `[REFACTOR] Reduce product statuses to in stock and sold out`.
 
 ### Task 2: Badges, buttons and the discount line

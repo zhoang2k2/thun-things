@@ -11,10 +11,8 @@ const { site } = getMessagesFor(DEFAULT_LOCALE);
 
 const AVAILABILITY: Record<ProductStatus, string> = {
   available: 'InStock',
-  limited: 'InStock',
-  sold_out: 'OutOfStock',
-  preorder: 'PreOrder',
-  coming_soon: 'PreSale',
+  // Orderable while out of stock: the pre-order offer (P9a2).
+  sold_out: 'BackOrder',
 };
 
 export const organizationJsonLd = (locale: Locale = DEFAULT_LOCALE): object => ({

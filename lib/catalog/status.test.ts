@@ -6,11 +6,8 @@ import { product } from '@/messages/vi.json';
 
 describe('presentStatus', () => {
   it.each([
-    ['available', 'Còn hàng', 'neutral', { label: 'Đặt mua', purpose: 'order' }],
-    ['limited', 'Số lượng giới hạn', 'accent', { label: 'Đặt mua', purpose: 'order' }],
-    ['preorder', 'Đặt trước', 'accent', { label: 'Đặt trước', purpose: 'order' }],
-    ['coming_soon', 'Sắp ra mắt', 'neutral', { label: 'Hỏi trước', purpose: 'notify' }],
-    ['sold_out', 'Hết hàng', 'muted', undefined],
+    ['available', 'Còn hàng', 'neutral', { label: 'Liên hệ đặt hàng', purpose: 'order' }],
+    ['sold_out', 'Hết hàng', 'muted', { label: 'Liên hệ đặt trước', purpose: 'preorder' }],
   ] as const)('%s → %s', (status, label, tone, action) => {
     const presentation = presentStatus(status);
     expect(presentation.tone).toBe(tone);
@@ -22,6 +19,12 @@ describe('presentStatus', () => {
       },
     ).toEqual(action);
   });
+});
+
+it('offers the pre-order discount only on sold-out designs', () => {
+  expect(presentStatus('sold_out').preorderOffer).toBe(true);
+  expect(presentStatus('available').preorderOffer).toBeUndefined();
+  expect(product.preorderOffer).toBe('Giảm đến 10% khi đặt trước');
 });
 
 it('builds the contact fallback link', () => {

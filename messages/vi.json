@@ -51,17 +51,14 @@
     },
     "status": {
       "available": "Còn hàng",
-      "limited": "Số lượng giới hạn",
-      "sold_out": "Hết hàng",
-      "coming_soon": "Sắp ra mắt",
-      "preorder": "Đặt trước"
+      "sold_out": "Hết hàng"
     },
     "actions": {
-      "order": "Đặt mua",
-      "preorder": "Đặt trước",
-      "askFirst": "Hỏi trước",
+      "order": "Liên hệ đặt hàng",
+      "preorder": "Liên hệ đặt trước",
       "notify": "Báo khi có hàng"
-    }
+    },
+    "preorderOffer": "Giảm đến 10% khi đặt trước"
   },
   "forms": {
     "required": "Bắt buộc",

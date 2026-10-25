@@ -51,17 +51,14 @@
     },
     "status": {
       "available": "In stock",
-      "limited": "Limited run",
-      "sold_out": "Sold out",
-      "coming_soon": "Coming soon",
-      "preorder": "Pre-order"
+      "sold_out": "Sold out"
     },
     "actions": {
-      "order": "Order",
-      "preorder": "Pre-order",
-      "askFirst": "Ask a question",
+      "order": "Contact to order",
+      "preorder": "Contact to pre-order",
       "notify": "Notify me"
-    }
+    },
+    "preorderOffer": "Up to 10% off when you pre-order"
   },
   "forms": {
     "required": "Required",

@@ -10,12 +10,12 @@ Replace the five product statuses with two that match how the shop sells today: 
 
 ## Owner decisions [USER, 2026-10-25]
 
-| ID     | Decision                                                                                                                                                                                                 |
-| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P9a2-1 | Two statuses only: **Còn hàng** (button "Liên hệ đặt hàng") and **Hết hàng** (button "Liên hệ đặt trước", with "Giảm đến 10% khi đặt trước" shown under the button).                                     |
-| P9a2-2 | Migration: `available`, `limited` → in stock; `preorder`, `coming_soon`, `sold_out` → sold out (15 in stock, 9 sold out in the current mock catalog). Real per-product statuses arrive with P9b content. |
-| P9a2-3 | The sold-out "notify me" form is **replaced** by the pre-order button, which opens Contact with a new purpose **Đặt trước** and the product prefilled.                                                   |
-| P9a2-4 | Quiz: in stock +2, sold out 0 (was −3); ties still prefer in stock.                                                                                                                                      |
+| ID     | Decision                                                                                                                                                                                                  |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P9a2-1 | Two statuses only: **Còn hàng** (button "Liên hệ đặt hàng") and **Hết hàng** (button "Liên hệ đặt trước", with "Giảm đến 10% khi đặt trước" shown under the button).                                      |
+| P9a2-2 | Migration: `available`, `limited` → in stock; `preorder`, `coming_soon`, `sold_out` → sold out (14 in stock, 10 sold out in the current mock catalog). Real per-product statuses arrive with P9b content. |
+| P9a2-3 | The sold-out "notify me" form is **replaced** by the pre-order button, which opens Contact with a new purpose **Đặt trước** and the product prefilled.                                                    |
+| P9a2-4 | Quiz: in stock +1, sold out 0 (was −3), so an exact sold-out match still leads; ties prefer in stock. (The +2 first proposed would tie an exact sold-out match with an in-stock colour-only one.)         |
 
 ## 1. Data model
 
@@ -44,7 +44,7 @@ Replace the five product statuses with two that match how the shop sells today: 
 
 ## 4. Other consumers
 
-- **Quiz scoring** (`lib/recommend/score.ts`): status bonus `available` +2, `sold_out` 0; status rank available before sold out.
+- **Quiz scoring** (`lib/recommend/score.ts`): status bonus `available` +1, `sold_out` 0; status rank available before sold out.
 - **AI prompt** (`lib/ai/prompt.ts`): availability "in stock" or "sold out, can be pre-ordered with up to 10% off".
 - **JSON-LD** (`lib/seo/jsonLd.ts`): `available` → `InStock`, `sold_out` → `BackOrder` (orderable while out of stock).
 - **OG image** (`lib/seo/ogImage.tsx`): accent marker only for the remaining states (none for sold out).
@@ -54,7 +54,7 @@ Replace the five product statuses with two that match how the shop sells today: 
 
 ## Testing
 
-- Unit: schema accepts only the two statuses; catalog migration counts (15/9) and no removed status anywhere in data; status presentation (labels, tones, purposes); prefill maps `notify` → `preorder`; lead schema rejects `notify`, accepts `preorder`; emails show "Đặt trước" and the offer line; quiz bonus/rank; AI prompt availability text; JSON-LD `BackOrder`.
+- Unit: schema accepts only the two statuses; catalog migration counts (14/10) and no removed status anywhere in data; status presentation (labels, tones, purposes); prefill maps `notify` → `preorder`; lead schema rejects `notify`, accepts `preorder`; emails show "Đặt trước" and the offer line; quiz bonus/rank; AI prompt availability text; JSON-LD `BackOrder`.
 - RTL: hover card and product page for both statuses (button, discount line, no notify form); order bar for sold out (pre-order button, no `#notify` link).
 - E2E: sold-out product → pre-order button → Contact with purpose "Đặt trước" and the product prefilled → submit; in-stock product → "Liên hệ đặt hàng"; existing specs updated for removed statuses and the notify form; axe on a sold-out product page.
 - Lighthouse budgets unchanged; evidence: hover card and product page for both statuses (vi), mobile order bar sold out, Contact prefilled with Đặt trước.

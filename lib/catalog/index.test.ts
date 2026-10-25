@@ -12,11 +12,18 @@ import {
 import { productStatusSchema } from '@/lib/catalog/schema';
 
 describe('mock catalog', () => {
-  it('has 24 products covering every status', () => {
+  it('has 24 products, 14 in stock and 10 sold out (P9a2 migration)', () => {
     const slugs = getAllSlugs();
     expect(slugs).toHaveLength(24);
-    const statuses = new Set(slugs.map((slug) => getProductBySlug(slug)?.status));
-    expect([...statuses].sort()).toEqual([...productStatusSchema.options].sort());
+    const statuses = slugs.map((slug) => getProductBySlug(slug)!.status);
+    expect(statuses.filter((status) => status === 'available')).toHaveLength(14);
+    expect(statuses.filter((status) => status === 'sold_out')).toHaveLength(10);
+    expect([...new Set(statuses)].sort()).toEqual([...productStatusSchema.options].sort());
+  });
+
+  it('keeps no note written for a removed status', () => {
+    for (const slug of getAllSlugs())
+      expect(getProductBySlug(slug)!.statusNote, slug).toBeUndefined();
   });
 });
 

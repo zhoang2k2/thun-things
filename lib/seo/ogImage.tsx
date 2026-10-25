@@ -97,10 +97,7 @@ export const renderProductImage = async (product: Product, locale: Locale = DEFA
                 fontSize: 28,
                 padding: '8px 20px',
                 border: `4px solid ${INK}`,
-                background:
-                  product.status === 'limited' || product.status === 'preorder'
-                    ? ACCENT
-                    : '#ffffff',
+                background: '#ffffff',
               }}
             >
               {productMessages.status[product.status]}

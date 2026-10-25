@@ -38,6 +38,10 @@ describe('productSchema', () => {
     );
   });
 
+  it.each(['limited', 'preorder', 'coming_soon'])('rejects the retired status %s', (status) => {
+    expect(productSchema.safeParse({ ...validProduct, status }).success).toBe(false);
+  });
+
   it('rejects a malformed colour hex', () => {
     const colors = [{ id: 'red', label: { vi: 'Đỏ', en: 'Red' }, hex: 'red' }];
     expect(productSchema.safeParse({ ...validProduct, colors }).success).toBe(false);
