@@ -10,7 +10,20 @@ describe('resolveContactPrefill', () => {
   });
 
   it('keeps an explicit purpose', () => {
-    expect(resolveContactPrefill({ product: 'am-ban', purpose: 'notify' }).purpose).toBe('notify');
+    expect(resolveContactPrefill({ product: 'am-ban', purpose: 'preorder' }).purpose).toBe(
+      'preorder',
+    );
+    expect(resolveContactPrefill({ product: 'am-ban', purpose: 'other' }).purpose).toBe('other');
+  });
+
+  it('opens old notify-me links as pre-orders (P9a2)', () => {
+    expect(resolveContactPrefill({ product: 'am-ban', purpose: 'notify' }).purpose).toBe(
+      'preorder',
+    );
+  });
+
+  it('defaults a sold-out product to pre-order', () => {
+    expect(resolveContactPrefill({ product: 'am-ban' }).purpose).toBe('preorder');
   });
 
   it('ignores an unknown product and falls back to other', () => {
@@ -22,7 +35,9 @@ describe('resolveContactPrefill', () => {
   });
 
   it('ignores an unknown purpose and takes the first of repeated params', () => {
-    expect(resolveContactPrefill({ product: 'am-ban', purpose: 'spam' }).purpose).toBe('order');
+    expect(resolveContactPrefill({ product: 'hoang-hon-01', purpose: 'spam' }).purpose).toBe(
+      'order',
+    );
     expect(resolveContactPrefill({ product: ['am-ban', 'nope'] }).product?.slug).toBe('am-ban');
   });
 });

@@ -32,7 +32,7 @@ export const pickClientMessages = ({
 });
 
 /**
- * Messages for a nested provider around a form (Contact page, product notify-me form). A nested
+ * Messages for a nested provider around a form (the Contact page). A nested
  * `NextIntlClientProvider` replaces its parent's messages, so this subset must cover everything
  * rendered inside the form.
  */
@@ -47,11 +47,9 @@ export const pickFormMessages = ({ forms }: Messages) => ({
     disabledEmail: forms.disabledEmail,
     rateLimited: forms.rateLimited,
     deliveryFailed: forms.deliveryFailed,
-    unknownProduct: forms.unknownProduct,
     errors: forms.errors,
     fields: forms.fields,
     purposes: forms.purposes,
     contact: forms.contact,
-    notify: forms.notify,
   },
 });

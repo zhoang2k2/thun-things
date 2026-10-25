@@ -10,7 +10,7 @@ import type { Product } from '@/lib/catalog/schema';
 import { type FormMessageKey, type FormState, HONEYPOT_FIELD } from '@/lib/leads/formState';
 import { checkRateLimit, clientKey } from '@/lib/leads/rateLimit';
 import { getFormReadiness } from '@/lib/leads/readiness';
-import { contactFormSchema, notifyFormSchema, toFieldErrors } from '@/lib/leads/schema';
+import { contactFormSchema, toFieldErrors } from '@/lib/leads/schema';
 import { getLeadSink } from '@/lib/leads/sink';
 import { LeadDeliveryError, type Lead } from '@/lib/leads/types';
 
@@ -97,30 +97,9 @@ export async function submitContact(_previous: FormState, formData: FormData): P
     toLead: ({ productSlug, ...form }, base) => ({
       ...base,
       ...form,
-      kind: 'contact',
       // Unknown products are ignored; the message still reaches the owner.
       ...productFields(productSlug ? getProductBySlug(productSlug) : undefined),
     }),
-  });
-  return respond(state, submissionLocale(formData));
-}
-
-export async function submitNotify(_previous: FormState, formData: FormData): Promise<FormState> {
-  const state = await handleSubmission({
-    formData,
-    schema: notifyFormSchema,
-    toLead: ({ productSlug, email, phone }, base) => {
-      const product = getProductBySlug(productSlug);
-      if (!product) return 'forms.unknownProduct';
-      return {
-        ...base,
-        kind: 'notify',
-        purpose: 'notify',
-        email,
-        phone,
-        ...productFields(product),
-      };
-    },
   });
   return respond(state, submissionLocale(formData));
 }

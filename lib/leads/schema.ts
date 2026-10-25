@@ -19,14 +19,11 @@ const errors = {
   emailInvalid: 'forms.errors.emailInvalid',
   phoneRequired: 'forms.errors.phoneRequired',
   phoneInvalid: 'forms.errors.phoneInvalid',
-  contactRequired: 'forms.errors.contactRequired',
   consentRequired: 'forms.errors.consentRequired',
   quantity: 'forms.errors.quantity',
   tooLong: 'forms.errors.tooLong',
   purpose: 'forms.errors.purpose',
 } as const satisfies Record<string, FormMessageKey>;
-
-const UNKNOWN_PRODUCT: FormMessageKey = 'forms.unknownProduct';
 
 const toText = (value: unknown): string => (typeof value === 'string' ? value.trim() : '');
 const toOptionalText = (value: unknown): string | undefined => toText(value) || undefined;
@@ -39,8 +36,6 @@ const requiredEmail = z.preprocess(
   z.email({ error: (issue) => (issue.input ? errors.emailInvalid : errors.emailRequired) }),
 );
 
-const optionalEmail = z.preprocess(toOptionalText, z.email(errors.emailInvalid).optional());
-
 const phoneValue = z.string().transform((value, context) => {
   const phone = normalizeVietnamesePhone(value);
   if (phone) return phone;
@@ -51,11 +46,6 @@ const phoneValue = z.string().transform((value, context) => {
 const requiredPhone = z.preprocess(
   toText,
   z.string().min(1, errors.phoneRequired).max(30, errors.phoneInvalid).pipe(phoneValue),
-);
-
-const optionalPhone = z.preprocess(
-  toOptionalText,
-  z.string().max(30, errors.phoneInvalid).pipe(phoneValue).optional(),
 );
 
 const consent = z.preprocess(
@@ -86,20 +76,7 @@ export const contactFormSchema = z.object({
   consent,
 });
 
-export const notifyFormSchema = z
-  .object({
-    productSlug: z.preprocess(toText, z.string().min(1, UNKNOWN_PRODUCT).max(80, UNKNOWN_PRODUCT)),
-    email: optionalEmail,
-    phone: optionalPhone,
-    consent,
-  })
-  .superRefine((form, context) => {
-    if (form.email || form.phone) return;
-    context.addIssue({ code: 'custom', path: ['email'], message: errors.contactRequired });
-  });
-
 export type ContactForm = z.output<typeof contactFormSchema>;
-export type NotifyForm = z.output<typeof notifyFormSchema>;
 
 /** First message key per top-level field, keyed by the form field name. */
 export const toFieldErrors = (error: z.ZodError): Record<string, FormMessageKey> => {

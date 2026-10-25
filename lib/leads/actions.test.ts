@@ -21,7 +21,7 @@ vi.mock('@/lib/leads/rateLimit', () => ({
 }));
 vi.mock('@/lib/leads/readiness', () => ({ getFormReadiness: mocks.getFormReadiness }));
 
-const { submitContact, submitNotify } = await import('@/lib/leads/actions');
+const { submitContact } = await import('@/lib/leads/actions');
 
 const formData = (entries: Record<string, string>) => {
   const data = new FormData();
@@ -56,7 +56,6 @@ describe('submitContact', () => {
     expect(mocks.deliver).toHaveBeenCalledTimes(1);
     const [lead] = mocks.deliver.mock.calls[0];
     expect(lead).toMatchObject({
-      kind: 'contact',
       purpose: 'order',
       email: 'khach@example.com',
       phone: '+84912345678',
@@ -139,42 +138,31 @@ describe('submissions without JavaScript', () => {
 
   it('redirects to the retry page on errors', async () => {
     await expect(
-      submitNotify(initialFormState, formData({ productSlug: 'am-ban', consent: 'on' })),
+      submitContact(initialFormState, formData({ ...VALID_CONTACT, email: '' })),
     ).rejects.toThrow('REDIRECT /vi/contact/retry');
     expect(mocks.deliver).not.toHaveBeenCalled();
   });
 });
 
-describe('submitNotify', () => {
-  it('delivers a notify lead with email only', async () => {
-    const state = await submitNotify(
+describe('pre-orders (P9a2)', () => {
+  it('delivers a pre-order lead for a sold-out design', async () => {
+    const state = await submitContact(
       initialFormState,
-      formData({ productSlug: 'am-ban', email: 'a@example.com', phone: '', consent: 'on' }),
+      formData({ ...VALID_CONTACT, purpose: 'preorder', productSlug: 'am-ban' }),
     );
     expect(state).toEqual({ status: 'success' });
     expect(mocks.deliver.mock.calls[0][0]).toMatchObject({
-      kind: 'notify',
-      purpose: 'notify',
-      email: 'a@example.com',
+      purpose: 'preorder',
       productSlug: 'am-ban',
     });
   });
 
-  it('requires email or phone and sends nothing', async () => {
-    const state = await submitNotify(
+  it('refuses the retired notify purpose', async () => {
+    const state = await submitContact(
       initialFormState,
-      formData({ productSlug: 'am-ban', email: '', phone: '', consent: 'on' }),
+      formData({ ...VALID_CONTACT, purpose: 'notify' }),
     );
-    expect(state.fieldErrors).toEqual({ email: 'forms.errors.contactRequired' });
-    expect(mocks.deliver).not.toHaveBeenCalled();
-  });
-
-  it('refuses an unknown product', async () => {
-    const state = await submitNotify(
-      initialFormState,
-      formData({ productSlug: 'nope', phone: '0912345678', consent: 'on' }),
-    );
-    expect(state).toMatchObject({ status: 'error', message: 'forms.unknownProduct' });
+    expect(state.fieldErrors).toEqual({ purpose: 'forms.errors.purpose' });
     expect(mocks.deliver).not.toHaveBeenCalled();
   });
 });
@@ -193,14 +181,7 @@ describe('locale-aware submissions', () => {
       submitContact(initialFormState, formData({ ...VALID_CONTACT, locale: 'en' })),
     ).rejects.toThrow('REDIRECT /en/contact/sent');
     await expect(
-      submitNotify(initialFormState, formData({ productSlug: 'am-ban', locale: 'en' })),
+      submitContact(initialFormState, formData({ ...VALID_CONTACT, email: '', locale: 'en' })),
     ).rejects.toThrow('REDIRECT /en/contact/retry');
-  });
-  it('stores an English notify lead', async () => {
-    await submitNotify(
-      initialFormState,
-      formData({ productSlug: 'am-ban', email: 'a@example.com', consent: 'on', locale: 'en' }),
-    );
-    expect(mocks.deliver.mock.calls[0][0].locale).toBe('en');
   });
 });

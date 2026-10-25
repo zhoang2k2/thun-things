@@ -8,7 +8,6 @@ import { LeadDeliveryError, type Lead } from '@/lib/leads/types';
 const product = getProductBySlug('hoang-hon-01')!;
 
 const LEAD: Lead = {
-  kind: 'contact',
   purpose: 'order',
   email: 'khach@example.com',
   phone: '+84912345678',
@@ -51,8 +50,8 @@ describe('emailSink', () => {
     expect(owner.to).toEqual(['owner@example.com']);
     expect(owner.from).toBe('Thun Things <onboarding@resend.dev>');
     expect(owner.replyTo).toBe('khach@example.com');
-    expect(owner.subject).toBe(`[Thun Things] Đặt mua — ${product.name.vi}`);
-    expect(owner.text).toContain('Đặt mua');
+    expect(owner.subject).toBe(`[Thun Things] Đặt hàng — ${product.name.vi}`);
+    expect(owner.text).toContain('Đặt hàng');
     expect(owner.text).toContain(product.name.vi);
     expect(owner.text).toContain('https://thun.example/vi/products/hoang-hon-01');
     expect(owner.text).toContain('+84912345678');
@@ -111,7 +110,7 @@ it('keeps the owner notification Vietnamese and identifies the customer locale',
   const { sink, sent } = setup('onboarding@resend.dev');
   await sink.deliver({ ...LEAD, locale: 'en' });
   expect(sent[0].text).toContain('Ngôn ngữ khách: EN');
-  expect(sent[0].subject).toContain('Đặt mua');
+  expect(sent[0].subject).toContain('Đặt hàng');
 });
 
 describe('HTML and locale', () => {
@@ -131,6 +130,6 @@ describe('HTML and locale', () => {
     expect(sent[1].subject).toBe('Thun Things has received your request');
     expect(sent[1].text).toContain('Hello,');
     expect(sent[1].text).toContain(product.name.en);
-    expect(sent[0].subject).toContain('Đặt mua');
+    expect(sent[0].subject).toContain('Đặt hàng');
   });
 });

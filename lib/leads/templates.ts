@@ -41,6 +41,7 @@ export const ownerEmail = (lead: Lead, product: Product | undefined, siteUrl: st
     `${purpose}`,
     `${email.locale}: ${lead.locale.toUpperCase()}`,
     ...productLines(product, siteUrl),
+    ...(lead.purpose === 'preorder' ? [email.preorderOffer] : []),
     ...line(fields.size, lead.size),
     ...line(fields.quantity, lead.quantity),
     '',
@@ -58,8 +59,7 @@ export const ownerEmail = (lead: Lead, product: Product | undefined, siteUrl: st
 export const customerEmail = (lead: Lead, product: Product | undefined, siteUrl: string) => {
   // The visitor's confirmation follows the page language (P9-4).
   const local = getMessagesFor(lead.locale);
-  const body =
-    lead.kind === 'notify' ? local.forms.notify.success : local.forms.contact.successBody;
+  const body = local.forms.contact.successBody;
   const productText = product
     ? [
         `${local.forms.contact.productLabel}: ${product.name[lead.locale]}`,

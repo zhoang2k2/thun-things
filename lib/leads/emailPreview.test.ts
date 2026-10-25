@@ -14,7 +14,6 @@ const SITE = 'https://thun-things.vercel.app';
 const product = getProductBySlug('hoang-hon-01')!;
 
 const LEAD: Lead = {
-  kind: 'contact',
   purpose: 'order',
   email: 'lan.nguyen@example.com',
   phone: '+84912345678',
@@ -37,7 +36,7 @@ describe.runIf(process.env.EMAIL_PREVIEW === '1')('email preview', () => {
       'owner-vi.html': ownerEmailHtml(LEAD, product, SITE),
       'customer-vi.html': customerEmailHtml(LEAD, product, SITE),
       'customer-en.html': customerEmailHtml(
-        { ...LEAD, locale: 'en', kind: 'notify', purpose: 'notify' },
+        { ...LEAD, locale: 'en', purpose: 'preorder' },
         product,
         SITE,
       ),

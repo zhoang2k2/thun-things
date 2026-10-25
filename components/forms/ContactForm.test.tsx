@@ -50,11 +50,11 @@ describe('ContactForm', () => {
     await renderForm(
       <ContactForm
         enabled
-        prefill={prefillOf({ purpose: 'notify', productSlug: 'am-ban', sizes: ['S', 'M'] })}
+        prefill={prefillOf({ purpose: 'preorder', productSlug: 'am-ban', sizes: ['S', 'M'] })}
       />,
     );
     await waitFor(() =>
-      expect(screen.getByRole('radio', { name: forms.purposes.notify })).toBeChecked(),
+      expect(screen.getByRole('radio', { name: forms.purposes.preorder })).toBeChecked(),
     );
     const size = await screen.findByRole('combobox', { name: /^Size/ });
     expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([

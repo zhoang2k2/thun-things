@@ -55,8 +55,7 @@
     },
     "actions": {
       "order": "Liên hệ đặt hàng",
-      "preorder": "Liên hệ đặt trước",
-      "notify": "Báo khi có hàng"
+      "preorder": "Liên hệ đặt trước"
     },
     "preorderOffer": "Giảm đến 10% khi đặt trước"
   },
@@ -71,13 +70,11 @@
     "disabledEmail": "Bạn có thể liên hệ qua email:",
     "rateLimited": "Bạn đã gửi quá nhiều lần. Vui lòng thử lại sau 10 phút.",
     "deliveryFailed": "Chưa gửi được yêu cầu. Vui lòng thử lại sau ít phút.",
-    "unknownProduct": "Không tìm thấy sản phẩm này.",
     "errors": {
       "emailRequired": "Vui lòng nhập email.",
       "emailInvalid": "Email chưa đúng định dạng.",
       "phoneRequired": "Vui lòng nhập số điện thoại hoặc Zalo.",
       "phoneInvalid": "Số điện thoại chưa đúng, ví dụ 0912 345 678.",
-      "contactRequired": "Vui lòng nhập email hoặc số điện thoại.",
       "consentRequired": "Bạn cần đồng ý với chính sách bảo mật.",
       "quantity": "Số lượng từ 1 đến 20.",
       "tooLong": "Nội dung quá dài.",
@@ -97,8 +94,8 @@
       "consentLink": "chính sách bảo mật"
     },
     "purposes": {
-      "order": "Đặt mua",
-      "notify": "Báo khi có hàng",
+      "order": "Đặt hàng",
+      "preorder": "Đặt trước",
       "other": "Câu hỏi khác"
     },
     "contact": {
@@ -116,14 +113,8 @@
       "detailsHeading": "Chi tiết yêu cầu",
       "call": "Gọi",
       "zalo": "Nhắn Zalo",
-      "viewProduct": "Xem sản phẩm"
-    },
-    "notify": {
-      "title": "Báo khi có hàng",
-      "intro": "Để lại email hoặc số điện thoại, Thun Things sẽ báo khi mẫu này có lại.",
-      "hint": "Chỉ cần một trong hai.",
-      "submit": "Báo cho tôi",
-      "success": "Đã ghi nhận. Thun Things sẽ báo bạn khi có hàng."
+      "viewProduct": "Xem sản phẩm",
+      "preorderOffer": "Ưu đãi đến 10% khi đặt trước"
     }
   },
   "errors": {
