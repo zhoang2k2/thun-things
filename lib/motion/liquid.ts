@@ -4,7 +4,7 @@
 
 export const LENS = {
   /** Lens diameter in px; one constant to try other sizes. */
-  diameter: 200,
+  diameter: 320,
   /** Vertices of the outline. */
   points: 72,
   /** Harmonics summed into the radius: more harmonics, more irregular dents and bulges. */

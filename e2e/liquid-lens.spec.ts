@@ -9,7 +9,7 @@ test.use({ extraHTTPHeaders: { 'x-forwarded-for': '192.0.2.91' } });
 // The grid's own tiles only: the open card links to the same product and must not match.
 const tileOf = (page: Page, slug: string) =>
   page
-    .locator('.ProductGrid__list > .ProductTile')
+    .locator('.ProductGrid__list:visible > .ProductTile')
     .filter({ has: page.locator(`.ProductTile__link[href$="/${slug}"]`) });
 
 const center = async (page: Page, slug: string) => {
@@ -71,6 +71,42 @@ test.describe('desktop fine pointer', () => {
     expect(zIndexes.filter((_, index) => index !== hoveredIndex).every((z) => z !== '30')).toBe(
       true,
     );
+  });
+
+  test('the revealed button is purple inside the lens', async ({ page }) => {
+    await page.goto('/vi');
+    const at = await center(page, 'hoang-hon-01');
+    await page.mouse.move(at.x + 120, at.y);
+    await glide(page, at);
+    await expect(page.locator('.LiquidLens__xray')).toHaveCount(1);
+    const colour = await page
+      .locator('.LiquidLens__xray .XrayCell__card .ProductAction')
+      .first()
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(colour).toBe('rgb(107, 63, 160)');
+  });
+
+  test('hovering the open card button turns the liquid orange', async ({ page }) => {
+    await page.goto('/vi');
+    const at = await center(page, 'hoang-hon-01');
+    await page.mouse.move(at.x + 120, at.y);
+    await glide(page, at);
+    // Centre the tile first: the card (and its button) must sit inside the viewport.
+    await page
+      .locator('.ProductGrid__list > .ProductTile')
+      .first()
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    const at2 = await center(page, 'hoang-hon-01');
+    await page.mouse.move(at2.x + 120, at2.y);
+    await glide(page, at2);
+    const button = page.getByTestId('product-hover-card').locator('.ProductAction');
+    await expect(button).toBeVisible();
+    await page.waitForTimeout(400);
+    const box = (await button.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 8 });
+    await page.waitForTimeout(300);
+    await expect(page.locator('.LiquidLens__tint--orange')).toHaveCSS('opacity', '1');
+    await expect(page.locator('.LiquidLens__tint--mixed')).toHaveCSS('opacity', '0');
   });
 
   test('every x-ray copy is inert and mirrors a card, with the film grain on top', async ({

@@ -8,6 +8,8 @@
   --color-line: #e5e5e5;
   --color-accent: #ff5a1f;
   --color-on-accent: #111111;
+  /* P11: the lens purple (liquid mix, and the revealed button it touches). */
+  --color-lens-purple: #6b3fa0;
   /* Form errors: 6.6:1 on canvas, so it works for text as well as borders. */
   --color-error: #b42318;
   /* V-26 dummy image fallback: light grey fill, dark grey icon and label. */
@@ -139,4 +141,26 @@ html:not([data-consent-decided]):not([data-consent-bar-measured])
   75% {
     transform: translate(-2%, 6%);
   }
+}
+
+/* P11: the liquid turns orange while the open card's button is hovered (the button is black there,
+   from the primary hover). The mixed tint is the default. */
+.LiquidLens__tint--orange {
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.ProductGrid:has(.ProductHoverCard .ProductAction:hover) .LiquidLens__tint--orange {
+  opacity: 1;
+}
+
+.ProductGrid:has(.ProductHoverCard .ProductAction:hover) .LiquidLens__tint--mixed {
+  opacity: 0;
+}
+
+/* P11: the revealed button turns purple where the liquid touches it. Copies are inert, so this only
+   shows inside the lens. */
+.XrayCell__card .ProductAction {
+  background-color: var(--color-lens-purple);
+  color: var(--color-canvas);
 }
