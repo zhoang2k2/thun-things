@@ -143,24 +143,16 @@ html:not([data-consent-decided]):not([data-consent-bar-measured])
   }
 }
 
-/* P11: the liquid turns orange while the open card's button is hovered (the button is black there,
-   from the primary hover). The mixed tint is the default. */
-.LiquidLens__tint--orange {
-  opacity: 0;
-  transition: opacity 150ms ease-out;
-}
-
-.ProductGrid:has(.ProductHoverCard .ProductAction:hover) .LiquidLens__tint--orange {
-  opacity: 1;
-}
-
-.ProductGrid:has(.ProductHoverCard .ProductAction:hover) .LiquidLens__tint--mixed {
-  opacity: 0;
-}
-
 /* P11: the revealed button turns purple where the liquid touches it. Copies are inert, so this only
    shows inside the lens. */
 .XrayCell__card .ProductAction {
   background-color: var(--color-lens-purple);
   color: var(--color-canvas);
+}
+
+/* P11: while the open card's button is hovered, the part of the revealed button under the liquid turns
+   orange (the accent, the button's own colour). Only the hovered design's copy reacts. */
+.ProductGrid:has(.ProductHoverCard .ProductAction:hover) .XrayCell__card--hovered .ProductAction {
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
 }

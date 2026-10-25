@@ -17,7 +17,11 @@ export const XrayCell = ({
 }) => (
   <li className="XrayCell relative aspect-[4/5]" inert>
     <div
-      className={cn(CARD_CLASSES, 'XrayCell__card absolute', hovered && 'z-30')}
+      className={cn(
+        CARD_CLASSES,
+        'XrayCell__card absolute',
+        hovered && 'XrayCell__card--hovered z-30',
+      )}
       style={{ left: -FRAME_PX, top: -FRAME_PX, width: `calc(100% + ${FRAME_PX * 2}px)` }}
     >
       <ProductCardFace

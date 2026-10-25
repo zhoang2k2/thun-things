@@ -86,7 +86,7 @@ test.describe('desktop fine pointer', () => {
     expect(colour).toBe('rgb(107, 63, 160)');
   });
 
-  test('hovering the open card button turns the liquid orange', async ({ page }) => {
+  test('hovering the open card button turns the overlap with it orange', async ({ page }) => {
     await page.goto('/vi');
     const at = await center(page, 'hoang-hon-01');
     await page.mouse.move(at.x + 120, at.y);
@@ -105,8 +105,12 @@ test.describe('desktop fine pointer', () => {
     const box = (await button.boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 8 });
     await page.waitForTimeout(300);
-    await expect(page.locator('.LiquidLens__tint--orange')).toHaveCSS('opacity', '1');
-    await expect(page.locator('.LiquidLens__tint--mixed')).toHaveCSS('opacity', '0');
+    // The liquid keeps its mixed colour; only the overlap with the hovered button turns orange.
+    await expect(page.locator('.LiquidLens__tint')).toHaveCSS('opacity', '1');
+    const overlap = await page
+      .locator('.XrayCell__card--hovered .ProductAction')
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(overlap).toBe('rgb(255, 90, 31)');
   });
 
   test('every x-ray copy is inert and mirrors a card, with the film grain on top', async ({

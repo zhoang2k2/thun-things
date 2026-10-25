@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { type RefObject, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
-import { BRAND_ORANGE, FILM_GRAIN, LIQUID_TINT } from '@/components/product/lensTextures';
+import { FILM_GRAIN, LIQUID_TINT } from '@/components/product/lensTextures';
 import { XrayCell } from '@/components/product/XrayCell';
 import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
 import type { ProductCardModel } from '@/lib/catalog';
@@ -175,7 +175,7 @@ export const LiquidLens = ({ products, wrapperRef, activeId }: LiquidLensProps) 
           ref={layerRef}
           data-seed={entry.seed}
           aria-hidden="true"
-          className="LiquidLens LiquidLens__xray pointer-events-none absolute inset-0 z-40 px-4"
+          className="LiquidLens LiquidLens__xray pointer-events-none absolute inset-0 z-40 px-4 py-10"
           style={{ clipPath: `url(#${clipId})`, visibility: 'hidden' }}
         >
           <ul className="grid grid-cols-1 md:grid-cols-4">
@@ -191,17 +191,12 @@ export const LiquidLens = ({ products, wrapperRef, activeId }: LiquidLensProps) 
           {/* Orange and purple mixed in streaks, multiplied over the back photos so they keep their
               detail and take the colour. */}
           <div
-            className="LiquidLens__tint LiquidLens__tint--mixed absolute inset-0"
+            className="LiquidLens__tint absolute inset-0"
             style={{
               backgroundImage: LIQUID_TINT,
               backgroundSize: '256px 256px',
               mixBlendMode: 'multiply',
             }}
-          />
-          {/* Solid orange, shown instead of the mix while the open card's button is hovered. */}
-          <div
-            className="LiquidLens__tint LiquidLens__tint--orange absolute inset-0"
-            style={{ backgroundColor: BRAND_ORANGE, mixBlendMode: 'multiply' }}
           />
           <div
             className="LiquidLens__grain pointer-events-none absolute inset-0"

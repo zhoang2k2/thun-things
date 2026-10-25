@@ -95,7 +95,7 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
 
   return (
     <LazyMotion features={loadMotionFeatures} strict>
-      <div ref={wrapperRef} className="ProductGrid relative overflow-x-clip px-4">
+      <div ref={wrapperRef} className="ProductGrid relative overflow-x-clip px-4 py-10">
         <ul className="ProductGrid__list grid grid-cols-1 md:grid-cols-4">
           {products.map((product) => (
             <ProductTile
