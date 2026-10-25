@@ -26,6 +26,7 @@ export const pickClientMessages = ({
     galleryLabel: product.galleryLabel,
     status: product.status,
     actions: product.actions,
+    preorderOffer: product.preorderOffer,
   },
   errors: { generic: errors.generic, notFound: { home: errors.notFound.home } },
 });

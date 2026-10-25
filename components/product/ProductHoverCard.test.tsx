@@ -35,7 +35,7 @@ describe('product hover card', () => {
     // vi-VN currency output uses a non-breaking space; the DOM matcher normalises it.
     expect(within(card).getByText(available.priceLabel.replace(/\s/g, ' '))).toBeInTheDocument();
     expect(within(card).getByText('Còn hàng')).toBeInTheDocument();
-    expect(within(card).getByRole('link', { name: 'Đặt mua' })).toBeInTheDocument();
+    expect(within(card).getByRole('link', { name: 'Liên hệ đặt hàng' })).toBeInTheDocument();
 
     fireEvent.pointerLeave(tile, { pointerType: 'mouse' });
     await waitFor(() =>
@@ -43,13 +43,17 @@ describe('product hover card', () => {
     );
   });
 
-  it('shows only the badge for sold-out products', () => {
+  it('offers pre-order with the discount line on sold-out products', () => {
     renderGrid();
     const tile = tileOf(soldOut.name);
     fireEvent.pointerEnter(tile, { pointerType: 'mouse' });
     const card = within(tile).getByTestId('product-hover-card');
     expect(within(card).getByText('Hết hàng')).toBeInTheDocument();
-    expect(within(card).queryByRole('link', { name: /Đặt|Hỏi/ })).not.toBeInTheDocument();
+    expect(within(card).getByRole('link', { name: 'Liên hệ đặt trước' })).toHaveAttribute(
+      'href',
+      `/vi/contact?product=${soldOut.slug}&purpose=preorder`,
+    );
+    expect(within(card).getByText('Giảm đến 10% khi đặt trước')).toBeInTheDocument();
   });
 
   it('opens on keyboard focus and closes on Escape', async () => {
