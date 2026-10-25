@@ -32,26 +32,52 @@ interface ProductGridProps {
 export const ProductGrid = ({ products }: ProductGridProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<ActiveCard | null>(null);
+  // The open cell, so its box can be measured again when the layout changes (a resize moves cells).
+  const openCell = useRef<HTMLElement | null>(null);
 
-  const open = useCallback<OpenCard>((id, cell, point) => {
+  const measure = useCallback((cell: HTMLElement) => {
     const wrapper = wrapperRef.current;
-    if (!wrapper) return;
+    if (!wrapper) return null;
     const cellBox = cell.getBoundingClientRect();
     const gridBox = wrapper.getBoundingClientRect();
-    setActive((current) => {
-      if (current?.id === id) return current;
-      return {
-        id,
-        origin: point ?? { x: cellBox.width / 2, y: cellBox.height / 2 },
-        rect: {
-          left: cellBox.left - gridBox.left,
-          top: cellBox.top - gridBox.top,
-          width: cellBox.width,
-          height: cellBox.height,
-        },
-      };
-    });
+    return {
+      left: cellBox.left - gridBox.left,
+      top: cellBox.top - gridBox.top,
+      width: cellBox.width,
+      height: cellBox.height,
+    };
   }, []);
+
+  const open = useCallback<OpenCard>(
+    (id, cell, point) => {
+      const rect = measure(cell);
+      if (!rect) return;
+      openCell.current = cell;
+      setActive((current) => {
+        if (current?.id === id) return current;
+        return {
+          id,
+          origin: point ?? { x: rect.width / 2, y: rect.height / 2 },
+          rect,
+        };
+      });
+    },
+    [measure],
+  );
+
+  // The card is positioned from the cell box measured on open: re-measure whenever the grid resizes,
+  // otherwise the card stays put while its neighbours move and the two drift apart.
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!active || !wrapper || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      const cell = openCell.current;
+      const rect = cell && measure(cell);
+      if (rect) setActive((current) => (current ? { ...current, rect } : current));
+    });
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, [active, measure]);
 
   const close = useCallback((id: string) => {
     setActive((current) => (current?.id === id ? null : current));
