@@ -89,3 +89,13 @@
 - Shared `ProductCardFace` for the hover card and the x-ray copies; copies are `inert`.
 - Film grain: `soft-light` layer above the copies; the tile is set from the component so the stylesheet stays small (LCP on `/vi` was over budget with the tile in CSS).
 - Known: the lens is hard to see on placeholder photos (copy and tile share the grey); the look should be judged again with real back photos (P9b).
+
+## Revision 4 tasks (2026-10-26)
+
+- [ ] Grid container aligned with the header (max width, 16/32px padding-x, 40px padding-y), no gaps; E2E: grid left edge equals the header inner left edge.
+- [ ] `lensOutline` gains `depth`; unit tests for a near-circle at low depth and deep irregularity at full depth.
+- [ ] `CursorLiquid` (site-wide, fixed, z between content and header): 120px → 240px inside the grid with an animated transition; coloured everywhere; off on touch/reduced motion; unit + E2E (size states, z-order below header and above the card).
+- [ ] Button overlap copy: purple, orange while the card button is hovered; E2E.
+- [ ] Neighbour push in `ProductGrid` (cached rects, max ~6px, scale ~0.97, hovered tile still); E2E.
+- [ ] Hover card: 1px border kept; frame grows out of the photo (clip-path inset) in ~280ms; reduced motion fades; E2E end state.
+- [ ] Remove `LiquidLens`, `XrayCell`, `backImage`, the back placeholder copy and their tests; ADR-014 revision 4; evidence; full suite; Lighthouse; push.
