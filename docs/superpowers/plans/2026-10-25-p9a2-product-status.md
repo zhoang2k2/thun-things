@@ -33,31 +33,39 @@
 
 **Files:** Modify `lib/catalog/schema.ts`, `lib/catalog/data.ts`, `lib/catalog/status.ts`, `lib/recommend/score.ts`, `lib/ai/prompt.ts`, `lib/seo/jsonLd.ts`, `lib/seo/ogImage.tsx` (+ their tests).
 
-- [ ] Tests: schema rejects `limited`/`preorder`/`coming_soon`; catalog has 14 `available`, 10 `sold_out`, no dropped notes; presentation `available` → order/neutral, `sold_out` → preorder/muted with offer; quiz bonus +1/0 and rank; AI availability strings; JSON-LD `InStock` / `BackOrder`.
-- [ ] Commit `[REFACTOR] Reduce product statuses to in stock and sold out`.
+- [x] Tests: schema rejects `limited`/`preorder`/`coming_soon`; catalog has 14 `available`, 10 `sold_out`, no dropped notes; presentation `available` → order/neutral, `sold_out` → preorder/muted with offer; quiz bonus +1/0 and rank; AI availability strings; JSON-LD `InStock` / `BackOrder`.
+- [x] Commit `[REFACTOR] Reduce product statuses to in stock and sold out`.
 
 ### Task 2: Badges, buttons and the discount line
 
 **Files:** Modify `components/product/{ProductAction,ProductHoverCard,ProductInfo,ProductOrderBar,StatusBadge}.tsx`, `messages/{vi,en}.json` (+ tests); remove the notify form from the product page.
 
-- [ ] RTL: in stock shows "Còn hàng" + "Liên hệ đặt hàng" → `/contact?product=…&purpose=order`; sold out shows "Hết hàng" + "Liên hệ đặt trước" → `purpose=preorder` + "Giảm đến 10% khi đặt trước" in hover card and product page; order bar sold out shows the pre-order button and no `#notify` link; English labels.
-- [ ] Commit `[FEATURE] Offer pre-order with up to 10% off on sold-out designs`.
+- [x] RTL: in stock shows "Còn hàng" + "Liên hệ đặt hàng" → `/contact?product=…&purpose=order`; sold out shows "Hết hàng" + "Liên hệ đặt trước" → `purpose=preorder` + "Giảm đến 10% khi đặt trước" in hover card and product page; order bar sold out shows the pre-order button and no `#notify` link; English labels.
+- [x] Commit `[FEATURE] Offer pre-order with up to 10% off on sold-out designs`.
 
 ### Task 3: Lead purposes
 
 **Files:** Modify `lib/leads/{purposes,schema,types,prefill,actions,templates,emailHtml}.ts`, `components/forms/{ContactForm,useFormAnalytics}.tsx`, `lib/analytics/events.ts`, `content/policies/privacy.ts`, messages; delete `components/forms/NotifyForm.tsx` (+ test) (+ tests).
 
-- [ ] Tests: purposes `order`/`preorder`/`other`; prefill `notify` → `preorder`; lead schema rejects `notify`; owner email "Đặt trước" + offer line; customer email uses the contact copy; analytics types; privacy text no longer mentions the notify form.
-- [ ] Commit `[FEATURE] Replace notify-me with a pre-order contact purpose`.
+- [x] Tests: purposes `order`/`preorder`/`other`; prefill `notify` → `preorder`; lead schema rejects `notify`; owner email "Đặt trước" + offer line; customer email uses the contact copy; analytics types; privacy text no longer mentions the notify form.
+- [x] Commit `[FEATURE] Replace notify-me with a pre-order contact purpose`.
 
 ### Task 4: E2E, docs, PR
 
-- [ ] E2E: sold-out → pre-order → Contact prefilled → submit (memory sink); in-stock → order; old `purpose=notify` link; axe on a sold-out page; update specs that used removed statuses or the notify form.
-- [ ] `thun-things.md` D-07, V-16, V-22, R-01 note; ADR-013; roadmap P9a2 → `IN REVIEW`; plan notes.
-- [ ] `pnpm perf` within budgets; evidence PNGs per spec; full suite, push, PR, evidence, CI.
+- [x] E2E: sold-out → pre-order → Contact prefilled → submit (memory sink); in-stock → order; old `purpose=notify` link; axe on a sold-out page; update specs that used removed statuses or the notify form.
+- [x] `thun-things.md` D-07, V-16, V-22, R-01 note; ADR-013; roadmap P9a2 → `IN REVIEW`; plan notes.
+- [x] `pnpm perf` within budgets; evidence PNGs per spec; full suite, push, PR, evidence, CI.
 
 ## P9a2 Acceptance
 
-- [ ] Only two statuses in code and data; copy and buttons per spec in vi/en.
-- [ ] Sold-out pre-order flow reaches the owner as "Đặt trước" with the offer noted; old notify links still work.
+- [x] Only two statuses in code and data; copy and buttons per spec in vi/en.
+- [x] Sold-out pre-order flow reaches the owner as "Đặt trước" with the offer noted; old notify links still work.
 - [ ] CI green; evidence in the PR; owner merged before P9b.
+
+## Implementation notes (2026-10-25)
+
+- Migration counts are 14 in stock / 10 sold out; the first draft of the spec said 15 / 9 (miscounted).
+- In-stock bonus is +1, not +2: +2 tied an exact sold-out match with an in-stock colour-only one.
+- The discount line lives in `ProductAction` (`showOffer`, off in the mobile bar) so hover card and product page stay in sync; `product.preorderOffer` was added to the client message subset.
+- A Contact link with a sold-out product and no purpose defaults to pre-order; the order purpose label is now "Đặt hàng".
+- Without JavaScript the prefilled purpose cannot be applied (streamed inside Suspense); the no-JS E2E test checks that submission still works.

@@ -22,6 +22,7 @@ This directory tracks significant technical and architectural choices made durin
 | **ADR-010** | Deterministic quiz bot: server scoring and bubble guardrails | **Accepted** | 2026-10-24 |
 | **ADR-011** | Quiz AI rationale: Gemini first, Anthropic fallback          | **Accepted** | 2026-10-24 |
 | **ADR-012** | Launch preparation on a temporary host                       | **Accepted** | 2026-10-24 |
+| **ADR-013** | Two product statuses and the pre-order purpose               | **Accepted** | 2026-10-25 |
 
 ---
 
@@ -167,3 +168,15 @@ This directory tracks significant technical and architectural choices made durin
   - **Production configuration check** (`scripts/check-production-config.mjs`) runs before `next build` and only enforces when `VERCEL_ENV=production`; it lists missing variable names and stops the build, so a broken deploy never replaces a working one.
   - **CSP review:** `blob:` removed from `img-src` (unused); `data:` kept for future blur placeholders; GA entries unchanged; AI providers are server-side and need none.
 - **Consequences:** Customers get no confirmation email until the domain is verified (accepted, the success page promises none). Merging to production requires the Vercel production variables listed in `docs/launch-checklist.md`.
+
+---
+
+### ADR-013: Two product statuses and the pre-order purpose
+
+- **Context:** Five statuses (available, limited, preorder, coming soon, sold out) with different buttons and a separate notify-me form were more than the shop needs. The owner wants in stock → "Liên hệ đặt hàng" and sold out → "Liên hệ đặt trước" with up to 10% off (P9a2) before go-live.
+- **Decision:**
+  - `ProductStatus = 'available' | 'sold_out'`; the two existing ids are kept so analytics values and links stay valid. Migration: limited → available; preorder and coming soon → sold out (14 / 10 in the mock catalog). Notes written for removed statuses were dropped.
+  - Every design has a button. Sold out shows "Giảm đến 10% khi đặt trước" under it (hover card, product page); the mobile order bar keeps its fixed height and shows the button only.
+  - Lead purposes are `order`, `preorder`, `other`. The notify-me form, its server function, lead kind and copy were removed; `?purpose=notify` links prefill `preorder`, and a sold-out product without a purpose defaults to `preorder`. Owner emails name pre-orders and their discount.
+  - Quiz status bonus: in stock +1, sold out 0 (+1 stays below the vibe weight, so an exact sold-out match still leads). JSON-LD: `InStock` / `BackOrder`. The AI prompt says a sold-out design can be pre-ordered with up to 10% off.
+- **Consequences:** Simpler pages and one lead path. Without JavaScript, Contact cannot apply the prefilled purpose (streamed inside Suspense); the form still submits. The discount is a public promise the owner must honour (R-01).
