@@ -1,20 +1,15 @@
 import { useLocale, useTranslations } from 'next-intl';
 
-import { FormIntlProvider } from '@/components/forms/FormIntlProvider';
-import { NotifyForm } from '@/components/forms/NotifyForm';
 import { ProductAction } from '@/components/product/ProductAction';
 import { StatusBadge } from '@/components/product/StatusBadge';
-import { siteConfig } from '@/config/site';
 import { formatPriceVND } from '@/lib/catalog/format';
 import type { Product } from '@/lib/catalog/schema';
-import { getFormReadiness } from '@/lib/leads/readiness';
 
-// V-11 right column; V-22 in-page notify-me form for sold-out products (P3).
-// Readiness is read when the page is prerendered; the server function re-checks it per request.
+// V-11 right column. P9a2: sold-out designs offer pre-order (with the discount line) instead of
+// the former notify-me form.
 export const ProductInfo = ({ product }: { product: Product }) => {
   const locale = useLocale();
   const t = useTranslations('product.details');
-  const soldOut = product.status === 'sold_out';
 
   return (
     <div className="ProductInfo flex flex-col gap-6">
@@ -34,23 +29,13 @@ export const ProductInfo = ({ product }: { product: Product }) => {
         )}
       </div>
 
-      {soldOut ? (
-        <FormIntlProvider>
-          <NotifyForm
-            productSlug={product.slug}
-            enabled={getFormReadiness().enabled}
-            contactEmail={siteConfig.contactEmail}
-          />
-        </FormIntlProvider>
-      ) : (
-        <ProductAction
-          slug={product.slug}
-          status={product.status}
-          size="lg"
-          // Mobile uses the sticky order bar instead.
-          className="hidden self-start md:inline-flex"
-        />
-      )}
+      <ProductAction
+        slug={product.slug}
+        status={product.status}
+        size="lg"
+        // Mobile uses the sticky order bar for the button; the discount line still shows here.
+        className="hidden self-start md:inline-flex"
+      />
 
       <p className="ProductInfo__description max-w-prose leading-6">
         {product.description[locale]}

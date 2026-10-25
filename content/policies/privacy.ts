@@ -9,7 +9,9 @@ export const privacyPolicy: PolicyDocument = {
     vi: [
       {
         heading: 'Thông tin Thun Things thu thập',
-        paragraphs: ['Khi bạn gửi form Liên hệ hoặc Báo khi có hàng, Thun Things nhận:'],
+        paragraphs: [
+          'Khi bạn gửi form Liên hệ (đặt hàng, đặt trước hoặc câu hỏi khác), Thun Things nhận:',
+        ],
         items: [
           'Email và số điện thoại / Zalo để liên hệ lại với bạn.',
           'Tên, size, số lượng, địa chỉ giao hàng và lời nhắn nếu bạn tự điền.',
@@ -70,7 +72,7 @@ export const privacyPolicy: PolicyDocument = {
       {
         heading: 'What we collect',
         paragraphs: [
-          'When you send the Contact form or the "Notify me when it\'s available" form, Thun Things receives:',
+          'When you send the Contact form (to order, pre-order or ask something else), Thun Things receives:',
         ],
         items: [
           'Your email and phone / Zalo number, so we can get back to you.',

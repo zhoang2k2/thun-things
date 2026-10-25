@@ -10,13 +10,8 @@ export const localizedSchema = z.object({
   en: z.string().min(1),
 });
 
-export const productStatusSchema = z.enum([
-  'available',
-  'limited',
-  'sold_out',
-  'coming_soon',
-  'preorder',
-]);
+// P9a2 [USER]: in stock (contact to order) or sold out (contact to pre-order, up to 10% off).
+export const productStatusSchema = z.enum(['available', 'sold_out']);
 
 export const imageAssetSchema = z.object({
   src: z.string().min(1).optional(),

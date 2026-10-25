@@ -34,12 +34,9 @@ const slugs = (ranked: Product[]) => ranked.map((item) => item.slug);
 describe('scoreProduct', () => {
   it('weighs colour 3, vibe 2 and the status bonus', () => {
     const answer = { color: 'black', vibe: 'art' };
-    expect(scoreProduct(product('a'), answer)).toBe(3 + 2 + 2);
-    expect(scoreProduct(product('b', { status: 'limited' }), answer)).toBe(7);
-    expect(scoreProduct(product('c', { status: 'preorder' }), answer)).toBe(6);
-    expect(scoreProduct(product('d', { status: 'coming_soon' }), answer)).toBe(5);
-    expect(scoreProduct(product('e', { status: 'sold_out' }), answer)).toBe(2);
-    expect(scoreProduct(product('f', { colors: ['white'], vibes: ['retro'] }), answer)).toBe(2);
+    expect(scoreProduct(product('a'), answer)).toBe(3 + 2 + 1);
+    expect(scoreProduct(product('e', { status: 'sold_out' }), answer)).toBe(5);
+    expect(scoreProduct(product('f', { colors: ['white'], vibes: ['retro'] }), answer)).toBe(1);
   });
 });
 
@@ -69,26 +66,38 @@ describe('rankProducts', () => {
     expect(slugs(ranked).slice(0, 2)).toEqual(['colour-only', 'exact']);
   });
 
-  it('ranks sold-out last among equal matches', () => {
+  it('ranks sold-out after in-stock among equal matches', () => {
     const { ranked } = rankProducts(
-      [product('gone', { status: 'sold_out' }), product('here', { status: 'coming_soon' })],
+      [product('gone', { status: 'sold_out' }), product('here', { status: 'available' })],
       { color: 'black', vibe: 'art' },
     );
     expect(slugs(ranked)).toEqual(['here', 'gone']);
+  });
+
+  it('still puts an exact sold-out match before an in-stock colour-only match', () => {
+    const { match, ranked } = rankProducts(
+      [
+        product('colour-only', { vibes: ['retro'] }),
+        product('exact-sold-out', { status: 'sold_out' }),
+      ],
+      { color: 'black', vibe: 'art' },
+    );
+    expect(match).toBe('exact');
+    expect(slugs(ranked)).toEqual(['exact-sold-out', 'colour-only']);
   });
 
   it('breaks ties by status, then newest release, then slug', () => {
     const { ranked } = rankProducts(
       [
         product('b-old', { releasedAt: '2026-01-01' }),
-        product('limited', { status: 'limited' }),
+        product('sold', { status: 'sold_out' }),
         product('a-undated'),
         product('c-new', { releasedAt: '2026-09-01' }),
         product('a-old', { releasedAt: '2026-01-01' }),
       ],
       { color: 'black', vibe: 'art' },
     );
-    expect(slugs(ranked)).toEqual(['c-new', 'a-old', 'b-old', 'a-undated', 'limited']);
+    expect(slugs(ranked)).toEqual(['c-new', 'a-old', 'b-old', 'a-undated', 'sold']);
   });
 
   it('is deterministic for the same input', () => {

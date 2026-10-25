@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { contactFormSchema, notifyFormSchema, toFieldErrors } from '@/lib/leads/schema';
+import { LEAD_PURPOSES } from '@/lib/leads/purposes';
+import { contactFormSchema, toFieldErrors } from '@/lib/leads/schema';
 import messages from '@/messages/vi.json';
 
 // The schema returns message keys; the form components translate them.
@@ -17,11 +18,6 @@ const VALID_CONTACT = {
 
 const contactErrors = (input: Record<string, string>) => {
   const result = contactFormSchema.safeParse(input);
-  return result.success ? {} : toFieldErrors(result.error);
-};
-
-const notifyErrors = (input: Record<string, string>) => {
-  const result = notifyFormSchema.safeParse(input);
   return result.success ? {} : toFieldErrors(result.error);
 };
 
@@ -79,38 +75,19 @@ describe('contactFormSchema', () => {
     });
   });
 
-  it('rejects an unknown purpose', () => {
-    expect(contactErrors({ ...VALID_CONTACT, purpose: 'spam' })).toEqual({
+  it('takes order, pre-order and other; notify is retired (P9a2)', () => {
+    expect(LEAD_PURPOSES).toEqual(['order', 'preorder', 'other']);
+    expect(contactFormSchema.parse({ ...VALID_CONTACT, purpose: 'preorder' }).purpose).toBe(
+      'preorder',
+    );
+    expect(contactErrors({ ...VALID_CONTACT, purpose: 'notify' })).toEqual({
       purpose: errors.purpose,
     });
   });
-});
 
-describe('notifyFormSchema', () => {
-  it('accepts email only or phone only', () => {
-    expect(
-      notifyFormSchema.parse({ productSlug: 'am-ban', email: 'a@example.com', consent: 'on' }),
-    ).toEqual({ productSlug: 'am-ban', email: 'a@example.com', consent: true });
-    expect(
-      notifyFormSchema.parse({ productSlug: 'am-ban', phone: '+84 912.345.678', consent: 'on' }),
-    ).toEqual({ productSlug: 'am-ban', phone: '+84912345678', consent: true });
-  });
-
-  it('requires one of email or phone, with the error on email', () => {
-    expect(notifyErrors({ productSlug: 'am-ban', email: '', phone: '', consent: 'on' })).toEqual({
-      email: errors.contactRequired,
-    });
-  });
-
-  it('still validates a filled field', () => {
-    expect(notifyErrors({ productSlug: 'am-ban', phone: 'abc', consent: 'on' })).toEqual({
-      phone: errors.phoneInvalid,
-    });
-  });
-
-  it('requires consent', () => {
-    expect(notifyErrors({ productSlug: 'am-ban', email: 'a@example.com' })).toEqual({
-      consent: errors.consentRequired,
+  it('rejects an unknown purpose', () => {
+    expect(contactErrors({ ...VALID_CONTACT, purpose: 'spam' })).toEqual({
+      purpose: errors.purpose,
     });
   });
 });
@@ -120,8 +97,6 @@ describe('error messages', () => {
     const results = [
       contactFormSchema.safeParse({ purpose: 'spam', quantity: '0', message: 'x'.repeat(1001) }),
       contactFormSchema.safeParse({ ...VALID_CONTACT, email: 'khach@', phone: '12345' }),
-      notifyFormSchema.safeParse({ productSlug: '', email: '', phone: '' }),
-      notifyFormSchema.safeParse({ productSlug: 'x'.repeat(81), email: 'a@example.com' }),
     ];
     const keys = results.flatMap((result) =>
       result.success ? [] : Object.values(toFieldErrors(result.error)),

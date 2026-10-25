@@ -1,11 +1,9 @@
 import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { ProductInfo } from '@/components/product/ProductInfo';
 import { getAllSlugs, getProductBySlug } from '@/lib/catalog';
 import { renderWithIntl } from '@/test/renderWithIntl';
-
-vi.mock('@/lib/leads/actions', () => ({ submitNotify: vi.fn() }));
 
 const firstWith = (status: string) =>
   getAllSlugs()
@@ -17,24 +15,24 @@ describe('ProductInfo', () => {
     const product = firstWith('available');
     renderWithIntl(<ProductInfo product={product} />);
     expect(screen.getByRole('heading', { level: 1, name: product.name.vi })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Đặt mua' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Liên hệ đặt hàng' })).toHaveAttribute(
       'href',
       `/vi/contact?product=${product.slug}&purpose=order`,
     );
-    expect(screen.queryByRole('heading', { name: 'Báo khi có hàng' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+    expect(screen.getByText('Còn hàng')).toBeInTheDocument();
   });
 
-  it('shows the in-page notify-me form for sold-out products', () => {
+  it('offers pre-order with the discount line, and no notify-me form, when sold out', () => {
     const product = firstWith('sold_out');
-    const { container } = renderWithIntl(<ProductInfo product={product} />);
+    renderWithIntl(<ProductInfo product={product} />);
     expect(screen.getByText('Hết hàng')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: 'Báo khi có hàng' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Số điện thoại / Zalo')).toBeInTheDocument();
-    expect(screen.getByRole('checkbox')).toBeInTheDocument();
-    expect(container.querySelector('input[name="productSlug"]')).toHaveValue(product.slug);
-    expect(screen.queryByRole('link', { name: 'Đặt mua' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Liên hệ đặt trước' })).toHaveAttribute(
+      'href',
+      `/vi/contact?product=${product.slug}&purpose=preorder`,
+    );
+    expect(screen.getByText('Giảm đến 10% khi đặt trước')).toBeInTheDocument();
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
   });
 
   it('lists sizes, material, and care', () => {
@@ -53,7 +51,7 @@ it('renders existing English product fields and English VND formatting', () => {
   expect(screen.getByText(product.description.en)).toBeVisible();
   expect(screen.getByText(product.material!.en)).toBeVisible();
   expect(screen.getByText('₫390,000')).toBeVisible();
-  expect(screen.getByRole('link', { name: 'Order' })).toHaveAttribute(
+  expect(screen.getByRole('link', { name: 'Contact to order' })).toHaveAttribute(
     'href',
     `/en/contact?product=${product.slug}&purpose=order`,
   );

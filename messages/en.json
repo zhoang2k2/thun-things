@@ -51,17 +51,13 @@
     },
     "status": {
       "available": "In stock",
-      "limited": "Limited run",
-      "sold_out": "Sold out",
-      "coming_soon": "Coming soon",
-      "preorder": "Pre-order"
+      "sold_out": "Sold out"
     },
     "actions": {
-      "order": "Order",
-      "preorder": "Pre-order",
-      "askFirst": "Ask a question",
-      "notify": "Notify me"
-    }
+      "order": "Contact to order",
+      "preorder": "Contact to pre-order"
+    },
+    "preorderOffer": "Up to 10% off when you pre-order"
   },
   "forms": {
     "required": "Required",
@@ -74,13 +70,11 @@
     "disabledEmail": "You can reach us by email:",
     "rateLimited": "Too many attempts. Please try again in 10 minutes.",
     "deliveryFailed": "Your request didn't go through. Please try again in a few minutes.",
-    "unknownProduct": "We couldn't find this product.",
     "errors": {
       "emailRequired": "Enter your email.",
       "emailInvalid": "Enter a valid email address.",
       "phoneRequired": "Enter your phone or Zalo number.",
       "phoneInvalid": "Enter a Vietnamese mobile number, for example 0912 345 678.",
-      "contactRequired": "Enter an email or a phone number.",
       "consentRequired": "Please agree to the privacy policy.",
       "quantity": "Choose a quantity from 1 to 20.",
       "tooLong": "This is too long.",
@@ -101,7 +95,7 @@
     },
     "purposes": {
       "order": "Place an order",
-      "notify": "Notify me when it's available",
+      "preorder": "Pre-order",
       "other": "Something else"
     },
     "contact": {
@@ -119,14 +113,8 @@
       "detailsHeading": "Request details",
       "call": "Call",
       "zalo": "Message on Zalo",
-      "viewProduct": "View product"
-    },
-    "notify": {
-      "title": "Notify me when it's available",
-      "intro": "Leave your email or phone number and Thun Things will let you know when this design is available.",
-      "hint": "Either one is enough.",
-      "submit": "Notify me",
-      "success": "Got it. Thun Things will let you know when it's available."
+      "viewProduct": "View product",
+      "preorderOffer": "Up to 10% off for pre-orders"
     }
   },
   "errors": {

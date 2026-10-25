@@ -21,10 +21,7 @@ const VIBE_LABELS: Record<Locale, Record<string, string>> = {
 };
 const STATUS: Record<ProductStatus, string> = {
   available: 'in stock',
-  limited: 'limited run',
-  preorder: 'open for pre-order',
-  coming_soon: 'coming soon',
-  sold_out: 'sold out',
+  sold_out: 'sold out, can be pre-ordered with up to 10% off',
 };
 
 const system = (locale: Locale) =>

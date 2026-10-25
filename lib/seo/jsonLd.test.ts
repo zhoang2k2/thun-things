@@ -15,10 +15,7 @@ const withStatus = (status: ProductStatus): Product => ({ ...base, status });
 describe('productJsonLd', () => {
   it.each([
     ['available', 'InStock'],
-    ['limited', 'InStock'],
-    ['sold_out', 'OutOfStock'],
-    ['preorder', 'PreOrder'],
-    ['coming_soon', 'PreSale'],
+    ['sold_out', 'BackOrder'],
   ] as const)('maps %s to %s', (status, schemaValue) => {
     const data = productJsonLd(withStatus(status)) as { offers: { availability: string } };
     expect(data.offers.availability).toBe(`https://schema.org/${schemaValue}`);

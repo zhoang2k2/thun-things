@@ -119,6 +119,9 @@ export const ownerEmailHtml = (lead: Lead, product: Product | undefined, siteUrl
   const body =
     `<p style="margin:0;font-size:24px;line-height:32px;font-weight:700">${escapeHtml(purpose)}</p>` +
     (product ? productBlock(product, DEFAULT_LOCALE, siteUrl, true) : '') +
+    (lead.purpose === 'preorder'
+      ? `<p style="margin:16px 0 0;padding:8px 12px;border:1px solid ${INK};font-size:15px">${escapeHtml(email.preorderOffer)}</p>`
+      : '') +
     heading(email.detailsHeading) +
     details +
     heading(email.contactHeading) +
@@ -132,8 +135,8 @@ export const ownerEmailHtml = (lead: Lead, product: Product | undefined, siteUrl
 /** The visitor's confirmation, in the language of the page they used. No contact data echoed. */
 export const customerEmailHtml = (lead: Lead, product: Product | undefined, siteUrl: string) => {
   const messages = getMessagesFor(lead.locale);
-  const { purposes, email, notify, contact } = messages.forms;
-  const body = lead.kind === 'notify' ? notify.success : contact.successBody;
+  const { purposes, email, contact } = messages.forms;
+  const body = contact.successBody;
 
   const html =
     `<p style="margin:0;font-size:17px">${escapeHtml(email.greeting)}</p>` +

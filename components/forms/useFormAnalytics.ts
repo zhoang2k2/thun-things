@@ -7,7 +7,7 @@ import { trackEvent } from '@/lib/analytics/events';
 import type { FormState } from '@/lib/leads/formState';
 import { LEAD_PURPOSES, type LeadPurpose } from '@/lib/leads/purposes';
 
-type FormName = 'contact' | 'notify';
+type FormName = 'contact';
 
 interface FormContext {
   purpose: LeadPurpose;
@@ -18,12 +18,12 @@ const isPurpose = (value: unknown): value is LeadPurpose =>
   LEAD_PURPOSES.some((purpose) => purpose === value);
 
 // Only the purpose and the product slug are read from the form — never contact fields.
-const readContext = (form: HTMLFormElement, name: FormName): FormContext => {
+const readContext = (form: HTMLFormElement): FormContext => {
   const data = new FormData(form);
   const purpose = data.get('purpose');
   const slug = data.get('productSlug');
   return {
-    purpose: isPurpose(purpose) ? purpose : name === 'notify' ? 'notify' : 'other',
+    purpose: isPurpose(purpose) ? purpose : 'other',
     ...(typeof slug === 'string' && slug ? { product_id: slug } : {}),
   };
 };
@@ -43,11 +43,11 @@ export const useFormAnalytics = (name: FormName, state: FormState) => {
   const onFocusCapture = (event: FocusEvent<HTMLFormElement>) => {
     if (started.current) return;
     started.current = true;
-    trackEvent('contact_start', { ...readContext(event.currentTarget, name), form: name });
+    trackEvent('contact_start', { ...readContext(event.currentTarget), form: name });
   };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    submitted.current = readContext(event.currentTarget, name);
+    submitted.current = readContext(event.currentTarget);
   };
 
   return { onFocusCapture, onSubmit };

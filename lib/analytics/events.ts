@@ -9,10 +9,10 @@ import type { MatchKind } from '@/lib/recommend/score';
 export interface AnalyticsEvent {
   select_item: { product_id: string; status: ProductStatus; locale: Locale };
   hover_preview_open: { product_id: string; status: ProductStatus };
-  contact_start: { purpose: LeadPurpose; form: 'contact' | 'notify'; product_id?: string };
+  contact_start: { purpose: LeadPurpose; form: 'contact'; product_id?: string };
   contact_submit: {
     purpose: LeadPurpose;
-    form: 'contact' | 'notify';
+    form: 'contact';
     product_id?: string;
     locale: Locale;
   };

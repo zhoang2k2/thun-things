@@ -8,8 +8,7 @@ export type FormMessageKey =
   | `forms.errors.${keyof Messages['forms']['errors']}`
   | 'forms.disabled'
   | 'forms.rateLimited'
-  | 'forms.deliveryFailed'
-  | 'forms.unknownProduct';
+  | 'forms.deliveryFailed';
 
 export interface FormState {
   status: 'idle' | 'success' | 'error' | 'disabled';

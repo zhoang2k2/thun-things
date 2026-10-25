@@ -13,22 +13,17 @@ export type MatchKind = 'exact' | 'color' | 'vibe' | 'none';
 const COLOR_WEIGHT = 3;
 const VIBE_WEIGHT = 2;
 
-// Purchasable products first; sold-out sinks below any equal match.
+// In stock is preferred slightly (P9a2-4): +1 stays below the vibe weight, so an exact sold-out
+// match (it can still be pre-ordered) outranks an in-stock colour-only one.
 const STATUS_BONUS: Record<ProductStatus, number> = {
-  available: 2,
-  limited: 2,
-  preorder: 1,
-  coming_soon: 0,
-  sold_out: -3,
+  available: 1,
+  sold_out: 0,
 };
 
 // Tie-break order among equal scores.
 const STATUS_RANK: Record<ProductStatus, number> = {
   available: 0,
-  limited: 1,
-  preorder: 2,
-  coming_soon: 3,
-  sold_out: 4,
+  sold_out: 1,
 };
 
 const matchesColor = (product: Product, color: string) =>

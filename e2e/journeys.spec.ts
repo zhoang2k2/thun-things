@@ -123,7 +123,7 @@ for (const locale of ['vi', 'en'] as const) {
         extraHTTPHeaders: { 'x-forwarded-for': locale === 'vi' ? '192.0.2.62' : '192.0.2.72' },
       });
 
-      test('Home, product, "Đặt mua", prefilled Contact, success', async ({ page }) => {
+      test('Home, product, "Liên hệ đặt hàng", prefilled Contact, success', async ({ page }) => {
         await page.setViewportSize({ width: 1440, height: 900 });
         await page.goto(`/${locale}`);
         const tile = tiles(page).first();

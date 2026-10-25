@@ -10,7 +10,6 @@ const product = getProductBySlug('hoang-hon-01')!;
 const SITE = 'https://thun-things.vercel.app';
 
 const LEAD: Lead = {
-  kind: 'contact',
   purpose: 'order',
   email: 'khach@example.com',
   phone: '+84912345678',
@@ -97,7 +96,6 @@ describe('ownerEmailHtml', () => {
   it('works without a product or optional fields', () => {
     const bare = ownerEmailHtml(
       {
-        kind: 'contact',
         purpose: 'other',
         email: 'a@b.co',
         locale: 'vi',
@@ -112,6 +110,18 @@ describe('ownerEmailHtml', () => {
   });
 });
 
+describe('pre-order leads (P9a2)', () => {
+  it('names the pre-order and its discount in the owner email', () => {
+    const html = ownerEmailHtml({ ...LEAD, purpose: 'preorder' }, product, SITE);
+    expect(html).toContain(vi.forms.purposes.preorder);
+    expect(html).toContain(vi.forms.email.preorderOffer);
+  });
+
+  it('leaves the discount out of other purposes', () => {
+    expect(ownerEmailHtml(LEAD, product, SITE)).not.toContain(vi.forms.email.preorderOffer);
+  });
+});
+
 describe('customerEmailHtml', () => {
   it('writes to a Vietnamese visitor in Vietnamese', () => {
     const html = customerEmailHtml(LEAD, product, SITE);
@@ -122,14 +132,11 @@ describe('customerEmailHtml', () => {
   });
 
   it('writes to an English visitor in English, with the English product page', () => {
-    const html = customerEmailHtml(
-      { ...LEAD, locale: 'en', kind: 'notify', purpose: 'notify' },
-      product,
-      SITE,
-    );
+    const html = customerEmailHtml({ ...LEAD, locale: 'en', purpose: 'preorder' }, product, SITE);
     expect(html).toContain('lang="en"');
     expect(html).toContain(en.forms.email.greeting);
-    expect(html).toContain(escapeHtml(en.forms.notify.success));
+    expect(html).toContain(escapeHtml(en.forms.contact.successBody));
+    expect(html).toContain(en.forms.purposes.preorder);
     expect(html).toContain(product.name.en);
     expect(html).toContain(`href="${SITE}/en/products/${product.slug}"`);
   });

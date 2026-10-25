@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-25",
+  "lighthouse": "13.5.0",
+  "preset": "mobile (default throttling)",
+  "method": "median-LCP run of 3 per page",
+  "budgets": {
+    "lcpMs": 2500,
+    "cls": 0.1,
+    "tbtMs": 200
+  },
+  "pages": [
+    {
+      "page": "/vi",
+      "report": "home-vi.report.html",
+      "performance": 99,
+      "lcpMs": 2264,
+      "cls": 0,
+      "tbtMs": 24,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 91,
+      "runs": [
+        {
+          "lcpMs": 2118,
+          "cls": 0,
+          "tbtMs": 27
+        },
+        {
+          "lcpMs": 2264,
+          "cls": 0,
+          "tbtMs": 24
+        },
+        {
+          "lcpMs": 2266,
+          "cls": 0,
+          "tbtMs": 33
+        }
+      ],
+      "runWarnings": [],
+      "passed": true,
+      "failures": []
+    },
+    {
+      "page": "/en",
+      "report": "home-en.report.html",
+      "performance": 99,
+      "lcpMs": 2113,
+      "cls": 0,
+      "tbtMs": 24,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 91,
+      "runs": [
+        {
+          "lcpMs": 2111,
+          "cls": 0,
+          "tbtMs": 48
+        },
+        {
+          "lcpMs": 2262,
+          "cls": 0,
+          "tbtMs": 50
+        },
+        {
+          "lcpMs": 2113,
+          "cls": 0,
+          "tbtMs": 24
+        }
+      ],
+      "runWarnings": [],
+      "passed": true,
+      "failures": []
+    },
+    {
+      "page": "/vi/products/hoang-hon-01",
+      "report": "product-hoang-hon-01.report.html",
+      "performance": 99,
+      "lcpMs": 2260,
+      "cls": 0,
+      "tbtMs": 21,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "runs": [
+        {
+          "lcpMs": 2262,
+          "cls": 0,
+          "tbtMs": 21
+        },
+        {
+          "lcpMs": 2111,
+          "cls": 0,
+          "tbtMs": 21
+        },
+        {
+          "lcpMs": 2260,
+          "cls": 0,
+          "tbtMs": 21
+        }
+      ],
+      "runWarnings": [],
+      "passed": true,
+      "failures": []
+    },
+    {
+      "page": "/en/contact",
+      "report": "contact.report.html",
+      "performance": 98,
+      "lcpMs": 2409,
+      "cls": 0,
+      "tbtMs": 22,
+      "accessibility": 100,
+      "bestPractices": 100,
+      "seo": 100,
+      "runs": [
+        {
+          "lcpMs": 2410,
+          "cls": 0,
+          "tbtMs": 24
+        },
+        {
+          "lcpMs": 2409,
+          "cls": 0,
+          "tbtMs": 22
+        },
+        {
+          "lcpMs": 1810,
+          "cls": 0,
+          "tbtMs": 24
+        }
+      ],
+      "runWarnings": [],
+      "passed": true,
+      "failures": []
+    }
+  ]
+}
