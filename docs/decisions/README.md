@@ -203,3 +203,11 @@ This directory tracks significant technical and architectural choices made durin
 - **Neighbour copies match the hover card exactly.** Both use `ProductCardFace`, the same markup and classes; the copy sits on the same 16px offsets. Copies are `inert`, so they cannot be clicked or focused.
 - **Colour with film grain.** Back photos keep their colour; a grain layer (SVG turbulence tile, `soft-light`, stepped CSS animation) sits above the copies. The monochrome tint is removed. The Excon typeface was dropped (not needed).
 - **Performance.** The grain tile is set from the component, not the stylesheet: a long data URI in the stylesheet raised LCP on `/vi` above the budget (2.56 s vs 2.41 s without it).
+
+**Revision 3 (2026-10-25, owner feedback on PR #14, second round).**
+
+- **One card.** The hover card is rendered once, by the grid, over the hovered cell (wrapper coordinates from the grid's active rect), not inside each tile. The revealed neighbour copies use the same card classes and the same 16px frame, so the two sit on one geometry. No exit animation, so a leaving card never overlaps the next one.
+- **Follows the pointer, without lag.** The lens centre is written on every pointer move; the morph keeps its own clock. The earlier follower (smoothing) is gone.
+- **Colour.** Orange (brand, `#E8662E`) and purple (`#6B3FA0`) mixed in streaks from a stitched SVG fractal-noise tile, multiplied over the back photos so they keep their detail; film grain (soft-light) over that. The colour is no longer transparent in the list.
+- **Tests and checks.** E2E selectors now target the grid's own tiles and the single card; the buying-path test centres the tile before clicking, because a click that scrolls moves the pointer onto another tile.
+- **Performance.** `/vi` LCP is 2.46 s (budget 2.5 s): within budget, with little margin.

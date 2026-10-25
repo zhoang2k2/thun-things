@@ -12,28 +12,28 @@
     {
       "page": "/vi",
       "report": "home-vi.report.html",
-      "performance": 99,
-      "lcpMs": 2262,
+      "performance": 97,
+      "lcpMs": 2460,
       "cls": 0,
-      "tbtMs": 21,
+      "tbtMs": 16,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 91,
       "runs": [
         {
-          "lcpMs": 2578,
+          "lcpMs": 2460,
           "cls": 0,
-          "tbtMs": 41
+          "tbtMs": 16
         },
         {
-          "lcpMs": 2262,
+          "lcpMs": 2561,
           "cls": 0,
-          "tbtMs": 21
+          "tbtMs": 25
         },
         {
-          "lcpMs": 1968,
+          "lcpMs": 1964,
           "cls": 0,
-          "tbtMs": 28
+          "tbtMs": 23
         }
       ],
       "runWarnings": [],
@@ -46,7 +46,7 @@
       "performance": 98,
       "lcpMs": 2411,
       "cls": 0,
-      "tbtMs": 42,
+      "tbtMs": 47,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 91,
@@ -54,17 +54,17 @@
         {
           "lcpMs": 2411,
           "cls": 0,
-          "tbtMs": 42
+          "tbtMs": 47
         },
         {
-          "lcpMs": 2953,
+          "lcpMs": 2411,
           "cls": 0,
-          "tbtMs": 41
+          "tbtMs": 43
         },
         {
-          "lcpMs": 1964,
+          "lcpMs": 2410,
           "cls": 0,
-          "tbtMs": 50
+          "tbtMs": 47
         }
       ],
       "runWarnings": [],
@@ -74,28 +74,28 @@
     {
       "page": "/vi/products/hoang-hon-01",
       "report": "product-hoang-hon-01.report.html",
-      "performance": 99,
-      "lcpMs": 2112,
+      "performance": 98,
+      "lcpMs": 2409,
       "cls": 0,
-      "tbtMs": 20,
+      "tbtMs": 18,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
       "runs": [
         {
-          "lcpMs": 2112,
-          "cls": 0,
-          "tbtMs": 20
-        },
-        {
-          "lcpMs": 1666,
-          "cls": 0,
-          "tbtMs": 26
-        },
-        {
-          "lcpMs": 2117,
+          "lcpMs": 2409,
           "cls": 0,
           "tbtMs": 23
+        },
+        {
+          "lcpMs": 2410,
+          "cls": 0,
+          "tbtMs": 19
+        },
+        {
+          "lcpMs": 2409,
+          "cls": 0,
+          "tbtMs": 18
         }
       ],
       "runWarnings": [],
@@ -106,27 +106,27 @@
       "page": "/en/contact",
       "report": "contact.report.html",
       "performance": 98,
-      "lcpMs": 2409,
+      "lcpMs": 2408,
       "cls": 0,
-      "tbtMs": 24,
+      "tbtMs": 23,
       "accessibility": 100,
       "bestPractices": 100,
       "seo": 100,
       "runs": [
         {
-          "lcpMs": 2409,
+          "lcpMs": 2408,
           "cls": 0,
-          "tbtMs": 24
+          "tbtMs": 22
         },
         {
-          "lcpMs": 2410,
+          "lcpMs": 2408,
           "cls": 0,
           "tbtMs": 23
         },
         {
           "lcpMs": 2408,
           "cls": 0,
-          "tbtMs": 25
+          "tbtMs": 22
         }
       ],
       "runWarnings": [],

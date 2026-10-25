@@ -3,20 +3,19 @@
 import { useTranslations } from 'next-intl';
 import { type RefObject, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
+import { FILM_GRAIN, LIQUID_TINT } from '@/components/product/lensTextures';
 import { XrayCell } from '@/components/product/XrayCell';
+import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
 import type { ProductCardModel } from '@/lib/catalog';
 import { LENS, lensOutline } from '@/lib/motion/liquid';
-import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
 
-// P11 (revision 2): a liquid lens opens where the pointer enters the product grid and stays there.
-// Its edge morphs on its own clock (lensOutline), not with the pointer. Inside it the grid shows each
-// neighbour's card with the back photo, plus a film-grain layer; it sits above the hovered card too.
-// Fine pointers only, never under reduced motion; nothing renders on touch.
+// P11 (rev 3): a liquid lens follows the pointer over the product grid without lag: its centre is the
+// pointer itself, written on every move. Its edge morphs on its own clock (lensOutline). Inside it the
+// grid shows each design's card with the back photo, tinted orange and purple, with film grain on top.
+// It sits above the hovered card too. Fine pointers only, never under reduced motion.
 
 const FINE_POINTER = '(hover: hover) and (pointer: fine)';
 const FADE_MS = 180;
-// Film grain: a static SVG noise tile. Kept out of the stylesheet so it never weighs on first paint.
-const GRAIN_TILE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3' intercept='-1'/%3E%3CfeFuncG type='linear' slope='3' intercept='-1'/%3E%3CfeFuncB type='linear' slope='3' intercept='-1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 const MAX_FRAME_MS = 50;
 
 const subscribeFinePointer = (onChange: () => void) => {
@@ -40,11 +39,9 @@ interface LensState {
   visible: boolean;
   /** 0 hidden … 1 full size. */
   progress: number;
-  /** Lens centre, in the grid's own coordinates. */
+  /** Lens centre (the pointer), in the grid's own coordinates. */
   origin: { x: number; y: number };
   seed: number;
-  /** The tile the pointer is in; a new tile re-anchors the lens. */
-  tile: Element | null;
   frame: number;
   last: number;
 }
@@ -55,8 +52,8 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
   const reducedMotion = usePrefersReducedMotion();
   const finePointer = useFinePointer();
   const enabled = finePointer && !reducedMotion;
-  // Set each time the pointer enters a new tile: its seed gives this anchor its own shape.
-  const [anchor, setAnchor] = useState<{ seed: number } | null>(null);
+  // Set when the pointer first enters; its seed gives this entry its own shape.
+  const [entry, setEntry] = useState<{ seed: number } | null>(null);
   const placeholderLabel = useTranslations('product')('lensBackPlaceholder');
   const clipId = useId();
   const clipRef = useRef<SVGPathElement>(null);
@@ -66,7 +63,6 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
     progress: 0,
     origin: { x: 0, y: 0 },
     seed: 1,
-    tile: null,
     frame: 0,
     last: 0,
   });
@@ -108,37 +104,50 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
       }
     };
 
-    // Entering a tile anchors the lens at that point; moving inside the same tile keeps it still.
-    const handleOver = (event: PointerEvent) => {
-      if (event.pointerType === 'touch') return;
-      const tile = (event.target as Element).closest('.ProductTile');
-      if (!tile || tile === state.tile) return;
-      state.tile = tile;
-      // Measured at the anchor: the lens lives in grid coordinates, so scrolling keeps it in place.
+    const locate = (event: PointerEvent) => {
       const rect = wrapper.getBoundingClientRect();
       state.origin = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-      state.seed = 1 + Math.floor(Math.random() * 2_147_483_646);
-      state.visible = true;
-      setAnchor({ seed: state.seed });
+    };
+    const startLoop = () => {
       if (!state.frame) {
         state.last = 0;
         state.frame = window.requestAnimationFrame(loop);
       }
     };
+
+    const handleEnter = (event: PointerEvent) => {
+      if (event.pointerType === 'touch' || state.visible) return;
+      locate(event);
+      state.seed = 1 + Math.floor(Math.random() * 2_147_483_646);
+      state.visible = true;
+      setEntry({ seed: state.seed });
+      startLoop();
+    };
+    // Every move re-centres the lens on the pointer directly: no follower, so no lag.
+    const handleMove = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return;
+      if (!state.visible) {
+        handleEnter(event);
+        return;
+      }
+      locate(event);
+      startLoop();
+    };
     const handleLeave = () => {
       state.visible = false;
-      state.tile = null;
     };
     const handleHidden = () => {
       if (document.hidden) handleLeave();
     };
 
-    wrapper.addEventListener('pointerover', handleOver);
+    wrapper.addEventListener('pointerover', handleEnter);
+    wrapper.addEventListener('pointermove', handleMove);
     wrapper.addEventListener('pointerleave', handleLeave);
     document.addEventListener('visibilitychange', handleHidden);
 
     return () => {
-      wrapper.removeEventListener('pointerover', handleOver);
+      wrapper.removeEventListener('pointerover', handleEnter);
+      wrapper.removeEventListener('pointermove', handleMove);
       wrapper.removeEventListener('pointerleave', handleLeave);
       document.removeEventListener('visibilitychange', handleHidden);
       window.cancelAnimationFrame(state.frame);
@@ -159,10 +168,10 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
           </clipPath>
         </defs>
       </svg>
-      {anchor && (
+      {entry && (
         <div
           ref={layerRef}
-          data-seed={anchor.seed}
+          data-seed={entry.seed}
           aria-hidden="true"
           className="LiquidLens LiquidLens__xray pointer-events-none absolute inset-0 z-40 px-4"
           style={{ clipPath: `url(#${clipId})`, visibility: 'hidden' }}
@@ -172,9 +181,19 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
               <XrayCell key={product.id} product={product} placeholderLabel={placeholderLabel} />
             ))}
           </ul>
+          {/* Orange and purple mixed in streaks, multiplied over the back photos so they keep their
+              detail and take the colour. */}
+          <div
+            className="LiquidLens__tint absolute inset-0"
+            style={{
+              backgroundImage: LIQUID_TINT,
+              backgroundSize: '256px 256px',
+              mixBlendMode: 'multiply',
+            }}
+          />
           <div
             className="LiquidLens__grain pointer-events-none absolute inset-0"
-            style={{ backgroundImage: GRAIN_TILE }}
+            style={{ backgroundImage: FILM_GRAIN }}
           />
         </div>
       )}

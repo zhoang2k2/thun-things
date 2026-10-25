@@ -30,7 +30,7 @@ describe('product hover card', () => {
     renderGrid();
     const tile = tileOf(available.name);
     fireEvent.pointerEnter(tile, { pointerType: 'mouse', clientX: 10, clientY: 10 });
-    const card = within(tile).getByTestId('product-hover-card');
+    const card = screen.getByTestId('product-hover-card');
     expect(within(card).getByText(available.name)).toBeInTheDocument();
     // vi-VN currency output uses a non-breaking space; the DOM matcher normalises it.
     expect(within(card).getByText(available.priceLabel.replace(/\s/g, ' '))).toBeInTheDocument();
@@ -38,16 +38,14 @@ describe('product hover card', () => {
     expect(within(card).getByRole('link', { name: 'Liên hệ đặt hàng' })).toBeInTheDocument();
 
     fireEvent.pointerLeave(tile, { pointerType: 'mouse' });
-    await waitFor(() =>
-      expect(within(tile).queryByTestId('product-hover-card')).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.queryByTestId('product-hover-card')).not.toBeInTheDocument());
   });
 
   it('offers pre-order with the discount line on sold-out products', () => {
     renderGrid();
     const tile = tileOf(soldOut.name);
     fireEvent.pointerEnter(tile, { pointerType: 'mouse' });
-    const card = within(tile).getByTestId('product-hover-card');
+    const card = screen.getByTestId('product-hover-card');
     expect(within(card).getByText('Hết hàng')).toBeInTheDocument();
     expect(within(card).getByRole('link', { name: 'Liên hệ đặt trước' })).toHaveAttribute(
       'href',
@@ -61,11 +59,9 @@ describe('product hover card', () => {
     const tile = tileOf(available.name);
     const link = within(tile).getAllByRole('link')[0];
     fireEvent.focus(link);
-    expect(within(tile).getByTestId('product-hover-card')).toBeInTheDocument();
+    expect(screen.getByTestId('product-hover-card')).toBeInTheDocument();
     fireEvent.keyDown(link, { key: 'Escape' });
-    await waitFor(() =>
-      expect(within(tile).queryByTestId('product-hover-card')).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.queryByTestId('product-hover-card')).not.toBeInTheDocument());
   });
 
   it('first touch tap opens the card without navigating', () => {
@@ -77,7 +73,7 @@ describe('product hover card', () => {
     fireEvent.focus(link); // a real tap focuses the link before the click
     const firstTap = fireEvent.click(link);
     expect(firstTap).toBe(false); // default prevented
-    expect(within(tile).getByTestId('product-hover-card')).toBeInTheDocument();
+    expect(screen.getByTestId('product-hover-card')).toBeInTheDocument();
 
     fireEvent.pointerDown(link, { pointerType: 'touch' });
     expect(fireEvent.click(link)).toBe(true); // second tap follows the link

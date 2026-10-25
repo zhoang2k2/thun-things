@@ -15,6 +15,13 @@ interface ProductCardFaceProps {
   placeholderLabel?: string;
 }
 
+// 16px photo-print frame (8-point grid): the card sits 16px outside the cell on every side but the
+// bottom, so its image lands exactly on the cell image. 1px border + 15px padding = 16px.
+export const FRAME_PX = 16;
+
+// The one card look, used by the single hover card and by every x-ray copy (P11 rev 3).
+export const CARD_CLASSES = 'bg-canvas border-line border p-[15px]';
+
 // The one card body shared by the hover card and the x-ray copies (P11), so the revealed card of a
 // neighbour is the same markup, type and spacing as the card that opens when it is hovered directly.
 export const ProductCardFace = ({

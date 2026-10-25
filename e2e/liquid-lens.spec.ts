@@ -6,8 +6,11 @@ import { expect, type Page, test } from '@playwright/test';
 
 test.use({ extraHTTPHeaders: { 'x-forwarded-for': '192.0.2.91' } });
 
+// The grid's own tiles only: the open card links to the same product and must not match.
 const tileOf = (page: Page, slug: string) =>
-  page.locator('.ProductTile').filter({ has: page.locator(`a[href$="/${slug}"]`) });
+  page
+    .locator('.ProductGrid__list > .ProductTile')
+    .filter({ has: page.locator(`.ProductTile__link[href$="/${slug}"]`) });
 
 const center = async (page: Page, slug: string) => {
   await tileOf(page, slug).scrollIntoViewIfNeeded();
@@ -74,7 +77,7 @@ test.describe('desktop fine pointer', () => {
 
     // Now hover the neighbour directly: its real card must sit at the same place and size.
     await glide(page, hover);
-    const card = tileOf(page, neighbour).getByTestId('product-hover-card');
+    const card = page.getByTestId('product-hover-card');
     await expect(card).toBeVisible();
     const cardBox = await card.boundingBox();
     expect(Math.abs(copyBox!.x - cardBox!.x)).toBeLessThanOrEqual(1);
@@ -88,15 +91,15 @@ test.describe('desktop fine pointer', () => {
     const at = await center(page, 'hoang-hon-01');
     await page.mouse.move(at.x + 120, at.y);
     await glide(page, at);
-    const card = tileOf(page, 'hoang-hon-01').getByTestId('product-hover-card');
+    const card = page.getByTestId('product-hover-card');
     await expect(card).toBeVisible();
     // The card opens with a circle reveal; hit-test only once it has fully opened.
     await page.waitForTimeout(600);
     const lensZ = await page
       .locator('.LiquidLens__xray')
       .evaluate((el) => getComputedStyle(el).zIndex);
-    const tileZ = await tileOf(page, 'hoang-hon-01').evaluate((el) => getComputedStyle(el).zIndex);
-    expect(Number(lensZ)).toBeGreaterThan(Number(tileZ));
+    const cardZ = await card.evaluate((el) => getComputedStyle(el).zIndex);
+    expect(Number(lensZ)).toBeGreaterThan(Number(cardZ));
     // The lens does not block the card: the element under the card's centre is still the card.
     const box = await card.boundingBox();
     const hit = await page.evaluate(

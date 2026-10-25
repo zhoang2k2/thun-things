@@ -44,10 +44,21 @@ const setFinePointer = (fine: boolean) => {
   })) as unknown as typeof window.matchMedia;
 };
 
+let pending: FrameRequestCallback[] = [];
+/** Runs the next animation frame, so tests can step the lens loop deterministically. */
+const runFrame = (now: number) => {
+  const next = pending.shift();
+  act(() => next?.(now));
+};
+
 beforeEach(() => {
   motion.reduced = false;
   setFinePointer(true);
-  vi.spyOn(window, 'requestAnimationFrame').mockImplementation(() => 1);
+  pending = [];
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+    pending.push(callback);
+    return pending.length;
+  });
   vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
 });
 
@@ -57,20 +68,24 @@ afterEach(() => {
 });
 
 describe('LiquidLens', () => {
-  it('re-anchors where the pointer enters each new tile, and stays put inside a tile', () => {
+  it('follows the pointer without lag: the outline is centred on the latest pointer position', () => {
     const { container } = renderLens();
     act(() => {
       fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
     });
-    const seedA = container.querySelector('.LiquidLens')!.getAttribute('data-seed');
     act(() => {
-      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 90, clientY: 90 });
+      fireEvent.pointerMove(screen.getByTestId('tile-a'), { clientX: 300, clientY: 150 });
     });
-    expect(container.querySelector('.LiquidLens')!.getAttribute('data-seed')).toBe(seedA);
-    act(() => {
-      fireEvent.pointerOver(screen.getByTestId('tile-b'), { clientX: 200, clientY: 40 });
-    });
-    expect(container.querySelector('.LiquidLens')!.getAttribute('data-seed')).not.toBe(seedA);
+    runFrame(16);
+    const points = [
+      ...(container.ownerDocument.querySelector('clipPath path')!.getAttribute('d') ?? '').matchAll(
+        /(-?\d+\.?\d*) (-?\d+\.?\d*)/g,
+      ),
+    ].map(([, x, y]) => ({ x: Number(x), y: Number(y) }));
+    const cx = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+    const cy = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+    expect(Math.abs(cx - 300)).toBeLessThan(25);
+    expect(Math.abs(cy - 150)).toBeLessThan(25);
   });
 
   it('renders nothing for reduced motion', () => {

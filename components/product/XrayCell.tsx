@@ -1,9 +1,10 @@
-import { ProductCardFace } from '@/components/product/ProductCardFace';
+import { CARD_CLASSES, FRAME_PX, ProductCardFace } from '@/components/product/ProductCardFace';
+import { cn } from '@/lib/cn';
 import type { ProductCardModel } from '@/lib/catalog';
 
-// One x-ray cell (P11 rev 2): the neighbour's card exactly as it opens on hover, but showing the back
-// photo. The `inert` cell can be neither clicked nor focused, so the copy never takes input; the
-// real tile underneath opens the card. Same offsets as the hover card (16px outside the cell).
+// One x-ray cell (P11): the neighbour's card as the single hover card draws it, showing the back
+// photo. Same classes and the same 16px frame, so both sit on one geometry. The `inert` cell cannot
+// be clicked or focused; the real tile underneath opens the card.
 export const XrayCell = ({
   product,
   placeholderLabel,
@@ -12,7 +13,10 @@ export const XrayCell = ({
   placeholderLabel: string;
 }) => (
   <li className="XrayCell relative aspect-[4/5]" inert>
-    <div className="XrayCell__card bg-canvas border-line absolute -top-4 -left-4 w-[calc(100%+32px)] border p-[15px]">
+    <div
+      className={cn(CARD_CLASSES, 'XrayCell__card absolute')}
+      style={{ left: -FRAME_PX, top: -FRAME_PX, width: `calc(100% + ${FRAME_PX * 2}px)` }}
+    >
       <ProductCardFace
         product={product}
         image={product.backImage}

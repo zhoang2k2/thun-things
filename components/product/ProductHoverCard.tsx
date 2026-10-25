@@ -3,27 +3,26 @@
 import { useReducedMotion } from 'motion/react';
 import * as m from 'motion/react-m';
 import { useLocale } from 'next-intl';
-import type { MouseEvent } from 'react';
+import type { MouseEvent, PointerEvent } from 'react';
 
 import { motionTokens } from '@/components/motion/tokens';
-import { ProductCardFace } from '@/components/product/ProductCardFace';
+import { CARD_CLASSES, FRAME_PX, ProductCardFace } from '@/components/product/ProductCardFace';
+import { cn } from '@/lib/cn';
 import type { ActiveCard } from '@/components/product/ProductGrid';
 import { useRouter } from '@/i18n/navigation';
 import { trackEvent } from '@/lib/analytics/events';
 import type { ProductCardModel } from '@/lib/catalog';
 
-// 16px photo-print frame (8-point grid): the card sits 16px outside the cell on every side but the
-// bottom, so its image lands exactly on the cell image. 1px border + 15px padding = 16px.
-const FRAME_PX = 16;
-
 interface ProductHoverCardProps {
   product: ProductCardModel;
   active: ActiveCard;
+  /** Keeps the card open while the pointer is on it; leaving it closes the card. */
+  onPointerLeave: (event: PointerEvent<HTMLDivElement>) => void;
 }
 
 // V-14/V-15 (P2-9): the image never moves or resizes; the card is revealed around it by a circle
 // spreading from the pointer entry point, as if the image were lifted into the card.
-export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => {
+export const ProductHoverCard = ({ product, active, onPointerLeave }: ProductHoverCardProps) => {
   const router = useRouter();
   const locale = useLocale();
   const reducedMotion = useReducedMotion();
@@ -47,11 +46,20 @@ export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => 
     router.push(href);
   };
 
+  // Placed by the grid over the hovered cell (wrapper coordinates), 16px outside it on each side.
+  const geometry = {
+    left: active.rect.left - FRAME_PX,
+    top: active.rect.top - FRAME_PX,
+    width: active.rect.width + FRAME_PX * 2,
+  };
+
   return (
     <m.div
       data-testid="product-hover-card"
       onClick={handleClick}
-      className="ProductHoverCard bg-canvas border-line absolute -top-4 -left-4 z-30 w-[calc(100%+32px)] cursor-pointer border p-[15px]"
+      onPointerLeave={onPointerLeave}
+      className={cn(CARD_CLASSES, 'ProductHoverCard absolute z-30 cursor-pointer')}
+      style={geometry}
       initial={closed}
       animate={open}
       exit={closed}

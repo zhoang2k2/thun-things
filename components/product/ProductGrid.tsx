@@ -4,6 +4,7 @@ import { LazyMotion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { LiquidLens } from '@/components/product/LiquidLens';
+import { ProductHoverCard } from '@/components/product/ProductHoverCard';
 import { ProductTile } from '@/components/product/ProductTile';
 import type { ProductCardModel } from '@/lib/catalog';
 
@@ -80,6 +81,21 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
             />
           ))}
         </ul>
+        {/* One hover card for the whole grid (P11 rev 3): it sits over the hovered cell, so the card
+            and every revealed copy share one geometry. Moving from the cell onto the card keeps it. */}
+        {/* No exit animation: a leaving card would overlap the next one for a moment. */}
+        {active && (
+          <ProductHoverCard
+            key={active.id}
+            product={products.find((product) => product.id === active.id)!}
+            active={active}
+            onPointerLeave={(event) => {
+              if (event.pointerType === 'touch') return;
+              if ((event.relatedTarget as Element | null)?.closest?.('.ProductTile')) return;
+              close(active.id);
+            }}
+          />
+        )}
         <LiquidLens products={products} wrapperRef={wrapperRef} />
       </div>
     </LazyMotion>

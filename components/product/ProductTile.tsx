@@ -1,17 +1,14 @@
 'use client';
 
-import { AnimatePresence } from 'motion/react';
 import { useLocale } from 'next-intl';
 import { useEffect, useRef } from 'react';
 import type { FocusEvent, KeyboardEvent, MouseEvent, PointerEvent } from 'react';
 
 import { MediaImage } from '@/components/media/MediaImage';
 import type { ActiveCard, OpenCard } from '@/components/product/ProductGrid';
-import { ProductHoverCard } from '@/components/product/ProductHoverCard';
 import { Link } from '@/i18n/navigation';
 import { trackEvent } from '@/lib/analytics/events';
 import type { ProductCardModel } from '@/lib/catalog';
-import { cn } from '@/lib/cn';
 
 export const GRID_IMAGE_SIZES = '(min-width: 768px) 25vw, 100vw';
 
@@ -44,6 +41,8 @@ export const ProductTile = ({ product, active, onOpen, onClose }: ProductTilePro
 
   const handlePointerLeave = (event: PointerEvent<HTMLLIElement>) => {
     if (event.pointerType === 'touch') return;
+    // The hover card is one element above the grid: moving onto it keeps this design open.
+    if ((event.relatedTarget as Element | null)?.closest?.('.ProductHoverCard')) return;
     onClose(product.id);
   };
 
@@ -83,7 +82,7 @@ export const ProductTile = ({ product, active, onOpen, onClose }: ProductTilePro
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
-      className={cn('ProductTile relative aspect-[4/5]', active && 'z-30')}
+      className="ProductTile relative aspect-[4/5]"
     >
       <Link
         href={`/products/${product.slug}`}
@@ -103,9 +102,6 @@ export const ProductTile = ({ product, active, onOpen, onClose }: ProductTilePro
           fill
         />
       </Link>
-      <AnimatePresence>
-        {active && <ProductHoverCard key={active.id} product={product} active={active} />}
-      </AnimatePresence>
     </li>
   );
 };

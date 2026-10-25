@@ -115,10 +115,10 @@ html:not([data-consent-decided]):not([data-consent-bar-measured])
   bottom: calc(var(--quiz-bottom) + 3.5rem);
 }
 
-/* P11: film grain over the liquid lens. The noise tile is set by LiquidLens (only when a lens is
-   open, so it never weighs on the first paint); the steps() jumps keep it reading as film grain. */
+/* P11: film grain over the liquid lens. The noise tile is set by LiquidLens; the steps() jumps keep
+   it reading as film grain rather than a smooth blur. */
 .LiquidLens__grain {
-  /* Above the x-ray cards, which are positioned too. */
+  /* Above the copies and the colour layer. */
   z-index: 50;
   position: absolute;
   inset: 0;
