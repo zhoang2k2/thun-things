@@ -3,18 +3,18 @@
 // shape only depends on the seed of that entry and on time.
 
 export const LENS = {
-  /** Diameter over the product grid, in px (P11-R4-2). */
-  diameter: 240,
-  /** Diameter everywhere else: a near-circle that follows the pointer. */
-  restDiameter: 120,
-  /** Depth everywhere else: a faint wobble. */
-  restDepth: 0.03,
+  /** Outer state (everywhere outside the product grid): a near-circle, in px. */
+  outerDiameter: 80,
+  /** Outer state: a faint wobble. */
+  outerDepth: 0.03,
+  /** Inner state (over the product grid): the liquid spreads, in px. */
+  innerDiameter: 280,
   /** Vertices of the outline. */
   points: 72,
   /** Harmonics summed into the radius: more harmonics, more irregular dents and bulges. */
   harmonics: 6,
-  /** Deepest bulge/dent as a fraction of the radius (owner: deeper, not a circle). */
-  depth: 0.22,
+  /** Inner state: deepest bulge/dent as a fraction of the radius (owner: deep, not a circle). */
+  innerDepth: 0.22,
   /** Hard limits of the outline as a fraction of the radius, so it never tears or disappears. */
   minScale: 0.55,
   maxScale: 1.6,
@@ -28,7 +28,7 @@ export interface LensInput {
   tMs: number;
   /** Chosen per entry, so every entry gets its own shape. */
   seed: number;
-  /** Deepest bulge/dent as a fraction of the radius; defaults to `LENS.depth`. */
+  /** Deepest bulge/dent as a fraction of the radius; defaults to `LENS.innerDepth`. */
   depth?: number;
 }
 
@@ -57,7 +57,7 @@ const harmonicsFor = (seed: number): Harmonic[] => {
   return Array.from({ length: LENS.harmonics }, (_, index) => ({
     // Orders 2..8 with jitter: no fixed rhythm, so the outline never reads as a regular wave.
     order: 2 + index + Math.floor(next() * 2),
-    amplitude: (LENS.depth * (0.4 + next() * 0.6)) / (1 + index * 0.35),
+    amplitude: (LENS.innerDepth * (0.4 + next() * 0.6)) / (1 + index * 0.35),
     phase: next() * Math.PI * 2,
     speed: ((0.6 + next() * 1.4) * (next() < 0.5 ? -1 : 1)) / 1_800,
   }));
@@ -70,10 +70,10 @@ export const lensOutline = ({
   radius,
   tMs,
   seed,
-  depth = LENS.depth,
+  depth = LENS.innerDepth,
 }: LensInput): string => {
   const harmonics = harmonicsFor(seed);
-  const strength = depth / LENS.depth;
+  const strength = depth / LENS.innerDepth;
   const vertices: string[] = [];
   for (let i = 0; i < LENS.points; i += 1) {
     const angle = (i / LENS.points) * Math.PI * 2;

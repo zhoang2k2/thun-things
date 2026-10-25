@@ -68,23 +68,23 @@ describe('CursorLiquid', () => {
     expect(render(<CursorLiquid />).container.querySelector('.CursorLiquid')).toBeNull();
   });
 
-  it('follows the pointer as a small near-circle outside the product grid', () => {
+  it('follows the pointer in the outer state (near-circle) outside the product grid', () => {
     const { container } = render(<CursorLiquid />);
     fireEvent.pointerMove(document.body, { clientX: 300, clientY: 200 });
     run(600);
     const width = outlineWidth(container);
-    expect(width).toBeGreaterThan(LENS.restDiameter * 0.85);
-    expect(width).toBeLessThan(LENS.restDiameter * 1.15);
+    expect(width).toBeGreaterThan(LENS.outerDiameter * 0.85);
+    expect(width).toBeLessThan(LENS.outerDiameter * 1.15);
   });
 
-  it('grows to the grid size over the product grid', () => {
+  it('spreads to the inner state over the product grid', () => {
     const grid = document.createElement('div');
     grid.className = 'ProductGrid';
     document.body.appendChild(grid);
     const { container } = render(<CursorLiquid />);
     fireEvent.pointerMove(grid, { clientX: 300, clientY: 200 });
     run(900);
-    expect(outlineWidth(container)).toBeGreaterThan(LENS.restDiameter * 1.5);
+    expect(outlineWidth(container)).toBeGreaterThan(LENS.innerDiameter * 0.8);
   });
 
   it('copies the hover card button into the liquid layer, purple by default', () => {

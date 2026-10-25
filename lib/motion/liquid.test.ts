@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { LENS, lensOutline } from '@/lib/motion/liquid';
 
-const R = LENS.diameter / 2;
+const R = LENS.innerDiameter / 2;
 
 const outline = (overrides: Partial<Parameters<typeof lensOutline>[0]> = {}) =>
   lensOutline({ cx: 0, cy: 0, radius: R, tMs: 0, seed: 7, ...overrides });
@@ -64,7 +64,7 @@ describe('lensOutline', () => {
     for (const value of radii(outline({ radius: 0 }))) expect(value).toBeCloseTo(0, 5);
   });
 
-  it('is a near-circle at a small depth (the site-wide resting state)', () => {
+  it('is a near-circle at a small depth (the outer state)', () => {
     for (const seed of [1, 7, 42]) {
       const values = radii(outline({ seed, tMs: 2500, depth: 0.03 }));
       expect(Math.max(...values) / Math.min(...values)).toBeLessThan(1.12);
@@ -72,6 +72,8 @@ describe('lensOutline', () => {
   });
 
   it('uses the full depth by default', () => {
-    expect(outline({ seed: 9, tMs: 800 })).toBe(outline({ seed: 9, tMs: 800, depth: LENS.depth }));
+    expect(outline({ seed: 9, tMs: 800 })).toBe(
+      outline({ seed: 9, tMs: 800, depth: LENS.innerDepth }),
+    );
   });
 });

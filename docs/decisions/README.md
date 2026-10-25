@@ -220,3 +220,5 @@ This directory tracks significant technical and architectural choices made durin
 - **Grid frame** matches the header: `max-w-screen-2xl`, 16/32px side padding, 40px vertical padding, no gaps.
 - **Removed**: the x-ray reveal (`LiquidLens`, `XrayCell`), `backImage` on the card model and the back placeholder copy.
 - **Performance**: `/vi` LCP 1.97 s; budgets pass on all pages.
+
+**Revision 4 sizes (2026-10-26) [USER].** The two liquid states are named **outer** (outside the grid: ~80px near-circle, depth 0.03) and **inner** (over the grid: 280px, depth 0.22). Constants: `LENS.outerDiameter`, `outerDepth`, `innerDiameter`, `innerDepth` in `lib/motion/liquid.ts`.

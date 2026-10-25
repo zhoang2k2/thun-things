@@ -8,9 +8,9 @@ import { useFinePointer } from '@/lib/hooks/useFinePointer';
 import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
 import { LENS, lensOutline } from '@/lib/motion/liquid';
 
-// P11 revision 4: a site-wide liquid follows the pointer with no lag. Everywhere it is a near-circle
-// (120px, faint wobble); over the product grid it grows to 240px and morphs deeply, and the change
-// animates both ways. Two fixed layers share one clip path: the colour layer multiplies the
+// P11 revision 4: a site-wide liquid follows the pointer with no lag. It has two states: outer, a
+// near-circle (80px, faint wobble) everywhere outside the product grid; inner, over the grid, where it
+// spreads to 280px and morphs deeply. The change between the two animates both ways. Two fixed layers share one clip path: the colour layer multiplies the
 // orange–purple tint and grain onto the page (also over the hover card), and the button layer shows a
 // copy of the hover card's button where the liquid overlaps it (purple, orange while hovered).
 // Above page content and the hover card, below the header, consent bar, quiz and dialogs.
@@ -26,12 +26,12 @@ interface LiquidState {
   y: number;
   /** Pointer inside the window. */
   visible: boolean;
-  /** Pointer over the product grid. */
-  inGrid: boolean;
+  /** Pointer over the product grid: the liquid heads for the inner state. */
+  inside: boolean;
   /** 0 hidden … 1 shown. */
   fade: number;
-  /** 0 resting near-circle … 1 grid liquid. */
-  mix: number;
+  /** Progress between the states: 0 outer … 1 inner. */
+  inner: number;
   seed: number;
   frame: number;
   last: number;
@@ -55,9 +55,9 @@ export const CursorLiquid = () => {
     x: 0,
     y: 0,
     visible: false,
-    inGrid: false,
+    inside: false,
     fade: 0,
-    mix: 0,
+    inner: 0,
     seed: 1,
     frame: 0,
     last: 0,
@@ -91,15 +91,15 @@ export const CursorLiquid = () => {
       const dt = state.last ? Math.min(MAX_FRAME_MS, now - state.last) : 16;
       state.last = now;
       state.fade = clamp(state.fade + ((state.visible ? 1 : -1) * dt) / FADE_MS);
-      state.mix = clamp(state.mix + ((state.inGrid ? 1 : -1) * dt) / STATE_MS);
+      state.inner = clamp(state.inner + ((state.inside ? 1 : -1) * dt) / STATE_MS);
 
       const shown = state.fade > 0 ? 'visible' : 'hidden';
       if (colourRef.current) colourRef.current.style.visibility = shown;
       if (buttonLayerRef.current) buttonLayerRef.current.style.visibility = shown;
       if (state.fade <= 0) return;
 
-      const grow = easeInOut(state.mix);
-      const diameter = lerp(LENS.restDiameter, LENS.diameter, grow);
+      const grow = easeInOut(state.inner);
+      const diameter = lerp(LENS.outerDiameter, LENS.innerDiameter, grow);
       clipRef.current?.setAttribute(
         'd',
         lensOutline({
@@ -108,7 +108,7 @@ export const CursorLiquid = () => {
           radius: (diameter / 2) * easeOut(state.fade),
           tMs: now,
           seed: state.seed,
-          depth: lerp(LENS.restDepth, LENS.depth, grow),
+          depth: lerp(LENS.outerDepth, LENS.innerDepth, grow),
         }),
       );
       syncButton();
@@ -117,7 +117,7 @@ export const CursorLiquid = () => {
     const loop = (now: number) => {
       draw(now);
       const settled =
-        !state.visible && state.fade <= 0 && (state.inGrid ? state.mix >= 1 : state.mix <= 0);
+        !state.visible && state.fade <= 0 && (state.inside ? state.inner >= 1 : state.inner <= 0);
       if (settled) {
         state.frame = 0;
         state.last = 0;
@@ -137,7 +137,7 @@ export const CursorLiquid = () => {
       state.x = event.clientX;
       state.y = event.clientY;
       state.visible = true;
-      state.inGrid = Boolean((event.target as Element | null)?.closest?.(GRID));
+      state.inside = Boolean((event.target as Element | null)?.closest?.(GRID));
       start();
     };
     const handleLeave = () => {

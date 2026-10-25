@@ -8,7 +8,7 @@ const centreTile = async (page, index) => {
   return { x: box.x + box.width / 2, y: box.y + box.height / 2, box };
 };
 
-/** From the page into the grid: the near-circle grows, a card opens, neighbours are pushed. */
+/** From the page into the grid: outer becomes inner, a card opens, neighbours are pushed. */
 const liquidJourney = {
   name: 'liquid-journey-vi',
   kind: 'gif',
@@ -36,8 +36,8 @@ const liquidJourney = {
 
 const still = (name, run) => ({ name, kind: 'png', viewport: DESKTOP, path: '/vi', run });
 
-/** Resting near-circle over the hero (outside the grid). */
-const resting = still('liquid-resting-vi', async ({ page }) => {
+/** Outer state over the hero (outside the grid). */
+const outer = still('liquid-outer-vi', async ({ page }) => {
   await page.mouse.move(600, 300);
   await page.mouse.move(700, 320, { steps: 10 });
   await page.waitForTimeout(500);
@@ -70,6 +70,6 @@ const onButton = still('liquid-on-button-vi', async ({ page }) => {
 });
 
 /** @type {import('./capture.mjs').Scenario[]} */
-const scenarios = [liquidJourney, resting, overCard, onButton];
+const scenarios = [liquidJourney, outer, overCard, onButton];
 
 export default scenarios;

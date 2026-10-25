@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
 
-// P11 revision 4: a site-wide liquid follows the pointer (120px near-circle; 240px and deep over the
+// P11 revision 4: a site-wide liquid follows the pointer (outer: 80px near-circle; inner: 280px, deep, over the
 // product grid), sits above the hover card and below the header, pushes neighbouring designs away and
 // recolours its overlap with the hover card's button. Off on touch and under reduced motion.
 
@@ -31,19 +31,19 @@ const centreOf = async (page: Page, index: number) => {
 test.describe('desktop fine pointer', () => {
   test.use({ viewport: { width: 1440, height: 900 }, hasTouch: false });
 
-  test('a small near-circle outside the grid grows over the grid', async ({ page }) => {
+  test('outer near-circle outside the grid, inner over the grid', async ({ page }) => {
     await page.goto('/vi');
     // Hero area: outside the product grid.
     await glide(page, { x: 700, y: 300 });
     await page.waitForTimeout(500);
-    const resting = await liquidWidth(page);
-    expect(resting).toBeGreaterThan(100);
-    expect(resting).toBeLessThan(140);
+    const outer = await liquidWidth(page);
+    expect(outer).toBeGreaterThan(65);
+    expect(outer).toBeLessThan(95);
 
     const at = await centreOf(page, 5);
     await glide(page, at);
     await page.waitForTimeout(700);
-    expect(await liquidWidth(page)).toBeGreaterThan(200);
+    expect(await liquidWidth(page)).toBeGreaterThan(230);
   });
 
   test('sits above the hover card and below the header, coloured over the card', async ({
