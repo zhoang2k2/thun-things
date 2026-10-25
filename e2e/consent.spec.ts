@@ -158,7 +158,7 @@ test('on mobile product pages the bar sits above the order bar', async ({ browse
   };
   await expect.poll(async () => Math.round(await barBottom())).toBe(Math.round(await orderTop()));
   await expect(
-    page.locator('.ProductOrderBar').getByRole('link', { name: 'Đặt mua' }),
+    page.locator('.ProductOrderBar').getByRole('link', { name: 'Liên hệ đặt hàng' }),
   ).toBeVisible();
   await context.close();
 });

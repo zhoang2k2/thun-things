@@ -99,11 +99,12 @@ for (const locale of ['vi', 'en'] as const) {
           page.getByRole('link', { name: messages.pages.contactRetry.back }),
         ).toBeVisible();
 
-        await page.goto(`/${locale}/products/am-ban`);
-        const notify = page.locator('#notify');
-        await notify.getByLabel(messages.forms.fields.email).fill('a@example.com');
-        await notify.getByRole('checkbox').check();
-        await notify.getByRole('button', { name: messages.forms.notify.submit }).click();
+        // A link shared before P9a2 (purpose=notify) still submits without JavaScript.
+        await page.goto(`/${locale}/contact?product=am-ban&purpose=notify`);
+        await page.getByLabel(messages.forms.fields.email).fill('khach@example.com');
+        await page.getByLabel(messages.forms.fields.phone).fill('0912345678');
+        await page.getByRole('checkbox', { name: messages.forms.fields.consentLink }).check();
+        await contactForm(page).getByRole('button', { name: messages.forms.submit }).click();
         await expect(page).toHaveURL(/\/contact\/sent$/);
         await context.close();
       });
@@ -123,35 +124,49 @@ for (const locale of ['vi', 'en'] as const) {
       });
     });
 
-    test.describe('notify-me form', () => {
-      test('requires email or phone, then confirms inline', async ({ page }) => {
+    test.describe('pre-order (P9a2)', () => {
+      test('a sold-out design offers pre-order with up to 10% off, through Contact', async ({
+        page,
+      }) => {
         await page.goto(`/${locale}/products/am-ban`);
-        const section = page.locator('#notify');
-        await expect(
-          section.getByRole('heading', { name: messages.forms.notify.title }),
-        ).toBeVisible();
-
-        await section.getByRole('checkbox').check();
-        await section.getByRole('button', { name: messages.forms.notify.submit }).click();
-        await expect(section.locator('.FormErrorSummary')).toContainText(
-          messages.forms.errors.contactRequired,
-        );
-        await expect(section.getByLabel(messages.forms.fields.email)).toHaveAttribute(
-          'aria-invalid',
-          'true',
-        );
-
-        await section.getByLabel(messages.forms.fields.phone).fill('+84 912.345.678');
-        await section.getByRole('button', { name: messages.forms.notify.submit }).click();
-        await expect(section.getByRole('status')).toContainText(messages.forms.notify.success);
-      });
-
-      test('available products have no notify-me form', async ({ page }) => {
-        await page.goto(`/${locale}/products/hoang-hon-01`);
+        const info = page.locator('.ProductInfo');
+        await expect(info.getByText(messages.product.status.sold_out)).toBeVisible();
+        await expect(info.getByText(messages.product.preorderOffer)).toBeVisible();
         await expect(page.locator('#notify')).toHaveCount(0);
+        await info.getByRole('link', { name: messages.product.actions.preorder }).click();
+
+        await expect(page).toHaveURL(/\/contact\?product=am-ban&purpose=preorder$/);
+        await expect(
+          page.getByRole('radio', { name: messages.forms.purposes.preorder }),
+        ).toBeChecked();
+        await expect(
+          page.getByRole('region', { name: messages.forms.contact.productLabel }),
+        ).toBeVisible();
+        await page.getByLabel(messages.forms.fields.email).fill('khach@example.com');
+        await page.getByLabel(messages.forms.fields.phone).fill('0912345678');
+        await page.getByRole('checkbox', { name: messages.forms.fields.consentLink }).check();
+        await contactForm(page).getByRole('button', { name: messages.forms.submit }).click();
+        await expect(page.getByRole('status')).toContainText(messages.forms.contact.successTitle);
       });
 
-      test('the mobile order bar jumps to the form', async ({ browser }) => {
+      test('a link shared before P9a2 (purpose=notify) opens as a pre-order', async ({ page }) => {
+        await page.goto(`/${locale}/contact?product=am-ban&purpose=notify`);
+        await expect(
+          page.getByRole('radio', { name: messages.forms.purposes.preorder }),
+        ).toBeChecked();
+      });
+
+      test('an in-stock design is ordered without the discount line', async ({ page }) => {
+        await page.goto(`/${locale}/products/hoang-hon-01`);
+        const info = page.locator('.ProductInfo');
+        await expect(info.getByText(messages.product.status.available)).toBeVisible();
+        await expect(info.getByText(messages.product.preorderOffer)).toHaveCount(0);
+        await expect(
+          info.getByRole('link', { name: messages.product.actions.order }),
+        ).toHaveAttribute('href', `/${locale}/contact?product=hoang-hon-01&purpose=order`);
+      });
+
+      test('the mobile order bar pre-orders a sold-out design', async ({ browser }) => {
         const context = await browser.newContext({
           extraHTTPHeaders: { 'x-forwarded-for': `198.51.100.${locale === 'vi' ? 60 : 61}` },
           viewport: { width: 390, height: 844 },
@@ -162,12 +177,9 @@ for (const locale of ['vi', 'en'] as const) {
         await page.goto(`/${locale}/products/am-ban`);
         await page
           .locator('.ProductOrderBar')
-          .getByRole('link', { name: messages.product.actions.notify })
+          .getByRole('link', { name: messages.product.actions.preorder })
           .tap();
-        await expect(page).toHaveURL(/#notify$/);
-        await expect(
-          page.locator('#notify').getByLabel(messages.forms.fields.email),
-        ).toBeInViewport();
+        await expect(page).toHaveURL(/\/contact\?product=am-ban&purpose=preorder$/);
         await context.close();
       });
     });
