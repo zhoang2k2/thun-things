@@ -117,15 +117,26 @@ html:not([data-consent-decided]):not([data-consent-bar-measured])
   bottom: calc(var(--quiz-bottom) + 3.5rem);
 }
 
-/* P11: film grain over the liquid lens. The noise tile is set by LiquidLens; the steps() jumps keep
-   it reading as film grain rather than a smooth blur. */
-.LiquidLens__grain {
-  /* Above the copies and the colour layer. */
-  z-index: 50;
-  position: absolute;
-  inset: 0;
+/* P11: the site-wide liquid (CursorLiquid). The colour layer multiplies onto the page; the grain tile
+   is set by the component, and the steps() jumps keep it reading as film grain. */
+.CursorLiquid__colour {
+  mix-blend-mode: multiply;
+}
+
+.CursorLiquid__grain {
   mix-blend-mode: soft-light;
   animation: lens-grain 0.5s steps(4) infinite;
+}
+
+/* Where the liquid overlaps the hover card's button: purple, orange while that button is hovered. */
+.CursorLiquid__button {
+  background-color: var(--color-lens-purple);
+  color: var(--color-canvas);
+}
+
+.CursorLiquid__button[data-hover='true'] {
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
 }
 
 @keyframes lens-grain {
@@ -143,16 +154,7 @@ html:not([data-consent-decided]):not([data-consent-bar-measured])
   }
 }
 
-/* P11: the revealed button turns purple where the liquid touches it. Copies are inert, so this only
-   shows inside the lens. */
-.XrayCell__card .ProductAction {
-  background-color: var(--color-lens-purple);
-  color: var(--color-canvas);
-}
-
-/* P11: while the open card's button is hovered, the part of the revealed button under the liquid turns
-   orange (the accent, the button's own colour). Only the hovered design's copy reacts. */
-.ProductGrid:has(.ProductHoverCard .ProductAction:hover) .XrayCell__card--hovered .ProductAction {
-  background-color: var(--color-accent);
-  color: var(--color-on-accent);
+/* P11-R4-4: neighbouring photos ease back and forth as the liquid pushes them. */
+.ProductTile__link {
+  transition: transform 220ms ease-out;
 }

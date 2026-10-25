@@ -211,7 +211,13 @@ test.describe('events after consent', () => {
       );
     await expect.poll(previews).toEqual([{ product_id: slug, status: expect.any(String) }]);
 
-    await tile.getByRole('link').first().click();
+    // The open hover card covers the tile; a click on the card opens the product and sends
+    // select_item. Wait for the card to finish opening first.
+    await tile.hover();
+    const card = page.getByTestId('product-hover-card');
+    await expect(card).toBeVisible();
+    await page.waitForTimeout(400);
+    await card.locator('.ProductHoverCard__name').click();
     await page.waitForURL(`**/vi/products/${slug}`);
     expect(await events(page, 'select_item')).toEqual([
       { product_id: slug, status: expect.any(String), locale: 'vi' },

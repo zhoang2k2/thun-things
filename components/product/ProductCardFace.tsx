@@ -11,35 +11,22 @@ interface ProductCardFaceProps {
   image: ImageAsset;
   /** Set for the hover card (the photo links to the product); omitted for the x-ray copy. */
   href?: string;
-  /** Shown instead of the photo when it has no source yet (x-ray back placeholder). */
-  placeholderLabel?: string;
 }
 
 // 16px photo-print frame (8-point grid): the card sits 16px outside the cell on every side but the
 // bottom, so its image lands exactly on the cell image. 1px border + 15px padding = 16px.
 export const FRAME_PX = 16;
 
-// The one card look, used by the single hover card and by every x-ray copy (P11 rev 3).
+// The card look: white sheet, 1px border, 15px padding (1 + 15 = the 16px frame).
 export const CARD_CLASSES = 'bg-canvas border-line border p-[15px]';
 
-// The one card body shared by the hover card and the x-ray copies (P11), so the revealed card of a
-// neighbour is the same markup, type and spacing as the card that opens when it is hovered directly.
-export const ProductCardFace = ({
-  product,
-  image,
-  href,
-  placeholderLabel,
-}: ProductCardFaceProps) => {
-  const photo =
-    !image.src && placeholderLabel ? (
-      <div className="bg-placeholder text-ink relative flex aspect-[4/5] items-center justify-center text-sm font-bold tracking-wide">
-        {placeholderLabel}
-      </div>
-    ) : (
-      <div className="relative aspect-[4/5]">
-        <MediaImage src={image.src} alt="" width={image.width} height={image.height} fill />
-      </div>
-    );
+// The hover card body: photo, name, price, status and action.
+export const ProductCardFace = ({ product, image, href }: ProductCardFaceProps) => {
+  const photo = (
+    <div className="relative aspect-[4/5]">
+      <MediaImage src={image.src} alt="" width={image.width} height={image.height} fill />
+    </div>
+  );
 
   return (
     <>

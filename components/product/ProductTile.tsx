@@ -82,6 +82,7 @@ export const ProductTile = ({ product, active, onOpen, onClose }: ProductTilePro
       onFocus={handleFocus}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
+      data-product-id={product.id}
       className="ProductTile relative aspect-[4/5]"
     >
       <Link

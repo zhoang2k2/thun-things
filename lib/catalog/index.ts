@@ -30,8 +30,6 @@ export interface ProductCardModel {
   priceLabel: string;
   status: ProductStatus;
   image: ImageAsset;
-  /** Back photo shown by the x-ray lens (P11); the front when no back photo exists. */
-  backImage: ImageAsset;
 }
 
 const parsePage = (value: string | string[] | undefined, pageCount: number): number => {
@@ -76,7 +74,6 @@ export const toCardModel = (product: Product, locale: Locale = 'vi'): ProductCar
   priceLabel: formatPriceVND(product.priceVND, locale),
   status: product.status,
   image: product.media.front,
-  backImage: product.media.back ?? product.media.front,
 });
 
 /** Every product, for the quiz scorer (server only; the client gets the ranked result). */

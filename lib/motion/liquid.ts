@@ -3,8 +3,12 @@
 // shape only depends on the seed of that entry and on time.
 
 export const LENS = {
-  /** Lens diameter in px; one constant to try other sizes. */
-  diameter: 320,
+  /** Diameter over the product grid, in px (P11-R4-2). */
+  diameter: 240,
+  /** Diameter everywhere else: a near-circle that follows the pointer. */
+  restDiameter: 120,
+  /** Depth everywhere else: a faint wobble. */
+  restDepth: 0.03,
   /** Vertices of the outline. */
   points: 72,
   /** Harmonics summed into the radius: more harmonics, more irregular dents and bulges. */
@@ -24,6 +28,8 @@ export interface LensInput {
   tMs: number;
   /** Chosen per entry, so every entry gets its own shape. */
   seed: number;
+  /** Deepest bulge/dent as a fraction of the radius; defaults to `LENS.depth`. */
+  depth?: number;
 }
 
 /** Small deterministic PRNG (mulberry32): the same seed always gives the same lens. */
@@ -58,14 +64,22 @@ const harmonicsFor = (seed: number): Harmonic[] => {
 };
 
 /** The lens outline as an SVG path, centred on (cx, cy). */
-export const lensOutline = ({ cx, cy, radius, tMs, seed }: LensInput): string => {
+export const lensOutline = ({
+  cx,
+  cy,
+  radius,
+  tMs,
+  seed,
+  depth = LENS.depth,
+}: LensInput): string => {
   const harmonics = harmonicsFor(seed);
+  const strength = depth / LENS.depth;
   const vertices: string[] = [];
   for (let i = 0; i < LENS.points; i += 1) {
     const angle = (i / LENS.points) * Math.PI * 2;
     let scale = 1;
     for (const { order, amplitude, phase, speed } of harmonics) {
-      scale += amplitude * Math.sin(order * angle + phase + speed * tMs);
+      scale += strength * amplitude * Math.sin(order * angle + phase + speed * tMs);
     }
     const clamped = Math.min(LENS.maxScale, Math.max(LENS.minScale, scale));
     const r = radius * clamped;

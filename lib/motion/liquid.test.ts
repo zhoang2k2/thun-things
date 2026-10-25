@@ -63,4 +63,15 @@ describe('lensOutline', () => {
   it('shrinks to nothing at zero radius', () => {
     for (const value of radii(outline({ radius: 0 }))) expect(value).toBeCloseTo(0, 5);
   });
+
+  it('is a near-circle at a small depth (the site-wide resting state)', () => {
+    for (const seed of [1, 7, 42]) {
+      const values = radii(outline({ seed, tMs: 2500, depth: 0.03 }));
+      expect(Math.max(...values) / Math.min(...values)).toBeLessThan(1.12);
+    }
+  });
+
+  it('uses the full depth by default', () => {
+    expect(outline({ seed: 9, tMs: 800 })).toBe(outline({ seed: 9, tMs: 800, depth: LENS.depth }));
+  });
 });

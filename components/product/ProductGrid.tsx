@@ -3,9 +3,11 @@
 import { LazyMotion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { LiquidLens } from '@/components/product/LiquidLens';
 import { ProductHoverCard } from '@/components/product/ProductHoverCard';
 import { ProductTile } from '@/components/product/ProductTile';
+import { useFinePointer } from '@/lib/hooks/useFinePointer';
+import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
+import { pushFor } from '@/lib/motion/push';
 import type { ProductCardModel } from '@/lib/catalog';
 
 export interface ActiveCard {
@@ -83,6 +85,64 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
     setActive((current) => (current?.id === id ? null : current));
   }, []);
 
+  // Neighbour push (P11-R4-4): designs near the pointer move a little away from it; the hovered
+  // design stays still. Rects are read first, transforms written after, once per frame.
+  const finePointer = useFinePointer();
+  const reducedMotion = usePrefersReducedMotion();
+  const activeId = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    activeId.current = active?.id;
+  }, [active]);
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper || !finePointer || reducedMotion) return;
+    let frame = 0;
+    let pointer: { x: number; y: number } | null = null;
+    const tiles = () =>
+      Array.from(wrapper.querySelectorAll<HTMLElement>('.ProductGrid__list > .ProductTile'));
+    const apply = () => {
+      frame = 0;
+      const cells = tiles();
+      const boxes = cells.map((cell) => cell.getBoundingClientRect());
+      cells.forEach((cell, index) => {
+        const link = cell.querySelector<HTMLElement>('.ProductTile__link');
+        if (!link) return;
+        const box = boxes[index]!;
+        const push =
+          pointer && cell.dataset.productId !== activeId.current
+            ? pushFor(pointer, { x: box.left + box.width / 2, y: box.top + box.height / 2 })
+            : null;
+        link.style.transform =
+          push && push.scale < 1
+            ? `translate(${push.x.toFixed(2)}px, ${push.y.toFixed(2)}px) scale(${push.scale.toFixed(4)})`
+            : '';
+      });
+    };
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(apply);
+    };
+    const handleMove = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return;
+      pointer = { x: event.clientX, y: event.clientY };
+      schedule();
+    };
+    const handleLeave = () => {
+      pointer = null;
+      schedule();
+    };
+    wrapper.addEventListener('pointermove', handleMove);
+    wrapper.addEventListener('pointerleave', handleLeave);
+    return () => {
+      wrapper.removeEventListener('pointermove', handleMove);
+      wrapper.removeEventListener('pointerleave', handleLeave);
+      window.cancelAnimationFrame(frame);
+      for (const cell of tiles()) {
+        const link = cell.querySelector<HTMLElement>('.ProductTile__link');
+        if (link) link.style.transform = '';
+      }
+    };
+  }, [finePointer, reducedMotion]);
+
   // Touch: a tap outside the grid closes the open card.
   useEffect(() => {
     if (!active) return;
@@ -95,7 +155,11 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
 
   return (
     <LazyMotion features={loadMotionFeatures} strict>
-      <div ref={wrapperRef} className="ProductGrid relative overflow-x-clip px-4 py-10">
+      {/* Same frame as the header (P11-R4-1): max width and 16/32px side padding. */}
+      <div
+        ref={wrapperRef}
+        className="ProductGrid relative mx-auto max-w-screen-2xl overflow-x-clip px-4 py-10 md:px-8"
+      >
         <ul className="ProductGrid__list grid grid-cols-1 md:grid-cols-4">
           {products.map((product) => (
             <ProductTile
@@ -122,7 +186,6 @@ export const ProductGrid = ({ products }: ProductGridProps) => {
             }}
           />
         )}
-        <LiquidLens products={products} wrapperRef={wrapperRef} activeId={active?.id} />
       </div>
     </LazyMotion>
   );

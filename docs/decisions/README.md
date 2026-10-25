@@ -211,3 +211,12 @@ This directory tracks significant technical and architectural choices made durin
 - **Colour.** Orange (brand, `#E8662E`) and purple (`#6B3FA0`) mixed in streaks from a stitched SVG fractal-noise tile, multiplied over the back photos so they keep their detail; film grain (soft-light) over that. The colour is no longer transparent in the list.
 - **Tests and checks.** E2E selectors now target the grid's own tiles and the single card; the buying-path test centres the tile before clicking, because a click that scrolls moves the pointer onto another tile.
 - **Performance.** `/vi` LCP is 2.46 s (budget 2.5 s): within budget, with little margin.
+
+**Revision 4 (2026-10-26, owner brainstorm) — supersedes revisions 1–3.**
+
+- **Site-wide liquid** (`components/motion/CursorLiquid.tsx`, mounted once in `SiteFrame`): follows the pointer with no lag; a 120px near-circle (depth 0.03) everywhere, growing to 240px with full depth (0.22) over the product grid; the state change eases over ~350ms both ways. Two fixed layers share one clip path: the colour layer (`mix-blend-mode: multiply`, orange–purple tint and grain) colours the page and the hover card; the button layer shows a copy of the hover card's button where the liquid overlaps it (purple, orange while that button is hovered). A clip path makes its own blending group, so the multiply sits on the layer itself, not on a child. z-index 35: above content and the hover card (30), below the header (40), consent bar, quiz and dialogs. Off on touch and under reduced motion.
+- **Neighbour push** in `ProductGrid` (`lib/motion/push.ts`): designs within 260px of the pointer move up to 6px away and scale to 0.97, eased by a CSS transition; the hovered design stays still. Rects are read, then transforms written, once per frame.
+- **Hover card**: 1px border kept; opens by growing its frame and info out of the photo (clip-path inset from the photo box to the whole card, 280ms); reduced motion fades.
+- **Grid frame** matches the header: `max-w-screen-2xl`, 16/32px side padding, 40px vertical padding, no gaps.
+- **Removed**: the x-ray reveal (`LiquidLens`, `XrayCell`), `backImage` on the card model and the back placeholder copy.
+- **Performance**: `/vi` LCP 1.97 s; budgets pass on all pages.

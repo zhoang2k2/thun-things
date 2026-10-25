@@ -20,24 +20,24 @@ interface ProductHoverCardProps {
   onPointerLeave: (event: PointerEvent<HTMLDivElement>) => void;
 }
 
-// V-14/V-15 (P2-9): the image never moves or resizes; the card is revealed around it by a circle
-// spreading from the pointer entry point, as if the image were lifted into the card.
+// V-14/V-15 (P2-9): the image never moves or resizes; the card frame and info grow out of it, as if
+// the image were lifted into the card (P11-R4-6).
 export const ProductHoverCard = ({ product, active, onPointerLeave }: ProductHoverCardProps) => {
   const router = useRouter();
   const locale = useLocale();
   const reducedMotion = useReducedMotion();
   const href = `/products/${product.slug}`;
 
-  const originX = active.origin.x + FRAME_PX;
-  const originY = active.origin.y + FRAME_PX;
-  // Large enough to cover the card from any entry point (card is at most ~2× the cell height).
-  const radius = Math.hypot(active.rect.width + FRAME_PX * 2, active.rect.height * 2);
+  // P11-R4-6: the card grows out of its photo. Closed, the clip is exactly the photo box (16px in
+  // from the top and sides, ending at the photo's bottom); open, it is the whole card. The photo
+  // itself never moves. Both values share one shape so the clip can be interpolated.
+  const photoBottom = FRAME_PX + active.rect.height;
   const closed = reducedMotion
     ? { opacity: 0 }
-    : { clipPath: `circle(0px at ${originX}px ${originY}px)` };
-  const open = reducedMotion
-    ? { opacity: 1 }
-    : { clipPath: `circle(${radius}px at ${originX}px ${originY}px)` };
+    : {
+        clipPath: `inset(${FRAME_PX}px ${FRAME_PX}px calc(100% - ${photoBottom}px) ${FRAME_PX}px)`,
+      };
+  const open = reducedMotion ? { opacity: 1 } : { clipPath: 'inset(0px 0px calc(0% - 0px) 0px)' };
 
   // The whole card opens the product; links inside keep their own behaviour.
   const handleClick = (event: MouseEvent<HTMLDivElement>) => {
@@ -63,7 +63,7 @@ export const ProductHoverCard = ({ product, active, onPointerLeave }: ProductHov
       initial={closed}
       animate={open}
       exit={closed}
-      transition={{ duration: motionTokens.duration.normal, ease: motionTokens.ease.out }}
+      transition={{ duration: 0.28, ease: motionTokens.ease.out }}
     >
       <ProductCardFace product={product} image={product.image} href={href} />
     </m.div>
