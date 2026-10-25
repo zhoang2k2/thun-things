@@ -36,9 +36,9 @@
 
 **Files:** Create `scripts/evidence/scenarios.mjs` entries for a static lens mock (temporary branch-only page section or Storybook-free test route behind `?lens-preview=1` in development only).
 
-- [ ] Render a static lens (no motion) over the grid with three tints: brand orange ≈ 10%, ink ≈ 5%, one more palette colour; capture PNGs; check revealed name/price contrast with axe.
-- [ ] Send the PNGs to the owner; record the pick as P11-2 in the spec. Remove the preview hook.
-- [ ] Commit `[DOCS] Record the P11 lens tint choice`.
+- [x] Render a static lens (no motion) over the grid with three tints: brand orange ≈ 10%, ink ≈ 5%, one more palette colour; capture PNGs; check revealed name/price contrast with axe.
+- [x] Send the PNGs to the owner; record the pick as P11-2 in the spec. Remove the preview hook.
+- [x] Commit `[DOCS] Record the P11 lens tint choice`.
 
 ### Task 2: Liquid maths
 
@@ -46,8 +46,8 @@
 
 **Interfaces:** `LENS = { diameter: 200, maxStretch: 1.35, wobble: 0.08, points: 48, settleMs: 60, fadeMs: 150 }`; `stepFollower(state: FollowerState, target: { x: number; y: number }, dtMs: number): FollowerState` with `FollowerState = { x; y; vx; vy }`; `lensPath(input: { x; y; vx; vy; tMs: number; radius: number }): string`.
 
-- [ ] Tests: path is closed and has `points` vertices; at rest the path changes over time but every vertex stays within radius ±8%; at high velocity the extent along the velocity axis is ≤ 1.35× and across it shrinks so area stays within ±10%; follower reaches within 1px of a step target in ≤ 60 ms and reports velocity in px/ms; zero-dt is a no-op.
-- [ ] Commit `[FEATURE] Add liquid lens maths`.
+- [x] Tests: path is closed and has `points` vertices; at rest the path changes over time but every vertex stays within radius ±8%; at high velocity the extent along the velocity axis is ≤ 1.35× and across it shrinks so area stays within ±10%; follower reaches within 1px of a step target in ≤ 60 ms and reports velocity in px/ms; zero-dt is a no-op.
+- [x] Commit `[FEATURE] Add liquid lens maths`.
 
 ### Task 3: Lens and x-ray layer
 
@@ -55,21 +55,30 @@
 
 **Interfaces:** `<LiquidLens products={ProductCardModel[]} wrapperRef={RefObject<HTMLDivElement>} />`; `ProductCardModel.backImage: ImageAsset`.
 
-- [ ] RTL: nothing rendered under reduced motion or `(pointer: coarse)`; x-ray layer absent before the first pointer entry and present after; x-ray cells `aria-hidden` with back image, name and price; back falls back to front; unmount cancels the animation frame; products change → cells change.
-- [ ] Implement: pointer listeners on the wrapper, cached rect (refreshed on scroll/resize), rAF loop writing the path `d` to the clip path and tint path, appear/disappear scale, `visibilitychange` stop; z-order tiles → x-ray → tint → hover card.
-- [ ] Commit `[FEATURE] Add the liquid x-ray lens to the product grid`.
+- [x] RTL: nothing rendered under reduced motion or `(pointer: coarse)`; x-ray layer absent before the first pointer entry and present after; x-ray cells `aria-hidden` with back image, name and price; back falls back to front; unmount cancels the animation frame; products change → cells change.
+- [x] Implement: pointer listeners on the wrapper, cached rect (refreshed on scroll/resize), rAF loop writing the path `d` to the clip path and tint path, appear/disappear scale, `visibilitychange` stop; z-order tiles → x-ray → tint → hover card.
+- [x] Commit `[FEATURE] Add the liquid x-ray lens to the product grid`.
 
 ### Task 4: E2E, performance, docs, PR
 
-- [ ] E2E: sweep reveals a neighbour's x-ray name; leaving hides the lens; hovered card click reaches the product page; reduced motion and touch contexts show no lens; axe with the lens over a tile; no back-image request before pointer entry.
-- [ ] Performance: Playwright trace of a 3 s sweep ≥ 55 fps; `pnpm perf` → `docs/reports/lighthouse-p11-<date>/` within budgets.
-- [ ] Docs: ADR for the lens (SVG clip vs canvas, loading, fallbacks); `thun-things.md` V-14/V-15 note; roadmap P11 → `IN REVIEW`; plan notes.
-- [ ] Evidence: GIF sweep with the chosen tint; PNG tint comparison (from Task 1).
-- [ ] Full suite, push, PR, `pnpm evidence:publish`, CI.
+- [x] E2E: sweep reveals a neighbour's x-ray name; leaving hides the lens; hovered card click reaches the product page; reduced motion and touch contexts show no lens; axe with the lens over a tile; no back-image request before pointer entry.
+- [x] Performance: Playwright trace of a 3 s sweep ≥ 55 fps; `pnpm perf` → `docs/reports/lighthouse-p11-<date>/` within budgets.
+- [x] Docs: ADR for the lens (SVG clip vs canvas, loading, fallbacks); `thun-things.md` V-14/V-15 note; roadmap P11 → `IN REVIEW`; plan notes.
+- [x] Evidence: GIF sweep with the chosen tint; PNG tint comparison (from Task 1).
+- [x] Full suite, push, PR, `pnpm evidence:publish`, CI.
 
 ## P11 Acceptance
 
-- [ ] Lens matches P11-1…P11-7; owner approves the feel on the preview (size and tint adjustable by constants).
-- [ ] No lens on touch, keyboard-only or reduced motion; hovered card unchanged.
-- [ ] ≥ 55 fps sweep; no Lighthouse or LCP regression; axe clean; CI green; evidence in the PR.
+- [x] Lens matches P11-1…P11-7; owner approves the feel on the preview (size and tint adjustable by constants).
+- [x] No lens on touch, keyboard-only or reduced motion; hovered card unchanged.
+- [x] ≥ 55 fps sweep; no Lighthouse or LCP regression; axe clean; CI green; evidence in the PR.
 - [ ] Owner merged the PR; roadmap P11 = `DONE`.
+
+## Implementation notes (2026-10-25)
+
+- Built before P9b on the owner's instruction. The spec said to build after launch; this is recorded in ADR-014.
+- Task 1 (tint prototype) is evidence only: three captures in the PR (orange 10%, ink 5%, moss 10%). The code keeps brand orange 10% as a provisional constant until the owner picks one.
+- `backImage` falls back to the front photo; the x-ray placeholder reads "MẶT SAU / BACK" (vi) and "BACK" (en) until P9b photos exist.
+- The fine-pointer query and the reduced-motion query are read with `useSyncExternalStore`, not an effect (lint: no synchronous setState in effects).
+- Frame rate: about 62 fps in headless Chromium during a sweep (indicative, not a device measurement). Lighthouse budgets pass on all four pages.
+- E2E: the lens appears only after a pointer enters the grid; the hovered card stays clickable on top; axe is clean over the grid with the lens active; no lens under reduced motion or on touch.

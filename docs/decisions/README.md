@@ -23,6 +23,7 @@ This directory tracks significant technical and architectural choices made durin
 | **ADR-011** | Quiz AI rationale: Gemini first, Anthropic fallback          | **Accepted** | 2026-10-24 |
 | **ADR-012** | Launch preparation on a temporary host                       | **Accepted** | 2026-10-24 |
 | **ADR-013** | Two product statuses and the pre-order purpose               | **Accepted** | 2026-10-25 |
+| **ADR-014** | Liquid x-ray lens on the product grid                        | **Accepted** | 2026-10-25 |
 
 ---
 
@@ -180,3 +181,16 @@ This directory tracks significant technical and architectural choices made durin
   - Lead purposes are `order`, `preorder`, `other`. The notify-me form, its server function, lead kind and copy were removed; `?purpose=notify` links prefill `preorder`, and a sold-out product without a purpose defaults to `preorder`. Owner emails name pre-orders and their discount.
   - Quiz status bonus: in stock +1, sold out 0 (+1 stays below the vibe weight, so an exact sold-out match still leads). JSON-LD: `InStock` / `BackOrder`. The AI prompt says a sold-out design can be pre-ordered with up to 10% off.
 - **Consequences:** Simpler pages and one lead path. Without JavaScript, Contact cannot apply the prefilled purpose (streamed inside Suspense); the form still submits. The discount is a public promise the owner must honour (R-01).
+
+---
+
+### ADR-014: Liquid x-ray lens on the product grid
+
+- **Context:** P11 (spec `docs/superpowers/specs/2026-10-24-p11-liquid-xray-hover-design.md`) asks for a ~200px liquid lens that follows the pointer over the grid and reveals each design's back photo with name and price, while the hovered tile keeps its full card. Built before P9b on the owner's instruction (2026-10-25).
+- **Decision:**
+  - **Shape and motion** are pure functions in `lib/motion/liquid.ts`: an outline of 48 vertices, radius wobbling ±8% on two slow sine terms, stretched along the pointer velocity up to 1.35× with area kept. The follower is exponential smoothing that settles within 1px in 60 ms and never overshoots. Tested without the DOM.
+  - **Rendering** uses one SVG clip path updated once per animation frame (`d` written straight to the DOM, no React state per frame). The x-ray layer (`XrayCell`, one per grid cell, aria-hidden, pointer-events none) is clipped by that path; a flat tint is drawn over it.
+  - **Mounting and fallbacks:** nothing renders on the server. The lens needs a fine pointer (`(hover: hover) and (pointer: fine)`) and no reduced motion; touch never gets it. The x-ray layer mounts only after the first pointer entry, so back photos never compete with LCP. The loop stops when the pointer leaves, the page is hidden, or the component unmounts.
+  - **Stacking:** tiles, then the x-ray layer (z-10), then the tint (z-20), then the hovered card (z-30 on its tile). The layers ignore the pointer, so the tile under the lens still opens its card.
+  - **Tint** is provisional: brand orange at 10% (P11-2). Prototype captures of three tints are in the PR; the owner picks the final one.
+- **Consequences:** Lighthouse budgets unchanged (the lens adds no server markup). Back photos fall back to the front until real photos exist (P9b); the placeholder reads "MẶT SAU / BACK" / "BACK". Frame rate in headless Chromium was about 62 fps during a sweep (indicative only; real devices not measured). The lens is off on touch, keyboard-only use and reduced motion by design.
