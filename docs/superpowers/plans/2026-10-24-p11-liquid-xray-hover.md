@@ -82,3 +82,10 @@
 - The fine-pointer query and the reduced-motion query are read with `useSyncExternalStore`, not an effect (lint: no synchronous setState in effects).
 - Frame rate: about 62 fps in headless Chromium during a sweep (indicative, not a device measurement). Lighthouse budgets pass on all four pages.
 - E2E: the lens appears only after a pointer enters the grid; the hovered card stays clickable on top; axe is clean over the grid with the lens active; no lens under reduced motion or on touch.
+
+## Revision 2 (2026-10-25, owner feedback on PR #14)
+
+- Lens: anchored at the tile entry point, self-morphing (`lensOutline`), deep and irregular; no follower, no stretch, no tint.
+- Shared `ProductCardFace` for the hover card and the x-ray copies; copies are `inert`.
+- Film grain: `soft-light` layer above the copies; the tile is set from the component so the stylesheet stays small (LCP on `/vi` was over budget with the tile in CSS).
+- Known: the lens is hard to see on placeholder photos (copy and tile share the grey); the look should be judged again with real back photos (P9b).

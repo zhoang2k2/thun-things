@@ -12,7 +12,7 @@ export const XrayCell = ({
   placeholderLabel: string;
 }) => (
   <li className="XrayCell relative aspect-[4/5]" inert>
-    <div className="XrayCell__card bg-canvas border-line absolute -top-4 -left-4 z-30 w-[calc(100%+32px)] border p-[15px]">
+    <div className="XrayCell__card bg-canvas border-line absolute -top-4 -left-4 w-[calc(100%+32px)] border p-[15px]">
       <ProductCardFace
         product={product}
         image={product.backImage}

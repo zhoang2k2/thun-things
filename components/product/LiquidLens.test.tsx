@@ -13,11 +13,15 @@ vi.mock('@/lib/hooks/usePrefersReducedMotion', () => ({
 
 const products = listProducts().items.map((product) => toCardModel(product));
 
-/** A wrapper like ProductGrid's, owning the ref the lens reads. */
+/** A wrapper like ProductGrid's, owning the ref the lens reads, with two tiles to enter. */
 const Harness = ({ list }: { list: typeof products }) => {
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div ref={ref} data-testid="wrapper" className="ProductGrid relative">
+      <ul>
+        <li className="ProductTile" data-testid="tile-a" />
+        <li className="ProductTile" data-testid="tile-b" />
+      </ul>
       <LiquidLens products={list} wrapperRef={ref} />
     </div>
   );
@@ -53,6 +57,22 @@ afterEach(() => {
 });
 
 describe('LiquidLens', () => {
+  it('re-anchors where the pointer enters each new tile, and stays put inside a tile', () => {
+    const { container } = renderLens();
+    act(() => {
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
+    });
+    const seedA = container.querySelector('.LiquidLens')!.getAttribute('data-seed');
+    act(() => {
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 90, clientY: 90 });
+    });
+    expect(container.querySelector('.LiquidLens')!.getAttribute('data-seed')).toBe(seedA);
+    act(() => {
+      fireEvent.pointerOver(screen.getByTestId('tile-b'), { clientX: 200, clientY: 40 });
+    });
+    expect(container.querySelector('.LiquidLens')!.getAttribute('data-seed')).not.toBe(seedA);
+  });
+
   it('renders nothing for reduced motion', () => {
     motion.reduced = true;
     const { container } = renderLens();
@@ -66,18 +86,18 @@ describe('LiquidLens', () => {
   });
 
   it('mounts the x-ray layer only after the first pointer entry', () => {
-    const { container, wrapper } = renderLens();
+    const { container } = renderLens();
     expect(container.querySelector('.LiquidLens__xray')).toBeNull();
     act(() => {
-      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
     });
     expect(container.querySelector('.LiquidLens__xray')).not.toBeNull();
   });
 
   it('keeps the x-ray layer out of the accessibility tree and off the pointer', () => {
-    const { container, wrapper } = renderLens();
+    const { container } = renderLens();
     act(() => {
-      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
     });
     const layer = container.querySelector<HTMLElement>('.LiquidLens__xray')!;
     expect(layer).toHaveAttribute('aria-hidden', 'true');
@@ -85,9 +105,9 @@ describe('LiquidLens', () => {
   });
 
   it('makes every x-ray copy inert: no clicks, no focus, no links in the tab order', () => {
-    const { container, wrapper } = renderLens();
+    const { container } = renderLens();
     act(() => {
-      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
     });
     const cells = container.querySelectorAll('.XrayCell');
     expect(cells.length).toBeGreaterThan(0);
@@ -95,17 +115,17 @@ describe('LiquidLens', () => {
   });
 
   it('adds the film grain layer inside the lens', () => {
-    const { container, wrapper } = renderLens();
+    const { container } = renderLens();
     act(() => {
-      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
     });
     expect(container.querySelector('.LiquidLens .LiquidLens__grain')).not.toBeNull();
   });
 
   it('shows each product back with its name and price in the x-ray cells', () => {
-    const { container, wrapper } = renderLens();
+    const { container } = renderLens();
     act(() => {
-      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
     });
     const xray = container.querySelector('.LiquidLens__xray')!;
     expect(xray.querySelectorAll('.XrayCell')).toHaveLength(products.length);
@@ -118,9 +138,9 @@ describe('LiquidLens', () => {
   });
 
   it('follows a product list change (pagination)', () => {
-    const { container, wrapper, rerender } = renderLens(products.slice(0, 4));
+    const { container, rerender } = renderLens(products.slice(0, 4));
     act(() => {
-      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
     });
     rerender(<Harness list={products.slice(4, 8)} />);
     const xray = container.querySelector('.LiquidLens__xray')!;
@@ -131,9 +151,9 @@ describe('LiquidLens', () => {
 
   it('stops the animation frame loop on unmount', () => {
     const cancel = vi.mocked(window.cancelAnimationFrame);
-    const { unmount, wrapper } = renderLens();
+    const { unmount } = renderLens();
     act(() => {
-      fireEvent.pointerEnter(wrapper, { clientX: 40, clientY: 40 });
+      fireEvent.pointerOver(screen.getByTestId('tile-a'), { clientX: 40, clientY: 40 });
     });
     unmount();
     expect(cancel).toHaveBeenCalled();

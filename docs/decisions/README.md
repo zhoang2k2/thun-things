@@ -194,3 +194,12 @@ This directory tracks significant technical and architectural choices made durin
   - **Stacking:** tiles, then the x-ray layer (z-10), then the tint (z-20), then the hovered card (z-30 on its tile). The layers ignore the pointer, so the tile under the lens still opens its card.
   - **Tint** is provisional: brand orange at 10% (P11-2). Prototype captures of three tints are in the PR; the owner picks the final one.
 - **Consequences:** Lighthouse budgets unchanged (the lens adds no server markup). Back photos fall back to the front until real photos exist (P9b); the placeholder reads "MẶT SAU / BACK" / "BACK". Frame rate in headless Chromium was about 62 fps during a sweep (indicative only; real devices not measured). The lens is off on touch, keyboard-only use and reduced motion by design.
+
+**Revision 2 (2026-10-25, owner feedback on PR #14).** The first build was rejected and rebuilt:
+
+- **Anchored, not following.** The lens opens where the pointer enters a _tile_ and stays there while the pointer moves inside that tile; entering another tile re-anchors it (`pointerover`, tile check). Its edge morphs on its own clock (`lensOutline`, seeded per anchor).
+- **Irregular and deep.** Six harmonics of orders 2–8 with random phase and drift give dents and bulges (depth 0.22, clamped 0.55–1.6 of the radius); no longer a circle with a stretch.
+- **Lens above the hovered card.** The x-ray layer sits at z-40, above the card (z-30). It is not clickable (`pointer-events: none`).
+- **Neighbour copies match the hover card exactly.** Both use `ProductCardFace`, the same markup and classes; the copy sits on the same 16px offsets. Copies are `inert`, so they cannot be clicked or focused.
+- **Colour with film grain.** Back photos keep their colour; a grain layer (SVG turbulence tile, `soft-light`, stepped CSS animation) sits above the copies. The monochrome tint is removed. The Excon typeface was dropped (not needed).
+- **Performance.** The grain tile is set from the component, not the stylesheet: a long data URI in the stylesheet raised LCP on `/vi` above the budget (2.56 s vs 2.41 s without it).

@@ -1,5 +1,7 @@
 # P11 Liquid X-ray Hover — Design
 
+> **Revision 2 (2026-10-25, owner feedback on PR #14) supersedes the decisions below where they differ:** the lens anchors at the tile entry point and morphs on its own clock (no pointer following, no stretch); it sits above the hovered card; the neighbour copy is the same card as the hover card, inert; the lens shows colour back photos with film grain (no monochrome tint, no Excon). ADR-014 records the details.
+
 **Date:** 2026-10-24
 **Builds on:** V-14/V-15 hover card (P2-9), DR-1/DR-2, the P3 removal of the glass layer, P6 events; [`../plans/2026-10-22-roadmap.md`](../plans/2026-10-22-roadmap.md) P11
 **Roadmap:** P11, after launch (P9). Planned now, built after P9.

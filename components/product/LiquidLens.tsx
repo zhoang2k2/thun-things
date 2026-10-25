@@ -15,6 +15,8 @@ import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
 
 const FINE_POINTER = '(hover: hover) and (pointer: fine)';
 const FADE_MS = 180;
+// Film grain: a static SVG noise tile. Kept out of the stylesheet so it never weighs on first paint.
+const GRAIN_TILE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3' intercept='-1'/%3E%3CfeFuncG type='linear' slope='3' intercept='-1'/%3E%3CfeFuncB type='linear' slope='3' intercept='-1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 const MAX_FRAME_MS = 50;
 
 const subscribeFinePointer = (onChange: () => void) => {
@@ -41,6 +43,8 @@ interface LensState {
   /** Lens centre, in the grid's own coordinates. */
   origin: { x: number; y: number };
   seed: number;
+  /** The tile the pointer is in; a new tile re-anchors the lens. */
+  tile: Element | null;
   frame: number;
   last: number;
 }
@@ -51,7 +55,8 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
   const reducedMotion = usePrefersReducedMotion();
   const finePointer = useFinePointer();
   const enabled = finePointer && !reducedMotion;
-  const [armed, setArmed] = useState(false);
+  // Set each time the pointer enters a new tile: its seed gives this anchor its own shape.
+  const [anchor, setAnchor] = useState<{ seed: number } | null>(null);
   const placeholderLabel = useTranslations('product')('lensBackPlaceholder');
   const clipId = useId();
   const clipRef = useRef<SVGPathElement>(null);
@@ -61,6 +66,7 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
     progress: 0,
     origin: { x: 0, y: 0 },
     seed: 1,
+    tile: null,
     frame: 0,
     last: 0,
   });
@@ -102,14 +108,18 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
       }
     };
 
-    const handleEnter = (event: PointerEvent) => {
+    // Entering a tile anchors the lens at that point; moving inside the same tile keeps it still.
+    const handleOver = (event: PointerEvent) => {
       if (event.pointerType === 'touch') return;
-      // Measured once, at entry: the lens lives in grid coordinates, so scrolling keeps it in place.
+      const tile = (event.target as Element).closest('.ProductTile');
+      if (!tile || tile === state.tile) return;
+      state.tile = tile;
+      // Measured at the anchor: the lens lives in grid coordinates, so scrolling keeps it in place.
       const rect = wrapper.getBoundingClientRect();
       state.origin = { x: event.clientX - rect.left, y: event.clientY - rect.top };
       state.seed = 1 + Math.floor(Math.random() * 2_147_483_646);
       state.visible = true;
-      setArmed(true);
+      setAnchor({ seed: state.seed });
       if (!state.frame) {
         state.last = 0;
         state.frame = window.requestAnimationFrame(loop);
@@ -117,17 +127,18 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
     };
     const handleLeave = () => {
       state.visible = false;
+      state.tile = null;
     };
     const handleHidden = () => {
       if (document.hidden) handleLeave();
     };
 
-    wrapper.addEventListener('pointerenter', handleEnter);
+    wrapper.addEventListener('pointerover', handleOver);
     wrapper.addEventListener('pointerleave', handleLeave);
     document.addEventListener('visibilitychange', handleHidden);
 
     return () => {
-      wrapper.removeEventListener('pointerenter', handleEnter);
+      wrapper.removeEventListener('pointerover', handleOver);
       wrapper.removeEventListener('pointerleave', handleLeave);
       document.removeEventListener('visibilitychange', handleHidden);
       window.cancelAnimationFrame(state.frame);
@@ -148,9 +159,10 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
           </clipPath>
         </defs>
       </svg>
-      {armed && (
+      {anchor && (
         <div
           ref={layerRef}
+          data-seed={anchor.seed}
           aria-hidden="true"
           className="LiquidLens LiquidLens__xray pointer-events-none absolute inset-0 z-40 px-4"
           style={{ clipPath: `url(#${clipId})`, visibility: 'hidden' }}
@@ -160,7 +172,10 @@ export const LiquidLens = ({ products, wrapperRef }: LiquidLensProps) => {
               <XrayCell key={product.id} product={product} placeholderLabel={placeholderLabel} />
             ))}
           </ul>
-          <div className="LiquidLens__grain pointer-events-none absolute inset-0" />
+          <div
+            className="LiquidLens__grain pointer-events-none absolute inset-0"
+            style={{ backgroundImage: GRAIN_TILE }}
+          />
         </div>
       )}
     </>
