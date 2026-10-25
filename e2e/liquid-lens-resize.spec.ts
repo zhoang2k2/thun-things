@@ -20,3 +20,24 @@ test('the open card stays on its cell after a resize', async ({ page }) => {
   expect(Math.abs(box!.y - (cell!.y - 16))).toBeLessThanOrEqual(1);
   expect(Math.abs(box!.width - (cell!.width + 32))).toBeLessThanOrEqual(1);
 });
+
+// The hover card sits exactly on its cell (16px frame) at several widths and across rows.
+for (const width of [1440, 1024, 900]) {
+  test(`the hover card is aligned to its cell at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/vi');
+    for (const index of [0, 3, 7, 12]) {
+      const tile = page.locator('.ProductGrid__list > .ProductTile').nth(index);
+      await tile.scrollIntoViewIfNeeded();
+      const cell = await tile.boundingBox();
+      await page.mouse.move(cell!.x + 25, cell!.y + cell!.height / 2);
+      const card = page.getByTestId('product-hover-card');
+      await expect(card).toBeVisible();
+      const box = await card.boundingBox();
+      expect(Math.abs(box!.x - (cell!.x - 16))).toBeLessThanOrEqual(1);
+      expect(Math.abs(box!.y - (cell!.y - 16))).toBeLessThanOrEqual(1);
+      expect(Math.abs(box!.width - (cell!.width + 32))).toBeLessThanOrEqual(1);
+      await page.mouse.move(1, 1);
+    }
+  });
+}
