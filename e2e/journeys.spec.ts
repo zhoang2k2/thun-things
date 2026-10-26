@@ -49,7 +49,7 @@ for (const locale of ['vi', 'en'] as const) {
 
         const tileLink = tiles(page).first().locator('.ProductTile__link');
         await tabTo(page, tileLink);
-        const card = tiles(page).first().getByTestId('product-hover-card');
+        const card = page.getByTestId('product-hover-card');
         await expect(card).toBeVisible();
 
         const href = await tileLink.getAttribute('href');
@@ -107,7 +107,7 @@ for (const locale of ['vi', 'en'] as const) {
         await page.setViewportSize({ width: 1440, height: 900 });
         await page.goto(`/${locale}`);
         await tiles(page).nth(5).hover();
-        const card = tiles(page).nth(5).getByTestId('product-hover-card');
+        const card = page.getByTestId('product-hover-card');
         await expect(card).toBeVisible();
         // Sampled while the card is opening and after it settles.
         for (let sample = 0; sample < 3; sample += 1) {
@@ -127,8 +127,11 @@ for (const locale of ['vi', 'en'] as const) {
         await page.setViewportSize({ width: 1440, height: 900 });
         await page.goto(`/${locale}`);
         const tile = tiles(page).first();
+        // Centre the tile so the whole card is on screen: a click that scrolls would move the pointer
+        // onto another tile and open that design's card instead.
+        await tile.evaluate((el) => el.scrollIntoView({ block: 'center' }));
         await tile.hover();
-        const card = tile.getByTestId('product-hover-card');
+        const card = page.getByTestId('product-hover-card');
         await expect(card).toBeVisible();
         const name = (await card.locator('.ProductHoverCard__name').textContent())!;
         await card.locator('.ProductHoverCard__image').click();

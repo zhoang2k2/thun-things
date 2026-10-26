@@ -67,7 +67,7 @@ for (const locale of ['vi', 'en'] as const) {
         await expect(tiles).toHaveCount(20);
         await tiles.last().scrollIntoViewIfNeeded();
         await tiles.nth(5).hover();
-        await expect(tiles.nth(5).getByTestId('product-hover-card')).toBeVisible();
+        await expect(page.getByTestId('product-hover-card')).toBeVisible();
 
         expect(await watch.violations()).toEqual([]);
         expect(watch.messages).toEqual([]);

@@ -1,87 +1,75 @@
-// P9a2 evidence: the two product statuses (vi) on the hover card, the product page, the mobile
-// order bar and the prefilled Contact page. `pnpm evidence` writes local artifacts only.
+// P11 revision 4 evidence: the site-wide liquid. `pnpm evidence` writes local artifacts only.
 const DESKTOP = { width: 1440, height: 900 };
-const MOBILE = { width: 390, height: 844 };
 
-const dismissConsent = async (page) => {
-  const reject = page.getByRole('button', { name: 'Từ chối' });
-  if (await reject.isVisible()) await reject.click();
+const centreTile = async (page, index) => {
+  const tile = page.locator('.ProductGrid__list:visible > .ProductTile').nth(index);
+  await tile.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  const box = await tile.boundingBox();
+  return { x: box.x + box.width / 2, y: box.y + box.height / 2, box };
 };
 
-const hoverTile =
-  (slug) =>
-  async ({ page }) => {
-    await dismissConsent(page);
-    const tile = page.locator('.ProductTile').filter({ has: page.locator(`a[href$="/${slug}"]`) });
-    // Bring the tile near the top so the whole card (image, name, price, button) fits.
-    const box = await tile.boundingBox();
-    await page.evaluate((top) => window.scrollBy(0, top - 80), box.y);
-    await tile.hover();
-    await tile.getByTestId('product-hover-card').waitFor();
-    await page.waitForTimeout(400);
-  };
-
-const settle = async ({ page }) => {
-  await dismissConsent(page);
-  await page.waitForTimeout(300);
+/** From the page into the grid: outer becomes inner, a card opens, neighbours are pushed. */
+const liquidJourney = {
+  name: 'liquid-journey-vi',
+  kind: 'gif',
+  viewport: DESKTOP,
+  async run({ page, snap }) {
+    await page.goto('/vi');
+    await page.waitForLoadState('networkidle');
+    const at = await centreTile(page, 5);
+    // Start above the grid (outside it), then move in.
+    await page.mouse.move(at.x - 300, at.box.y - 140);
+    await snap(4);
+    for (let i = 1; i <= 14; i += 1) {
+      await page.mouse.move(
+        at.x - 300 + (300 * i) / 14,
+        at.box.y - 140 + ((at.y - at.box.y + 140) * i) / 14,
+      );
+      await snap(1);
+    }
+    for (let i = 0; i < 8; i += 1) {
+      await page.waitForTimeout(80);
+      await snap(1);
+    }
+  },
 };
+
+const still = (name, run) => ({ name, kind: 'png', viewport: DESKTOP, path: '/vi', run });
+
+/** Outer state over the hero (outside the grid). */
+const outer = still('liquid-outer-vi', async ({ page }) => {
+  await page.mouse.move(600, 300);
+  await page.mouse.move(700, 320, { steps: 10 });
+  await page.waitForTimeout(500);
+});
+
+/** Over a hovered card, near its button: coloured over the card, purple on the button overlap. */
+const overCard = still('liquid-over-card-vi', async ({ page }) => {
+  const at = await centreTile(page, 1);
+  await page.mouse.move(at.x, at.y, { steps: 10 });
+  await page.waitForTimeout(450);
+  const button = await page
+    .getByTestId('product-hover-card')
+    .locator('.ProductAction')
+    .boundingBox();
+  await page.mouse.move(at.x, button.y - 40, { steps: 10 });
+  await page.waitForTimeout(400);
+});
+
+/** Hovering the card button: the overlap turns orange, the button itself black. */
+const onButton = still('liquid-on-button-vi', async ({ page }) => {
+  const at = await centreTile(page, 1);
+  await page.mouse.move(at.x, at.y, { steps: 10 });
+  await page.waitForTimeout(450);
+  const button = await page
+    .getByTestId('product-hover-card')
+    .locator('.ProductAction')
+    .boundingBox();
+  await page.mouse.move(button.x + button.width / 2, button.y + button.height / 2, { steps: 10 });
+  await page.waitForTimeout(400);
+});
 
 /** @type {import('./capture.mjs').Scenario[]} */
-const scenarios = [
-  {
-    name: 'hover-in-stock-vi',
-    kind: 'png',
-    viewport: DESKTOP,
-    path: '/vi',
-    run: hoverTile('hoang-hon-01'),
-  },
-  {
-    name: 'hover-sold-out-vi',
-    kind: 'png',
-    viewport: DESKTOP,
-    path: '/vi',
-    run: hoverTile('am-ban'),
-  },
-  {
-    name: 'product-in-stock-vi',
-    kind: 'png',
-    viewport: DESKTOP,
-    path: '/vi/products/hoang-hon-01',
-    run: settle,
-  },
-  {
-    name: 'product-sold-out-vi',
-    kind: 'png',
-    viewport: DESKTOP,
-    path: '/vi/products/am-ban',
-    run: settle,
-  },
-  {
-    name: 'order-bar-sold-out-mobile-vi',
-    kind: 'png',
-    viewport: MOBILE,
-    mobile: true,
-    path: '/vi/products/am-ban',
-    run: settle,
-  },
-  {
-    name: 'contact-preorder-vi',
-    kind: 'png',
-    viewport: DESKTOP,
-    path: '/vi/contact?product=am-ban&purpose=preorder',
-    run: settle,
-  },
-  {
-    name: 'product-sold-out-en',
-    kind: 'png',
-    viewport: DESKTOP,
-    path: '/en/products/am-ban',
-    async run({ page }) {
-      const reject = page.getByRole('button', { name: 'Reject' });
-      if (await reject.isVisible()) await reject.click();
-      await page.waitForTimeout(300);
-    },
-  },
-];
+const scenarios = [liquidJourney, outer, overCard, onButton];
 
 export default scenarios;

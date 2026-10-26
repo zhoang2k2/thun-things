@@ -8,6 +8,7 @@ import { ConsentBootScript } from '@/components/consent/ConsentBootScript';
 import { ConsentProvider } from '@/components/consent/ConsentProvider';
 import { ConsentSettings } from '@/components/consent/ConsentSettings';
 import { SiteFooter } from '@/components/layout/SiteFooter';
+import { CursorLiquid } from '@/components/motion/CursorLiquid';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SkipLink } from '@/components/layout/SkipLink';
 import { QuizBubble } from '@/components/quiz/QuizBubble';
@@ -58,6 +59,7 @@ export const SiteFrame = async ({ children, switcherPathname }: SiteFrameProps) 
           <ConsentBanner />
           <QuizBubble />
           <QuizLauncher />
+          <CursorLiquid />
         </QuizProvider>
         <ConsentSettings />
         {/* VERCEL_ENV is a platform marker read at build (P6-3), not an owner variable. */}

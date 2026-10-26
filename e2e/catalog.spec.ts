@@ -57,7 +57,7 @@ for (const locale of ['vi', 'en'] as const) {
             .nth(index === 7 ? 6 : index + 1)
             .boundingBox();
           await tile.hover();
-          const tileCard = tile.getByTestId('product-hover-card');
+          const tileCard = page.getByTestId('product-hover-card');
           await expect(tileCard).toBeVisible();
           await page.waitForTimeout(500);
           const image = await tileCard.locator('.ProductHoverCard__image').boundingBox();
@@ -96,7 +96,7 @@ for (const locale of ['vi', 'en'] as const) {
         expect(b!.y).toBeGreaterThan(a!.y);
         await first.scrollIntoViewIfNeeded();
         await first.getByRole('link').first().tap();
-        const tileCard = first.getByTestId('product-hover-card');
+        const tileCard = page.getByTestId('product-hover-card');
         await expect(tileCard).toBeVisible();
         const cardBox = await tileCard.boundingBox();
         expect(cardBox!.x).toBeCloseTo(0, 0);

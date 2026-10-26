@@ -8,6 +8,8 @@
   --color-line: #e5e5e5;
   --color-accent: #ff5a1f;
   --color-on-accent: #111111;
+  /* P11: the lens purple (liquid mix, and the revealed button it touches). */
+  --color-lens-purple: #6b3fa0;
   /* Form errors: 6.6:1 on canvas, so it works for text as well as borders. */
   --color-error: #b42318;
   /* V-26 dummy image fallback: light grey fill, dark grey icon and label. */
@@ -113,4 +115,46 @@ html:not([data-consent-decided]):not([data-consent-bar-measured])
 .QuizCard,
 .QuizBubble {
   bottom: calc(var(--quiz-bottom) + 3.5rem);
+}
+
+/* P11: the site-wide liquid (CursorLiquid). The colour layer multiplies onto the page; the grain tile
+   is set by the component, and the steps() jumps keep it reading as film grain. */
+.CursorLiquid__colour {
+  mix-blend-mode: multiply;
+}
+
+.CursorLiquid__grain {
+  mix-blend-mode: soft-light;
+  animation: lens-grain 0.5s steps(4) infinite;
+}
+
+/* Where the liquid overlaps the hover card's button: purple, orange while that button is hovered. */
+.CursorLiquid__button {
+  background-color: var(--color-lens-purple);
+  color: var(--color-canvas);
+}
+
+.CursorLiquid__button[data-hover='true'] {
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+@keyframes lens-grain {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-4%, 3%);
+  }
+  50% {
+    transform: translate(3%, -5%);
+  }
+  75% {
+    transform: translate(-2%, 6%);
+  }
+}
+
+/* P11-R4-4: neighbouring photos ease back and forth as the liquid pushes them. */
+.ProductTile__link {
+  transition: transform 220ms ease-out;
 }

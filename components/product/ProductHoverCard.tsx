@@ -3,44 +3,41 @@
 import { useReducedMotion } from 'motion/react';
 import * as m from 'motion/react-m';
 import { useLocale } from 'next-intl';
-import type { MouseEvent } from 'react';
+import type { MouseEvent, PointerEvent } from 'react';
 
-import { MediaImage } from '@/components/media/MediaImage';
 import { motionTokens } from '@/components/motion/tokens';
-import { ProductAction } from '@/components/product/ProductAction';
+import { CARD_CLASSES, FRAME_PX, ProductCardFace } from '@/components/product/ProductCardFace';
+import { cn } from '@/lib/cn';
 import type { ActiveCard } from '@/components/product/ProductGrid';
-import { StatusBadge } from '@/components/product/StatusBadge';
-import { Link, useRouter } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { trackEvent } from '@/lib/analytics/events';
 import type { ProductCardModel } from '@/lib/catalog';
-
-// 16px photo-print frame (8-point grid): the card sits 16px outside the cell on every side but the
-// bottom, so its image lands exactly on the cell image. 1px border + 15px padding = 16px.
-const FRAME_PX = 16;
 
 interface ProductHoverCardProps {
   product: ProductCardModel;
   active: ActiveCard;
+  /** Keeps the card open while the pointer is on it; leaving it closes the card. */
+  onPointerLeave: (event: PointerEvent<HTMLDivElement>) => void;
 }
 
-// V-14/V-15 (P2-9): the image never moves or resizes; the card is revealed around it by a circle
-// spreading from the pointer entry point, as if the image were lifted into the card.
-export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => {
+// V-14/V-15 (P2-9): the image never moves or resizes; the card frame and info grow out of it, as if
+// the image were lifted into the card (P11-R4-6).
+export const ProductHoverCard = ({ product, active, onPointerLeave }: ProductHoverCardProps) => {
   const router = useRouter();
   const locale = useLocale();
   const reducedMotion = useReducedMotion();
   const href = `/products/${product.slug}`;
 
-  const originX = active.origin.x + FRAME_PX;
-  const originY = active.origin.y + FRAME_PX;
-  // Large enough to cover the card from any entry point (card is at most ~2× the cell height).
-  const radius = Math.hypot(active.rect.width + FRAME_PX * 2, active.rect.height * 2);
+  // P11-R4-6: the card grows out of its photo. Closed, the clip is exactly the photo box (16px in
+  // from the top and sides, ending at the photo's bottom); open, it is the whole card. The photo
+  // itself never moves. Both values share one shape so the clip can be interpolated.
+  const photoBottom = FRAME_PX + active.rect.height;
   const closed = reducedMotion
     ? { opacity: 0 }
-    : { clipPath: `circle(0px at ${originX}px ${originY}px)` };
-  const open = reducedMotion
-    ? { opacity: 1 }
-    : { clipPath: `circle(${radius}px at ${originX}px ${originY}px)` };
+    : {
+        clipPath: `inset(${FRAME_PX}px ${FRAME_PX}px calc(100% - ${photoBottom}px) ${FRAME_PX}px)`,
+      };
+  const open = reducedMotion ? { opacity: 1 } : { clipPath: 'inset(0px 0px calc(0% - 0px) 0px)' };
 
   // The whole card opens the product; links inside keep their own behaviour.
   const handleClick = (event: MouseEvent<HTMLDivElement>) => {
@@ -49,40 +46,26 @@ export const ProductHoverCard = ({ product, active }: ProductHoverCardProps) => 
     router.push(href);
   };
 
+  // Placed by the grid over the hovered cell (wrapper coordinates), 16px outside it on each side.
+  const geometry = {
+    left: active.rect.left - FRAME_PX,
+    top: active.rect.top - FRAME_PX,
+    width: active.rect.width + FRAME_PX * 2,
+  };
+
   return (
     <m.div
       data-testid="product-hover-card"
       onClick={handleClick}
-      className="ProductHoverCard bg-canvas border-line absolute -top-4 -left-4 z-30 w-[calc(100%+32px)] cursor-pointer border p-[15px]"
+      onPointerLeave={onPointerLeave}
+      className={cn(CARD_CLASSES, 'ProductHoverCard absolute z-30 cursor-pointer')}
+      style={geometry}
       initial={closed}
       animate={open}
       exit={closed}
-      transition={{ duration: motionTokens.duration.normal, ease: motionTokens.ease.out }}
+      transition={{ duration: 0.28, ease: motionTokens.ease.out }}
     >
-      <Link href={href} tabIndex={-1} aria-hidden="true" className="ProductHoverCard__image block">
-        <div className="relative aspect-[4/5]">
-          <MediaImage
-            src={product.image.src}
-            alt=""
-            width={product.image.width}
-            height={product.image.height}
-            fill
-          />
-        </div>
-      </Link>
-      <div className="ProductHoverCard__info flex flex-col pt-4">
-        <p className="ProductHoverCard__name text-base leading-6 font-bold">{product.name}</p>
-        <div className="ProductHoverCard__meta mt-2 flex items-center justify-between gap-2">
-          <p className="ProductHoverCard__price text-sm leading-6">{product.priceLabel}</p>
-          <StatusBadge status={product.status} />
-        </div>
-        <ProductAction
-          slug={product.slug}
-          status={product.status}
-          size="lg"
-          className="mt-4 w-full"
-        />
-      </div>
+      <ProductCardFace product={product} image={product.image} href={href} />
     </m.div>
   );
 };

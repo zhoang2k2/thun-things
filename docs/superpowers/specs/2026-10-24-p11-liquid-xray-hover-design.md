@@ -1,5 +1,9 @@
 # P11 Liquid X-ray Hover — Design
 
+> **Revision 4 (2026-10-26, owner brainstorm) supersedes every earlier revision.** The x-ray reveal is removed. See "Revision 4" at the end.
+
+> **Revision 2 (2026-10-25, owner feedback on PR #14) supersedes the decisions below where they differ:** the lens anchors at the tile entry point and morphs on its own clock (no pointer following, no stretch); it sits above the hovered card; the neighbour copy is the same card as the hover card, inert; the lens shows colour back photos with film grain (no monochrome tint, no Excon). ADR-014 records the details.
+
 **Date:** 2026-10-24
 **Builds on:** V-14/V-15 hover card (P2-9), DR-1/DR-2, the P3 removal of the glass layer, P6 events; [`../plans/2026-10-22-roadmap.md`](../plans/2026-10-22-roadmap.md) P11
 **Roadmap:** P11, after launch (P9). Planned now, built after P9.
@@ -69,3 +73,16 @@ No new GA4 event: `hover_preview_open` and `select_item` stay as they are. (A le
 ## Out of scope
 
 Lens on pages other than the grid, touch or gyro variants, sound, WebGL/canvas rendering, new analytics events.
+
+## Revision 4 (2026-10-26) [USER]
+
+| ID       | Decision                                                                                                                                                                                                                                                                                             |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P11-R4-1 | The grid container matches the header: `max-w-screen-2xl`, padding-x 16px (mobile) / 32px (md+), 40px vertical padding. No gaps between cells.                                                                                                                                                       |
+| P11-R4-2 | A site-wide liquid follows the pointer with no lag. Two states [USER, 2026-10-26]: **outer**, a near-circle of ~80px with a faint wobble everywhere outside the product grid; **inner**, over the grid, spread to 280px and morphing deeply. The change between the two animates (~350ms) both ways. |
+| P11-R4-3 | The liquid is always coloured (orange–purple tint, film grain), also over the hovered card. It sits above page content and the hover card, below the header, consent bar, quiz and dialogs. Off on touch and under reduced motion.                                                                   |
+| P11-R4-4 | The x-ray reveal (back-photo copies) is removed. Neighbouring designs react by being pushed away from the liquid: up to ~6px and scaled to ~0.97, stronger when closer, easing back when it leaves. The hovered design does not move.                                                                |
+| P11-R4-5 | Button overlap colour is kept: where the liquid overlaps the hover card's button it shows purple, orange while that button is hovered (a clipped copy of the button inside the liquid layer).                                                                                                        |
+| P11-R4-6 | The hover card keeps its 1px border and opens by growing its frame and info out of the photo (~280ms); the photo does not move. Reduced motion: fade only.                                                                                                                                           |
+
+Implementation: `components/motion/CursorLiquid.tsx` (fixed layer mounted once in `SiteFrame`, clip path from `lensOutline` with a `depth` parameter, tint and grain from `lensTextures.ts`, button copy), neighbour push in `ProductGrid`, card open animation in `ProductHoverCard`. Removed: `LiquidLens`, `XrayCell`, `backImage` on the card model, the back placeholder copy.
